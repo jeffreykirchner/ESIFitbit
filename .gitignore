@@ -1,0 +1,7 @@
+*.sqlite3
+db.sqlite3-journal
+*.pyc
+logs/*
+ESIRecruiterEnv/*
+.vscode/*
+Notes.txt
