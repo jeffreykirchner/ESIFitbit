@@ -7,7 +7,7 @@ import uuid
 
 from enum import Enum
 
-#one day from session
+#one day from session 
 class Session_day_user_actvity(models.Model):
     session_day = models.ForeignKey(Session_day,on_delete=models.CASCADE)
     session_subject = models.ForeignKey(Session_subject,on_delete=models.CASCADE)
