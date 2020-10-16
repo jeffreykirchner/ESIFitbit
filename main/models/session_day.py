@@ -16,6 +16,8 @@ class Treatment(Enum):
 class Session_day(models.Model):
     session = models.ForeignKey(Session,on_delete=models.CASCADE)
 
+    date = models.DateTimeField(default=now)                            #date and time of session day
+
     treatment = models.CharField(
         max_length=100,
         choices = [(tag.name, tag.value) for tag in Treatment],

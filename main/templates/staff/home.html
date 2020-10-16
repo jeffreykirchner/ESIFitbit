@@ -1,5 +1,152 @@
-{% extends "base.html" %}
+{%extends "base.html"%}
+{% load crispy_forms_tags %}
 
-{% block content %}
-staff home
-{% endblock %}
+{%block head%}
+
+    <script type="text/javascript">
+    $(document).ready(function(){
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        axios.defaults.xsrfCookieName = "csrftoken";
+
+        var app = new Vue({
+        
+            delimiters: ['[[', ']]'],
+            el: '#root',        
+            data:{
+                sessions:[],
+                createSessionButtonText : 'Create Session <i class="fas fa-plus"></i>',
+            },
+
+            methods:{
+
+                //create new experient
+                getSessions:function(){                    
+                    
+                    axios.post('/staffHome/', {
+                                    action :"getSessions" ,                                                                                                                                                                
+                                })
+                                .then(function (response) {     
+                                    app.updateSessions(response);                                              
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });                        
+                },
+                
+                //create new experient
+                createSession:function(){                    
+                    app.$data.createSessionButtonText ='<i class="fas fa-spinner fa-spin"></i>';
+                    axios.post('/staffHome/', {
+                                    action :"createSession" ,                                                                                                                                                                
+                                })
+                                .then(function (response) {     
+                                    app.updateSessions(response);      
+                                    app.$data.createExperimentButtonText = 'Create Experiment <i class="fas fa-plus"></i>';                                        
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });                        
+                },
+                
+                //update the experiment list from server
+                updateSessions:function(response){
+                    app.$data.sessions = response.data.sessions;       
+                                    
+                },
+
+                //delete the selected experiment
+                deleteSession:function(id){
+                    if(confirm("Delete Session?"))
+                    {
+                        axios.post('/staffHome/', {
+                                action :"deleteSession" ,
+                                id:id,                                                                                                                             
+                            })
+                            .then(function (response) {   
+                                app.updateSessions(response);                                                                          
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                            });                        
+                        }
+                    }                          
+            },
+
+            mounted: function(){
+                this.getSessions();                      
+            },
+        });
+
+    });
+
+    </script>
+    <style>
+        .table_header{
+            font-weight:bold;
+            font-size: 16px;
+        }
+    </style>
+{%endblock head%}
+
+{%block content%}
+<div class="row justify-content-lg-center">
+    <div class="col col-lg-8">
+        <div class="card">                  
+            <div class="card-header">
+                <!-- <span class="align-middle">Sessions</span>                -->
+                
+                <span class="float-right">
+                    <button class="btn btn-outline-success" type="button" v-on:click = "createSession()">
+                        <span v-html="createSessionButtonText"></span>
+                    </button>
+                </span>
+                                                                
+            </div>
+            <div class="card-body">                      
+                                
+                <!-- session list -->
+                <table class="table table-hover table-condensed">                            
+
+                    <caption style="caption-side:top;text-align: center;">Sessions</caption>
+
+                    <thead>
+                        <th width="30%">
+                            Title
+                        </th> 
+                        <th width="20%" style="text-align: center;">
+                            Start Date                            
+                        </th>
+                        <th width="35%" style="text-align: center;">
+                            Current Period
+                        </th>                                                      
+                        <th width="15%" style="text-align: center;">
+                            Control
+                        </th>
+                    </thead>
+
+                    <tbody id="sessionList">                                                  
+                        <tr v-for="(s,index) in sessions" v-bind:key="s.id">                                                                          
+                            <td> 
+                                <a :href="'/session/' + s.id + '/' "><span v-html="s.title"></span></a>                                        
+                            </td>
+                            <td style="text-align: center;"> 
+                                <span v-html="s.start_date"></span>                                   
+                            </td>
+                            <td style="text-align: center;">                                        
+                                <span v-html="s.current_period"></span>                                       
+                            </td>                               
+                            <td style="text-align: center;">
+                                <button v-bind:id="'deleteSession' + s.id" type="button" class="btn btn-outline-danger btn-sm" v-on:click = "deleteSession(s.id)" v-bind:disabled="s.allowDelete === false">
+                                    Delete <i class="fas fa-user-minus fa-xs"></i>  
+                                </button>
+                            </td>                            
+                        </tr>                                                    
+                    </tbody>
+                    
+                </table>                 
+                
+            </div>                    
+        </div>                
+    </div>
+</div>    
+{%endblock content%}

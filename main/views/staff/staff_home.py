@@ -5,34 +5,54 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 import logging
 
+from main.models import Session
+
 @login_required
 def Staff_Home(request):
     logger = logging.getLogger(__name__) 
    
     
     # logger.info("some info")
-    u=request.user  
 
     if request.method == 'POST':     
 
-       
-        # #u=User.objects.get(id=11330)  #tester
 
-        # data = json.loads(request.body.decode('utf-8'))
+        data = json.loads(request.body.decode('utf-8'))
 
-        # if data["action"] == "getCurrentInvitations":
-        #     return getCurrentInvitations(data,u)
-        # elif data["action"] == "acceptInvitation":
-        #     return acceptInvitation(data,u)
-        # elif data["action"] == "cancelAcceptInvitation":
-        #     return cancelAcceptInvitation(data,u)
-        # elif data["action"] == "showAllInvitations":
-        #     return showAllInvitations(data,u)
-        # elif data["action"] == "acceptConsentForm":
-        #     return acceptConsentForm(data,u)
+        if data["action"] == "createSession":
+            return createSession(data)
+        elif data["action"] == "deleteSession":
+            return deleteSession(data)
+        elif data["action"] == "getSessions":
+             return getSessions(data)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
         
         return render(request,'staff/home.html',{"a":"a",
-                                                   "b":"b"})      
+                                                   "b":"b"})     
+
+#get list of experiment sessions
+def getSessions(data):
+    logger = logging.getLogger(__name__) 
+    logger.info("Get Sessions")
+    logger.info(data)
+
+    return JsonResponse({"sessions" :[s.json() for s in  Session.objects.all()],
+                                },safe=False) 
+
+def createSession(data):
+    logger = logging.getLogger(__name__) 
+    logger.info("Create Session")
+    logger.info(data)
+
+    return getSessions(data) 
+
+
+def deleteSession(data):
+    logger = logging.getLogger(__name__) 
+    logger.info("Delete Session")
+    logger.info(data)
+
+    return getSessions(data) 
+

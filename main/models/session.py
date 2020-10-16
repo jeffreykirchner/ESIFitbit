@@ -8,7 +8,7 @@ from . import Parameterset
 class Session(models.Model):
     parameterset = models.ForeignKey(Parameterset,on_delete=models.CASCADE)
 
-    title = models.CharField(max_length = 300)
+    title = models.CharField(max_length = 300)                                #title of session
     start_date = models.DateTimeField(default=now)                            #date and time of session
 
     timestamp = models.DateTimeField(auto_now_add= True)
