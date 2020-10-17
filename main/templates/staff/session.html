@@ -1,0 +1,164 @@
+{%extends "base.html"%}
+{% load crispy_forms_tags %}
+
+{%block head%}
+
+    <script type="text/javascript">
+    $(document).ready(function(){
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        axios.defaults.xsrfCookieName = "csrftoken";
+
+        var app = new Vue({
+        
+            delimiters: ['[[', ']]'],
+            el: '#root',        
+            data:{
+                session:{"title":"",
+                         "start_date":"",},
+                session_subjects:[],
+                addSubjectButtonText:'Add Subject <i class="fas fa-plus"></i>',
+            },
+
+            methods:{
+
+                //create new experient
+                getSession:function(){                    
+                    
+                    axios.post('/session/{{id}}/', {
+                                    action :"getSession" ,                                                                                                                                                                
+                                })
+                                .then(function (response) {     
+                                    app.updateSession(response);   
+                                    app.updateSubjects(response);                                        
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });                        
+                },
+                
+                
+                //update the experiment list from server
+                updateSession:function(response){
+                    app.$data.session = response.data.session;      
+                                    
+                },
+
+                 //update the experiment list from server
+                updateSubjects:function(response){
+                    app.$data.session_subjects = response.data.session_subjects;      
+                                    
+                },
+
+                //delete the selected experiment
+                deleteSubject:function(id){
+                    if(confirm("Delete Subject?"))
+                    {
+                        axios.post('/staffHome/{{id}}/', {
+                            action :"deleteSubject" ,
+                            id:id,                                                                                                                             
+                        })
+                        .then(function (response) {   
+                            app.updateSession(response);                                                                          
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });                        
+                    }
+                },
+
+                //create new experient
+                addSubject:function(){                    
+                    app.$data.addSubjectButtonText ='<i class="fas fa-spinner fa-spin"></i>';
+                    axios.post('/staffHome/{{id}}/', {
+                                    action :"addSubject" ,                                                                                                                                                                
+                                })
+                                .then(function (response) {     
+                                    app.updateSessions(response);      
+                                    app.$data.addSubjectButtonText = 'Add Subject <i class="fas fa-plus"></i>';                                        
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });                        
+                },
+                        
+            },
+
+            mounted: function(){
+                this.getSession();                      
+            },
+        });
+
+    });
+
+    </script>
+    <style>
+        .table_header{
+            font-weight:bold;
+            font-size: 16px;
+        }
+    </style>
+{%endblock head%}
+
+{%block content%}
+<div class="row justify-content-lg-center">
+    <div class="col col-lg-8">
+        <div class="card">                  
+            <div class="card-header">
+                <span class="align-middle">Subjects</span>
+                
+                <span class="float-right">
+                    <button class="btn btn-outline-success" type="button" v-on:click = "addSubject()">
+                        <span v-html="addSubjectButtonText"></span>
+                    </button>
+                </span>
+                                                                
+            </div>
+            <div class="card-body">                      
+                                
+                <!-- session list -->
+                <table class="table table-hover table-condensed">                            
+
+                    <!-- <caption style="caption-side:top;text-align: center;">Subjects</caption> -->
+
+                    <thead>
+                        <th width="30%">
+                            Name
+                        </th> 
+                        <th width="20%" style="text-align: center;">
+                            Login Link                    
+                        </th>
+                        <th width="35%" style="text-align: center;">
+                           
+                        </th>                                                      
+                        <th width="15%" style="text-align: center;">
+                            Control
+                        </th>
+                    </thead>
+
+                    <tbody id="subjectList">                                                  
+                        <tr v-for="(s,index) in session_subjects" v-bind:key="s.id">                                                                          
+                            <td> 
+                                <span v-html="s.name"></span>                                      
+                            </td>
+                            <td style="text-align: center;"> 
+                                                                  
+                            </td>
+                            <td style="text-align: center;">                                        
+                                                                       
+                            </td>                               
+                            <td style="text-align: center;">
+                                <button v-bind:id="'deleteSubject' + s.id" type="button" class="btn btn-outline-danger btn-sm" v-on:click = "deleteSubject(s.id)">
+                                    Delete <i class="fas fa-user-minus fa-xs"></i>  
+                                </button>
+                            </td>                            
+                        </tr>                                                    
+                    </tbody>
+                    
+                </table>                 
+                
+            </div>                    
+        </div>                
+    </div>
+</div>    
+
+{%endblock content%}

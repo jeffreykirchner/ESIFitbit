@@ -41,7 +41,7 @@
                                 })
                                 .then(function (response) {     
                                     app.updateSessions(response);      
-                                    app.$data.createExperimentButtonText = 'Create Experiment <i class="fas fa-plus"></i>';                                        
+                                    app.$data.createSessionButtonText = 'Create Session <i class="fas fa-plus"></i>';                                        
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -136,7 +136,7 @@
                                 <span v-html="s.current_period"></span>                                       
                             </td>                               
                             <td style="text-align: center;">
-                                <button v-bind:id="'deleteSession' + s.id" type="button" class="btn btn-outline-danger btn-sm" v-on:click = "deleteSession(s.id)" v-bind:disabled="s.allowDelete === false">
+                                <button v-bind:id="'deleteSession' + s.id" type="button" class="btn btn-outline-danger btn-sm" v-on:click = "deleteSession(s.id)">
                                     Delete <i class="fas fa-user-minus fa-xs"></i>  
                                 </button>
                             </td>                            
@@ -149,4 +149,5 @@
         </div>                
     </div>
 </div>    
+
 {%endblock content%}

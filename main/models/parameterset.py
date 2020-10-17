@@ -52,6 +52,28 @@ class Parameterset(models.Model):
     def json(self):
         return{
             "id":self.id,
-            "name":self.number_of_days,
-            "name":self.start_date,
+            "number_of_days":self.number_of_days,
+            "number_of_players":self.number_of_players,
+
+            "heart_activity_inital":self.heart_activity_inital,
+            "heart_parameter_1":self.heart_parameter_1,
+            "heart_parameter_2":self.heart_parameter_2,
+            "heart_parameter_3":self.heart_parameter_3,
+
+            "immune_activity_inital":self.immune_activity_inital,
+            "immune_parameter_1":self.immune_parameter_1,
+            "immune_parameter_2":self.immune_parameter_2,
+            "immune_parameter_3":self.immune_parameter_3,
+
+            "treatment_pay_1":self.treatment_pay_1,
+            "treatment_pay_2":self.treatment_pay_2,
+            "treatment_pay_3":self.treatment_pay_3,
+
+            "treatment_3_heart_bonus":self.treatment_3_heart_bonus,
+            "treatment_3_immune_bonus":self.treatment_3_immune_bonus,
+            "treatment_3_bonus_target_count":self.treatment_3_bonus_target_count,
+
+            "treatment_1_day_count":self.treatment_1_day_count,
+            "treatment_2_day_count":self.treatment_2_day_count,
+            "treatment_3_day_count":self.treatment_3_day_count,
         }

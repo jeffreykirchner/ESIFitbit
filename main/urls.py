@@ -20,6 +20,7 @@ urlpatterns = [
     
     #staff
     path('staffHome/',views.Staff_Home,name='staff_home'),
+    path('session/<id>/',views.Staff_Session,name='staff_session'),
 
     #subject
     path('subjectHome/',views.Subject_Home,name='subject_home'),

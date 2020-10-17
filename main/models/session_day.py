@@ -15,8 +15,9 @@ class Treatment(Enum):
 #subject in session
 class Session_day(models.Model):
     session = models.ForeignKey(Session,on_delete=models.CASCADE)
-
-    date = models.DateTimeField(default=now)                            #date and time of session day
+    
+    period_number = models.IntegerField()
+    date = models.DateField(default=now)                            #date and time of session day
 
     treatment = models.CharField(
         max_length=100,
@@ -31,6 +32,9 @@ class Session_day(models.Model):
         return self.name
     
     class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['session', 'period_number'], name='unique_SD')
+        ]
         verbose_name = 'Session Day'
         verbose_name_plural = 'Session Dat'
 
