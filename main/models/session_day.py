@@ -14,7 +14,7 @@ class Treatment(Enum):
 
 #subject in session
 class Session_day(models.Model):
-    session = models.ForeignKey(Session,on_delete=models.CASCADE)
+    session = models.ForeignKey(Session,on_delete=models.CASCADE,related_name="session_days")
     
     period_number = models.IntegerField()
     date = models.DateField(default=now)                            #date and time of session day

@@ -67,11 +67,12 @@ def addSubject(data,id):
     s=Session.objects.get(id=id)
 
     ss = Session_subject()
+    ss.session=s
     ss.save()
 
     sda = Session_day_subject_actvity()
     sda.session_subject = ss
-    sda.session_day = s.Session_day_set.filter(period_number = 1).first()
+    sda.session_day = s.session_days.filter(period_number = 1).first()
     sda.check_in_today = True
     sda.heart_activity_minutes = -1
     sda.immune_activity_minutes = -1

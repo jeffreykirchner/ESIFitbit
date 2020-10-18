@@ -53,12 +53,12 @@
                 deleteSubject:function(id){
                     if(confirm("Delete Subject?"))
                     {
-                        axios.post('/staffHome/{{id}}/', {
+                        axios.post('/session/{{id}}/', {
                             action :"deleteSubject" ,
                             id:id,                                                                                                                             
                         })
                         .then(function (response) {   
-                            app.updateSession(response);                                                                          
+                            app.updateSubjects(response);                                                                          
                         })
                         .catch(function (error) {
                             console.log(error);
@@ -69,11 +69,11 @@
                 //create new experient
                 addSubject:function(){                    
                     app.$data.addSubjectButtonText ='<i class="fas fa-spinner fa-spin"></i>';
-                    axios.post('/staffHome/{{id}}/', {
+                    axios.post('/session/{{id}}/', {
                                     action :"addSubject" ,                                                                                                                                                                
                                 })
                                 .then(function (response) {     
-                                    app.updateSessions(response);      
+                                    app.updateSubjects(response);       
                                     app.$data.addSubjectButtonText = 'Add Subject <i class="fas fa-plus"></i>';                                        
                                 })
                                 .catch(function (error) {

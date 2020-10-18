@@ -10,17 +10,17 @@ from django.conf import settings
 class Session_subject(models.Model):
     session = models.ForeignKey(Session,on_delete=models.CASCADE,related_name="session_subjects")
 
-    login_key = models.UUIDField(default=uuid.uuid4, editable=False,verbose_name = 'Login Key')      #log in key used to ID subject for URL login
-    name = models.CharField(max_length = 300,verbose_name = 'Subject Name')                          #subject name 
-    contact_email = models.CharField(max_length = 300,verbose_name = 'Subject Email')                #contact email address
-    student_id = models.CharField(max_length = 300,verbose_name = 'Student ID Number')               #student ID number
-    gmail_address = models.CharField(max_length = 300,verbose_name = 'Gmail Address')                #gmail address asigned to subject for experiment 
-    gmail_password = models.CharField(max_length = 300,verbose_name = 'Gmail Password')              #password for above 
+    login_key = models.UUIDField(default=uuid.uuid4, editable=False,verbose_name = 'Login Key')                         #log in key used to ID subject for URL login
+    name = models.CharField(max_length = 300,default = 'Subject Name', verbose_name = 'Subject Name')                   #subject name 
+    contact_email = models.CharField(max_length = 300,default = 'Subject Email',verbose_name = 'Subject Email')         #contact email address
+    student_id = models.CharField(max_length = 300,default = 'Student ID Number',verbose_name = 'Student ID Number')    #student ID number
+    gmail_address = models.CharField(max_length = 300,default = 'Gmail Address',verbose_name = 'Gmail Address')         #gmail address asigned to subject for experiment 
+    gmail_password = models.CharField(max_length = 300,default = 'Gmail Password',verbose_name = 'Gmail Password')      #password for above 
  
     #fitbit    
-    fitBitAccessToken = models.CharField(max_length=200, default="")
-    fitBitRefreshToken = models.CharField(max_length=200, default="")
-    fitBitUserId = models.CharField(max_length=200, default="")  
+    fitBitAccessToken = models.CharField(max_length=200, default="",verbose_name = 'FitBit Access Token')
+    fitBitRefreshToken = models.CharField(max_length=200, default="",verbose_name = 'FitBit Refresh Token')
+    fitBitUserId = models.CharField(max_length=200, default="",verbose_name = 'FitBit User ID')  
 
     softDelete =  models.BooleanField(default=False)                                                 #hide subject if true
 
