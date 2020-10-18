@@ -1,4 +1,5 @@
 # from .models import *
+from .parameters import * 
 from .parameterset import *
 from .session import *
 from .session_day import *

@@ -54,7 +54,7 @@ def getSubjectListJSON(id):
     logger.info("Get Subject List JSON")
     
     s=Session.objects.get(id=id)
-    ss = s.session_subjects.all()
+    ss = s.session_subjects.filter(soft_delete = False)
 
     return  [i.json() for i in ss]
 
@@ -89,7 +89,11 @@ def deleteSubject(data,id):
     logger.info("Delete Subject")
     logger.info(data)
 
-    id = data["id"] 
+    ss_id = data["id"] 
+
+    ss =  Session_subject.objects.get(id=ss_id)
+    ss.soft_delete=True
+    ss.save()
 
     # s = Session.objects.get(id=id)
     # s.softDelete=True

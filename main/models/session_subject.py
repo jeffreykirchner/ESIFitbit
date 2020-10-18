@@ -22,7 +22,7 @@ class Session_subject(models.Model):
     fitBitRefreshToken = models.CharField(max_length=200, default="",verbose_name = 'FitBit Refresh Token')
     fitBitUserId = models.CharField(max_length=200, default="",verbose_name = 'FitBit User ID')  
 
-    softDelete =  models.BooleanField(default=False)                                                 #hide subject if true
+    soft_delete =  models.BooleanField(default=False)                                                 #hide subject if true
 
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)

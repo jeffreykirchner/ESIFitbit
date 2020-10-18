@@ -38,7 +38,7 @@ def getSessions(data):
     logger.info("Get Sessions")
     logger.info(data)
 
-    return JsonResponse({"sessions" :[s.json() for s in  Session.objects.filter(softDelete=False)],
+    return JsonResponse({"sessions" :[s.json() for s in  Session.objects.filter(soft_delete=False)],
                                 },safe=False) 
 
 #create new session
@@ -73,7 +73,7 @@ def deleteSession(data):
     id = data["id"] 
 
     s = Session.objects.get(id=id)
-    s.softDelete=True
+    s.soft_delete=True
     s.save()
 
     return getSessions(data) 

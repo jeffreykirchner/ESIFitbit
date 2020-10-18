@@ -14,7 +14,7 @@ class Session(models.Model):
     title = models.CharField(max_length = 300,default="*** New Session ***")    #title of session
     start_date = models.DateField(default=now)                                  #date of session
 
-    softDelete =  models.BooleanField(default=False)                            #hide session if true
+    soft_delete =  models.BooleanField(default=False)                            #hide session if true
 
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
