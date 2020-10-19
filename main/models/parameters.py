@@ -34,9 +34,5 @@ class Parameters(models.Model):
             "subjectTimeZone":self.subjectTimeZone,
             "defaultShowUpFee":str(self.defaultShowUpFee),
             "invitationText":self.invitationText,
-            "invitationTextMultiDay":self.invitationTextMultiDay,
-            "reminderText":self.reminderText,
             "consentForm":self.consentForm,
-            "noShowCutoff":str(self.noShowCutoff),
-            "noShowCutoffWindow":(self.noShowCutoffWindow),
         }

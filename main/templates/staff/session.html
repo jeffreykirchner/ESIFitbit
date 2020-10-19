@@ -101,7 +101,7 @@
 
 {%block content%}
 <div class="row justify-content-lg-center">
-    <div class="col col-lg-8">
+    <div class="col col-lg-12">
         <div class="card">                  
             <div class="card-header">
                 <span class="align-middle">Subjects</span>
@@ -121,13 +121,13 @@
                     <!-- <caption style="caption-side:top;text-align: center;">Subjects</caption> -->
 
                     <thead>
-                        <th width="30%">
+                        <th width="20%">
                             Name
                         </th> 
-                        <th width="20%" style="text-align: center;">
+                        <th width="40%" style="text-align: center;">
                             Login Link                    
                         </th>
-                        <th width="35%" style="text-align: center;">
+                        <th width="25%" style="text-align: center;">
                            
                         </th>                                                      
                         <th width="15%" style="text-align: center;">
@@ -141,7 +141,7 @@
                                 <span v-html="s.name"></span>                                      
                             </td>
                             <td style="text-align: center;"> 
-                                                                  
+                                <span v-html="s.login_url"></span>                           
                             </td>
                             <td style="text-align: center;">                                        
                                                                        

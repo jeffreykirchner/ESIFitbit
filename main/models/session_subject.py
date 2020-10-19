@@ -2,7 +2,7 @@ from django.db import models
 import logging
 import traceback
 from django.utils.timezone import now
-from . import Session
+from . import Session,Parameters
 import uuid
 from django.conf import settings
 
@@ -36,11 +36,13 @@ class Session_subject(models.Model):
 
     #return json object of class
     def json(self):
+        p = Parameters.objects.first()
+
         return{
             "id":self.id,
             "name":self.name,
             "contact_email":self.contact_email,
             "student_id":self.student_id,
             "gmail_address":self.gmail_address,
-            "login_url": settings.BASE_URL + str(self.login_key)
+            "login_url": p.siteURL + str(self.login_key)
         }

@@ -18,24 +18,24 @@ class Parameters_form(forms.ModelForm):
     siteURL = forms.CharField(label='Site URL',
                                          widget=forms.TextInput(attrs={"size":"125"}))
 
-    invitationTextSubject = forms.CharField(label='Default Recruitment Email Subject, Single Day',
+    invitationTextSubject = forms.CharField(label='Welcome Email, Subject',
                                          widget=forms.TextInput(attrs={"size":"125"}))
 
-    invitationText = forms.CharField(label='Default Recruitment Email Text, Single Day',
+    invitationText = forms.CharField(label='Welcome Email, Text',
                                      widget=forms.Textarea(attrs={"rows":"15", "cols":"125"}))
 
 
-    cancelationTextSubject = forms.CharField(label='Cancelation Email Subject',
+    cancelationTextSubject = forms.CharField(label='Cancelation Email, Subject',
                                          widget=forms.TextInput(attrs={"size":"125"}))
 
-    cancelationText = forms.CharField(label='Cancelation Email Text',
+    cancelationText = forms.CharField(label='Cancelation Email, Text',
                                      widget=forms.Textarea(attrs={"rows":"15", "cols":"125"}))
 
     
     consentForm = forms.CharField(label='Consent Form',
                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
 
-    subjectTimeZone = forms.ChoiceField(label="Subject Timezone",
+    experimentTimeZone = forms.ChoiceField(label="Experiment Timezone",
                                         choices=[(tz, tz) for tz in pytz.all_timezones])
 
     class Meta:
