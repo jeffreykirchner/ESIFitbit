@@ -13,8 +13,8 @@
             delimiters: ['[[', ']]'],
             el: '#root',        
             data:{
-                sessionParametersBeforeEdit:{},
-                session:{title:"",
+                sessionParametersBeforeEdit:{},                     //store session before editing to restore if canceled
+                session:{title:"",                                  //session and parameter set values
                          start_date:"",
                          parameterset:{id:"",
                                         number_of_days:"",
@@ -42,8 +42,10 @@
                                         treatment_2_day_count:"",
                                         treatment_3_day_count:"",}
                         },
-                session_subjects:[],
-                cancelModal:false,
+                session_subjects:[],              //list of subjects in this session 
+                cancelModal:false,                //if modal is canceled reload old values
+                currentSubject:{},                //current subject being edited
+                currentSubjectIndex:-1,           //index of current subject being edited
                 addSubjectButtonText:'Add Subject <i class="fas fa-plus"></i>',
             },
 
@@ -109,7 +111,7 @@
                                 });                        
                 },
 
-                //create new experient
+                //update session parameters
                 updateParameters:function(){                    
                     app.$data.cancelModal=false;
 
@@ -124,8 +126,67 @@
 
                                     if(status=="success")
                                     {
-                                        app.updateSubjects(response);       
+                                        app.updateSession(response);       
                                         $('#editSessionParametersModal').modal('toggle');    
+                                    } 
+                                    else
+                                    {
+                                        app.$data.cancelModal=true;                           
+                                        app.displayErrors(response.data.errors);
+                                    }                                   
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });                        
+                },
+
+                //update session parameters
+                updateSessionSettings:function(){                    
+                    app.$data.cancelModal=false;
+
+                    axios.post('/session/{{id}}/', {
+                                    action :"updateSession" ,      
+                                    formData : $("#sessionForm").serializeArray(),                                                                                                                                                          
+                                })
+                                .then(function (response) {     
+                                    status=response.data.status;                               
+
+                                    app.clearMainFormErrors();
+
+                                    if(status=="success")
+                                    {
+                                        app.updateSession(response);       
+                                        $('#editSessionModal').modal('toggle');    
+                                    } 
+                                    else
+                                    {
+                                        app.$data.cancelModal=true;                           
+                                        app.displayErrors(response.data.errors);
+                                    }                                   
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });                        
+                },
+
+                //update subject parameters
+                updateSubjectSettings:function(){                    
+                    app.$data.cancelModal=false;
+
+                    axios.post('/session/{{id}}/', {
+                                    action :"updateSubject" ,
+                                    ss_id : app.$data.currentSubject.id,      
+                                    formData : $("#subjectForm").serializeArray(),                                                                                                                                                          
+                                })
+                                .then(function (response) {     
+                                    status=response.data.status;                               
+
+                                    app.clearMainFormErrors();
+
+                                    if(status=="success")
+                                    {
+                                        app.updateSubjects(response);       
+                                        $('#editSubjectModal').modal('toggle');    
                                     } 
                                     else
                                     {
@@ -152,6 +213,47 @@
                     {
                         Object.assign(app.$data.session.parameterset, app.$data.sessionParametersBeforeEdit);
                         app.$data.sessionBeforeEdit=null;
+                    }
+                },
+
+                //show edit parameters modal
+                showEditSession:function(){
+                    app.clearMainFormErrors();
+                    app.$data.cancelModal=true;
+                    app.$data.sessionBeforeEdit = Object.assign({}, app.$data.session);
+                    $('#editSessionModal').modal('show');                   
+                },
+
+                //fire when edit experiment model hides, cancel action if nessicary
+                hideEditSession:function(){
+                    if(app.$data.cancelModal)
+                    {
+                        Object.assign(app.$data.session, app.$data.sessionBeforeEdit);
+                        app.$data.sessionBeforeEdit=null;
+                    }
+                },
+
+                //show edit parameters modal
+                showEditSubject:function(s_id,index){
+                    app.clearMainFormErrors();
+                    app.$data.cancelModal=true;
+                    app.$data.currentSubjectIndex = index
+                    app.$data.subjectBeforeEdit = Object.assign({}, app.$data.session_subjects[index]);
+                    app.$data.currentSubject = app.$data.session_subjects[index];
+                    $('#editSubjectModal').modal('show');                   
+                },
+
+                //fire when edit experiment model hides, cancel action if nessicary
+                hideEditSubject:function(){
+                    if(app.$data.cancelModal)
+                    {
+                        index = currentSubjectIndex;
+
+                        if(index != -1)
+                        {
+                            Object.assign(app.$data.session_subjects[index], app.$data.subjectBeforeEdit);
+                            app.$data.subjectBeforeEdit=null;
+                        }
                     }
                 },
             
@@ -181,12 +283,19 @@
                         $("#id_" + item).attr("class","form-control");
                         $("#id_errors_" + item).remove();
                     }
+
+                    for(var item in app.$data.session)
+                    {
+                        $("#id_" + item).attr("class","form-control");
+                        $("#id_errors_" + item).remove();
+                    }
                 },       
             },
 
             mounted: function(){
                 this.getSession();        
-                $('#editSessionParametersModal').on("hidden.bs.modal", this.hideEditParameters);              
+                $('#editSessionParametersModal').on("hidden.bs.modal", this.hideEditParameters);  
+                $('#editSessionModal').on("hidden.bs.modal", this.hideEditSession);            
             },
         });
 
@@ -368,7 +477,7 @@
                         <span class="align-middle">Session</span>
                         
                         <span class="float-right">
-                            <button class="btn btn-outline-primary" type="button" v-on:click = "">
+                            <button class="btn btn-outline-primary" type="button" v-on:click = "showEditSession()">
                                 Edit <i class="far fa-edit"></i>
                             </button>
                         </span>
@@ -377,13 +486,13 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col" style="text-align: right;">
-                                {{parameterset_form.heart_activity_inital.label}}:
+                                {{session_form.title.label}}:
                             </div>
                             <div class="col">
                                 <span v-html="session.title"></span>
                             </div>
                             <div class="col" style="text-align: right;">
-                                {{parameterset_form.immune_activity_inital.label}}:
+                                {{session_form.start_date.label}}:
                             </div>
                             <div class="col">
                                 <span v-html="session.start_date"></span>
@@ -441,6 +550,9 @@
                                                                             
                                     </td>                               
                                     <td style="text-align: center;">
+                                        <button v-bind:id="'editSubject' + s.id" type="button" class="btn btn-outline-primary btn-sm" v-on:click = "showEditSubject(s.id,index)">
+                                            Edit <i class="far fa-edit"></i>  
+                                        </button> | 
                                         <button v-bind:id="'deleteSubject' + s.id" type="button" class="btn btn-outline-danger btn-sm" v-on:click = "deleteSubject(s.id)">
                                             Delete <i class="fas fa-user-minus fa-xs"></i>  
                                         </button>
@@ -459,5 +571,7 @@
 </div>    
 
 {%include "modals/editSessionParametersModal.html"%}
+{%include "modals/editSessionModal.html"%}
+{%include "modals/editSubjectModal.html"%}
 
 {%endblock content%}

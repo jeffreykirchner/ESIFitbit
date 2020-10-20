@@ -6,17 +6,14 @@ import pytz
 
 class Session_form(forms.ModelForm):
     title = forms.CharField(label='Title',
-                            widget=forms.TextInput(attrs={"v-model":"experiment.title",
-                                                          "v-on:keyup":"mainFormChange1"})) 
+                            widget=forms.TextInput(attrs={"v-model":"session.title"})) 
     
-    date = forms.DateTimeField(label="Start Date",
-                               localize=True,
+    start_date = forms.DateField(label="Start Date",
                                input_formats=['%m/%d/%Y'],
-                               error_messages={'invalid': 'Format: M/D/YYYY H:MM am/pm ZZ'},                                                                                                           
-                               widget = forms.DateTimeInput(attrs={"v-model":"currentSessionDay.date",                                                                 
-                                                                   "v-on:change":"mainFormChange2"}))
+                               error_messages={'invalid': 'Format: M/D/YYYY'},                                                                                                           
+                               widget = forms.DateTimeInput(attrs={"v-model":"session.start_date"}))
     
 
     class Meta:
         model=Session
-        fields = ('__all__')
+        exclude=['soft_delete','parameterset']

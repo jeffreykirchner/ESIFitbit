@@ -39,7 +39,7 @@ class Parameterset(models.Model):
     updated= models.DateTimeField(auto_now= True)
 
     def __str__(self):
-        return self.name
+        return str(self.id)
     
     class Meta:
         verbose_name = 'Experiment Parameter Set'

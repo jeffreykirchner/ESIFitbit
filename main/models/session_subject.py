@@ -44,5 +44,6 @@ class Session_subject(models.Model):
             "contact_email":self.contact_email,
             "student_id":self.student_id,
             "gmail_address":self.gmail_address,
-            "login_url": p.siteURL + str(self.login_key)
+            "gmail_password":self.gmail_password,
+            "login_url": p.siteURL +'subjectHome/' + str(self.login_key)
         }

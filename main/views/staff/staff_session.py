@@ -4,8 +4,9 @@ import json
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 import logging
+from django.db.models.functions import Lower
 
-from main.forms import Parameterset_form
+from main.forms import Parameterset_form,Session_form,Subject_form
 from main.models import Session,Parameterset,Session_subject,Session_day_subject_actvity
 
 @login_required
@@ -28,13 +29,21 @@ def Staff_Session(request,id):
             return addSubject(data,id)
         elif data["action"] == "updateParameters":
             return updateParameters(data,id)
+        elif data["action"] == "updateSession":
+            return updateSession(data,id)
+        elif data["action"] == "updateSubject":
+            return updateSubject(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
         
         parameterset_form = Parameterset_form()
+        session_form = Session_form()
+        subject_form = Subject_form()
         return render(request,'staff/session.html',{'id': id,
-                                                    'parameterset_form':parameterset_form})     
+                                                    'parameterset_form':parameterset_form,
+                                                    'session_form':session_form,
+                                                    'subject_form':subject_form})     
 
 #get list of experiment sessions
 def getSession(data,id):
@@ -61,7 +70,7 @@ def getSubjectListJSON(id):
     logger.info("Get Subject List JSON")
     
     s=Session.objects.get(id=id)
-    ss = s.session_subjects.filter(soft_delete = False)
+    ss = s.session_subjects.filter(soft_delete = False).order_by(Lower('name'))
 
     return  [i.json() for i in ss]
 
@@ -109,6 +118,7 @@ def deleteSubject(data,id):
     return JsonResponse({"session_subjects": getSubjectListJSON(id), 
                                 },safe=False) 
 
+#update session parameters
 def updateParameters(data,id):
     logger = logging.getLogger(__name__) 
     logger.info("Update parameters")
@@ -130,6 +140,56 @@ def updateParameters(data,id):
                                 
     else:
         logger.info("Invalid parameterset form")
+        return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
+
+#update session settings
+def updateSession(data,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Update session")
+    logger.info(data)
+
+    form_data_dict = {}
+
+    s=Session.objects.get(id=id)
+
+    for field in data["formData"]:            
+        form_data_dict[field["name"]] = field["value"]
+
+    form = Session_form(form_data_dict,instance=s)
+
+    if form.is_valid():
+        #print("valid form")                
+        form.save()               
+        return JsonResponse({"status":"success","session" : getSessionJSON(id),},safe=False)                         
+                                
+    else:
+        logger.info("Invalid session form")
+        return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
+
+#update subject settings
+def updateSubject(data,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Update subject")
+    logger.info(data)
+
+    form_data_dict = {}
+
+    ss_id =  data["ss_id"]
+
+    ss=Session_subject.objects.get(id=ss_id)
+
+    for field in data["formData"]:            
+        form_data_dict[field["name"]] = field["value"]
+
+    form = Subject_form(form_data_dict,instance=ss)
+
+    if form.is_valid():
+        #print("valid form")                
+        form.save()               
+        return JsonResponse({"status":"success","session_subjects": getSubjectListJSON(id), },safe=False)                         
+                                
+    else:
+        logger.info("Invalid session form")
         return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
     
 
