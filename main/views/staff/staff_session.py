@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 import logging
 
+from main.forms import Parameterset_form
 from main.models import Session,Parameterset,Session_subject,Session_day_subject_actvity
 
 @login_required
@@ -25,11 +26,15 @@ def Staff_Session(request,id):
             return deleteSubject(data,id)
         elif data["action"] == "addSubject":
             return addSubject(data,id)
+        elif data["action"] == "updateParameters":
+            return updateParameters(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
         
-        return render(request,'staff/session.html',{'id': id,})     
+        parameterset_form = Parameterset_form()
+        return render(request,'staff/session.html',{'id': id,
+                                                    'parameterset_form':parameterset_form})     
 
 #get list of experiment sessions
 def getSession(data,id):
@@ -41,6 +46,7 @@ def getSession(data,id):
                          "session_subjects": getSubjectListJSON(id), 
                                 },safe=False)  
 
+#get session json object
 def getSessionJSON(id):
     logger = logging.getLogger(__name__) 
     logger.info("Get Session JSON")
@@ -49,6 +55,7 @@ def getSessionJSON(id):
 
     return s.json()
 
+#get subject list json object
 def getSubjectListJSON(id):
     logger = logging.getLogger(__name__) 
     logger.info("Get Subject List JSON")
@@ -101,4 +108,31 @@ def deleteSubject(data,id):
 
     return JsonResponse({"session_subjects": getSubjectListJSON(id), 
                                 },safe=False) 
+
+def updateParameters(data,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Update parameters")
+    logger.info(data)
+
+    form_data_dict = {}
+
+    s=Session.objects.get(id=id)
+
+    for field in data["formData"]:            
+        form_data_dict[field["name"]] = field["value"]
+
+    form = Parameterset_form(form_data_dict,instance=s.parameterset)
+
+    if form.is_valid():
+        #print("valid form")                
+        form.save()               
+        return JsonResponse({"status":"success","session" : getSessionJSON(id),},safe=False)                         
+                                
+    else:
+        logger.info("Invalid parameterset form")
+        return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
+    
+
+    
+
 

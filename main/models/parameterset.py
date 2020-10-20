@@ -3,10 +3,10 @@ import logging
 import traceback
 from django.utils.timezone import now
 
+from django.core import serializers
+
 #experiment session parameters
 class Parameterset(models.Model):
-    number_of_days = models.IntegerField(default = 1)  
-    number_of_players = models.IntegerField(default = 1) 
 
     #heartActivityToday = heartActivityTodayT-1 * (1 - (1 - heartActivityTodayT-1) * (heart_parameter_1 / heart_parameter_2  - heartTimeT-1 / (heartTimeT-1 + heart_parameter_3))
     heart_activity_inital =  models.DecimalField(decimal_places=10, default=1, max_digits=20)
@@ -25,15 +25,15 @@ class Parameterset(models.Model):
     treatment_pay_2 = models.DecimalField(decimal_places=2, default=8.00, max_digits=6)
     treatment_pay_3 = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
 
-    #bonus paid to subjects when group target met
-    treatment_3_heart_bonus = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
-    treatment_3_immune_bonus = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
-    treatment_3_bonus_target_count = models.IntegerField(default = 1)
-
     #number of days for each treatment
     treatment_1_day_count = models.IntegerField(default = 1)
     treatment_2_day_count = models.IntegerField(default = 1)
     treatment_3_day_count = models.IntegerField(default = 1)
+
+    #bonus paid to subjects when group target met
+    treatment_3_heart_bonus = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
+    treatment_3_immune_bonus = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
+    treatment_3_bonus_target_count = models.IntegerField(default = 1)
 
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
@@ -51,9 +51,8 @@ class Parameterset(models.Model):
     #return json object of class
     def json(self):
         return{
+            
             "id":self.id,
-            "number_of_days":self.number_of_days,
-            "number_of_players":self.number_of_players,
 
             "heart_activity_inital":self.heart_activity_inital,
             "heart_parameter_1":self.heart_parameter_1,
