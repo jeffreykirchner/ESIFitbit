@@ -24,5 +24,7 @@ urlpatterns = [
 
     #subject
     path('subjectHome/',views.Subject_Home,name='subject_home'),
+
+    path('fitBit/',views.fitBit,name='fitBit'),
     
 ]

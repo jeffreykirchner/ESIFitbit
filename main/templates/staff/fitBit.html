@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="row justify-content-md-center">
+  <div class="col col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        FitBit Setup        
+      </div>
+
+      <div class="card-body">
+        <center>
+          {%if status == 'fail'%}
+            Your FitBit failed to connect.<br>
+            Please return to your profile and try again.
+          {%else%}
+            Your FitBit has been connected.<br>
+            Return to your experiment.
+          {%endif%}
+        </center>
+       
+      </div>      
+    </div>
+  </div>
+</div>
+
+{% endblock %}

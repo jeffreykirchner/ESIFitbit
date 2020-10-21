@@ -531,7 +531,7 @@
                                     Login Link                    
                                 </th>
                                 <th width="25%" style="text-align: center;">
-                                
+                                    FitBit
                                 </th>                                                      
                                 <th width="15%" style="text-align: center;">
                                     Control
@@ -547,7 +547,7 @@
                                         <span v-html="s.login_url"></span>                           
                                     </td>
                                     <td style="text-align: center;">                                        
-                                                                            
+                                        <a :href="s.fitBitLink"><span v-html="'Setup'"></span></a>                                   
                                     </td>                               
                                     <td style="text-align: center;">
                                         <button v-bind:id="'editSubject' + s.id" type="button" class="btn btn-outline-primary btn-sm" v-on:click = "showEditSubject(s.id,index)">
