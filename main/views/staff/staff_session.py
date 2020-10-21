@@ -33,6 +33,8 @@ def Staff_Session(request,id):
             return updateSession(data,id)
         elif data["action"] == "updateSubject":
             return updateSubject(data,id)
+        elif data["action"] ==  "showFitbitStatus":
+            return showFitbitStatus(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -52,7 +54,7 @@ def getSession(data,id):
     logger.info(data)
 
     return JsonResponse({"session" : getSessionJSON(id),
-                         "session_subjects": getSubjectListJSON(id), 
+                         "session_subjects": getSubjectListJSON(id,False), 
                                 },safe=False)  
 
 #get session json object
@@ -65,14 +67,14 @@ def getSessionJSON(id):
     return s.json()
 
 #get subject list json object
-def getSubjectListJSON(id):
+def getSubjectListJSON(id,get_fitbit_status):
     logger = logging.getLogger(__name__) 
     logger.info("Get Subject List JSON")
     
     s=Session.objects.get(id=id)
     ss = s.session_subjects.filter(soft_delete = False).order_by(Lower('name'))
 
-    return  [i.json() for i in ss]
+    return  [i.json(get_fitbit_status) for i in ss]
 
 #add new subject to the session
 def addSubject(data,id):
@@ -96,7 +98,7 @@ def addSubject(data,id):
     sda.immune_activity = s.parameterset.immune_activity_inital
     sda.save()    
 
-    return JsonResponse({"session_subjects": getSubjectListJSON(id), 
+    return JsonResponse({"session_subjects": getSubjectListJSON(id,False), 
                                 },safe=False) 
 
 #remove subject from session
@@ -115,7 +117,7 @@ def deleteSubject(data,id):
     # s.softDelete=True
     # s.save()
 
-    return JsonResponse({"session_subjects": getSubjectListJSON(id), 
+    return JsonResponse({"session_subjects": getSubjectListJSON(id,False), 
                                 },safe=False) 
 
 #update session parameters
@@ -186,12 +188,20 @@ def updateSubject(data,id):
     if form.is_valid():
         #print("valid form")                
         form.save()               
-        return JsonResponse({"status":"success","session_subjects": getSubjectListJSON(id), },safe=False)                         
+        return JsonResponse({"status":"success","session_subjects": getSubjectListJSON(id,False), },safe=False)                         
                                 
     else:
         logger.info("Invalid session form")
         return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
     
+#update subject settings
+def showFitbitStatus(data,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Show fitbit status")
+    logger.info(data)
+            
+    return JsonResponse({"status":"success","session_subjects": getSubjectListJSON(id,True), },safe=False)                         
+
 
     
 

@@ -19,9 +19,9 @@ class Session_subject(models.Model):
     gmail_password = models.CharField(max_length = 300,default = 'Gmail Password',verbose_name = 'Gmail Password')      #password for above 
  
     #fitbit    
-    fitBitAccessToken = models.CharField(max_length=200, default="",verbose_name = 'FitBit Access Token')
-    fitBitRefreshToken = models.CharField(max_length=200, default="",verbose_name = 'FitBit Refresh Token')
-    fitBitUserId = models.CharField(max_length=200, default="",verbose_name = 'FitBit User ID')  
+    fitBitAccessToken = models.CharField(max_length=1000, default="",verbose_name = 'FitBit Access Token')
+    fitBitRefreshToken = models.CharField(max_length=1000, default="",verbose_name = 'FitBit Refresh Token')
+    fitBitUserId = models.CharField(max_length=100, default="",verbose_name = 'FitBit User ID')  
 
     soft_delete =  models.BooleanField(default=False)                                                 #hide subject if true
 
@@ -36,17 +36,25 @@ class Session_subject(models.Model):
         verbose_name_plural = 'Session Subjects'
 
     #return json object of class
-    def json(self):
+    def json(self,get_fitbit_status):
         p = Parameters.objects.first()
 
+        #link to setup fitbit
         tempURL = p.siteURL+"fitBit/"
         tempURL = tempURL.replace(":","%3A")
         tempURL = tempURL.replace("/","%2F")
 
         tempClientID = settings.FITBIT_CLIENT_ID
-
         tempState = str(self.id) + ";" + str(self.session.id)
-        fitBitLink = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight&expires_in=604800&prompt=login%20consent&state={tempState}"
+        fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight&expires_in=604800&prompt=login%20consent&state={tempState}"
+
+        #test if fitbit is already connected
+        fitBit_Attached = False
+        if get_fitbit_status:
+            fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1/user/-/body/log/weight/date/today.json')
+            
+            if 'weight' in fitbit_response:
+                fitBit_Attached = True
 
         return{
             "id":self.id,
@@ -56,18 +64,20 @@ class Session_subject(models.Model):
             "gmail_address":self.gmail_address,
             "gmail_password":self.gmail_password,
             "login_url": p.siteURL +'subjectHome/' + str(self.login_key),
-            "fitBitLink" : fitBitLink,
+            "fitBit_Link" : fitBit_Link,
+            "fitBit_Attached" : fitBit_Attached,
+            "get_fitbit_status" : get_fitbit_status,
         }
 
-    def getFitbitInfo(self,url,u):
+    def getFitbitInfo(self,url):
         logger = logging.getLogger(__name__)         
 
-        r = self.getFitbitInfo2(url,u)
+        r = self.getFitbitInfo2(url)
 
         #try to reauthorize
         if 'success' in r:        
             headers = {'Authorization': 'Basic ' + str(settings.FITBIT_AUTHORIZATION) ,
-                    'Content-Type' : 'application/x-www-form-urlencoded'}
+                       'Content-Type' : 'application/x-www-form-urlencoded'}
             
             data = {'grant_type' : 'refresh_token',
                     'refresh_token' : self.fitBitRefreshToken}    
@@ -87,14 +97,14 @@ class Session_subject(models.Model):
                 logger.info("Fitbit refresh failed:")
                 logger.info(r) 
 
-            r = self.getFitbitInfo2(url,u)
+            r = self.getFitbitInfo2(url)
         
         return r
 
-    def getFitbitInfo2(self,url,u):
+    def getFitbitInfo2(self,url):
         logger = logging.getLogger(__name__)     
 
-        headers = {'Authorization': 'Bearer ' + u.profile.fitBitAccessToken,
+        headers = {'Authorization': 'Bearer ' + self.fitBitAccessToken,
                    'Accept-Language' :	'en_US'}    
 
         r = requests.get(url, headers=headers).json()

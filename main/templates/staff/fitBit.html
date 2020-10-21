@@ -12,11 +12,12 @@
       <div class="card-body">
         <center>
           {%if status == 'fail'%}
-            Your FitBit failed to connect.<br>
-            Please return to your profile and try again.
+            The FitBit failed to connect.<br>
+            {{fitBit_response}}<br>
+            {{fitBit_error}}<br>
           {%else%}
-            Your FitBit has been connected.<br>
-            Return to your experiment.
+            The FitBit has been connected for subject {{session_subject.name}}.<br>
+            <a href="{% url 'staff_session' id=session.id %}">Return to the session.</a>
           {%endif%}
         </center>
        

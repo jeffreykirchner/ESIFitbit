@@ -7,12 +7,25 @@ from . import Parameterset
 from django.dispatch import receiver
 from django.db.models.signals import post_delete
 
+from enum import Enum
+
+class Treatment(Enum):
+    one = "Individual"                                   
+    two = "Individual with chat" 
+    three = "Individual with chat and bonus" 
+
 #experiment sessoin
 class Session(models.Model):
     parameterset = models.ForeignKey(Parameterset,on_delete=models.CASCADE)
 
     title = models.CharField(max_length = 300,default="*** New Session ***")    #title of session
     start_date = models.DateField(default=now)                                  #date of session
+
+    treatment = models.CharField(
+        max_length=100,
+        choices = [(tag.name, tag.value) for tag in Treatment],
+        default=Treatment.one
+    )    
 
     soft_delete =  models.BooleanField(default=False)                            #hide session if true
 

@@ -20,15 +20,20 @@ class Parameterset(models.Model):
     immune_parameter_2 = models.DecimalField(decimal_places=10, default=3, max_digits=20)
     immune_parameter_3 = models.DecimalField(decimal_places=10, default=60, max_digits=20) 
 
-    #todaysEarnings = treatmentPay * (heartActivityToday + immuneEarningsToday)
-    treatment_pay_1 = models.DecimalField(decimal_places=2, default=4.00, max_digits=6)
-    treatment_pay_2 = models.DecimalField(decimal_places=2, default=8.00, max_digits=6)
-    treatment_pay_3 = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
+    #heartEarnings $ = block_N_heart_pay * heartActivityToday
+    block_1_heart_pay = models.DecimalField(decimal_places=2, default=4.00, max_digits=6)
+    block_2_heart_pay = models.DecimalField(decimal_places=2, default=8.00, max_digits=6)
+    block_3_heart_pay = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
 
-    #number of days for each treatment
-    treatment_1_day_count = models.IntegerField(default = 1)
-    treatment_2_day_count = models.IntegerField(default = 1)
-    treatment_3_day_count = models.IntegerField(default = 1)
+    #immuneEarnings $ = block_N_immune_pay * immuneActivityToday
+    block_1_immune_pay = models.DecimalField(decimal_places=2, default=4.00, max_digits=6)
+    block_2_immune_pay = models.DecimalField(decimal_places=2, default=8.00, max_digits=6)
+    block_3_immune_pay = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
+
+    #number of days for each time block
+    block_1_day_count = models.IntegerField(default = 1)
+    block_2_day_count = models.IntegerField(default = 1)
+    block_3_day_count = models.IntegerField(default = 1)
 
     #bonus paid to subjects when group target met
     treatment_3_heart_bonus = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
@@ -64,15 +69,19 @@ class Parameterset(models.Model):
             "immune_parameter_2":self.immune_parameter_2,
             "immune_parameter_3":self.immune_parameter_3,
 
-            "treatment_pay_1":self.treatment_pay_1,
-            "treatment_pay_2":self.treatment_pay_2,
-            "treatment_pay_3":self.treatment_pay_3,
+            "block_1_heart_pay":self.block_1_heart_pay,
+            "block_2_heart_pay":self.block_2_heart_pay,
+            "block_3_heart_pay":self.block_3_heart_pay,
+
+            "block_1_immune_pay":self.block_1_immune_pay,
+            "block_2_immune_pay":self.block_2_immune_pay,
+            "block_3_immune_pay":self.block_3_immune_pay,
 
             "treatment_3_heart_bonus":self.treatment_3_heart_bonus,
             "treatment_3_immune_bonus":self.treatment_3_immune_bonus,
             "treatment_3_bonus_target_count":self.treatment_3_bonus_target_count,
 
-            "treatment_1_day_count":self.treatment_1_day_count,
-            "treatment_2_day_count":self.treatment_2_day_count,
-            "treatment_3_day_count":self.treatment_3_day_count,
+            "block_1_day_count":self.block_1_day_count,
+            "block_2_day_count":self.block_2_day_count,
+            "block_3_day_count":self.block_3_day_count,
         }

@@ -30,23 +30,28 @@
                                         immune_parameter_2:"",
                                         immune_parameter_3:"",
 
-                                        treatment_pay_1:"",
-                                        treatment_pay_2:"",
-                                        treatment_pay_3:"",
+                                        block_1_heart_pay:"",
+                                        block_2_heart_pay:"",
+                                        block_3_heart_pay:"",
+
+                                        block_1_immune_pay:"",
+                                        block_2_immune_pay:"",
+                                        block_3_immune_pay:"",
 
                                         treatment_3_heart_bonus:"",
                                         treatment_3_immune_bonus:"",
                                         treatment_3_bonus_target_count:"",
 
-                                        treatment_1_day_count:"",
-                                        treatment_2_day_count:"",
-                                        treatment_3_day_count:"",}
+                                        block_1_day_count:"",
+                                        block_2_day_count:"",
+                                        block_3_day_count:"",}
                         },
                 session_subjects:[],              //list of subjects in this session 
                 cancelModal:false,                //if modal is canceled reload old values
                 currentSubject:{},                //current subject being edited
                 currentSubjectIndex:-1,           //index of current subject being edited
                 addSubjectButtonText:'Add Subject <i class="fas fa-plus"></i>',
+                showFitbitStatusButtonText:'<i class="far fa-check-circle"></i>',
             },
 
             methods:{
@@ -163,6 +168,20 @@
                                         app.$data.cancelModal=true;                           
                                         app.displayErrors(response.data.errors);
                                     }                                   
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });                        
+                },
+
+                showFitbitStatus:function(){                    
+                    app.$data.showFitbitStatusButtonText = '<i class="fas fa-spinner fa-spin"></i>';
+                    axios.post('/session/{{id}}/', {
+                                    action :"showFitbitStatus" ,                                                                                                                                                               
+                                })
+                                .then(function (response) {     
+                                    app.updateSubjects(response);      
+                                    app.$data.showFitbitStatusButtonText = '<i class="far fa-check-circle"></i>';                          
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -392,49 +411,67 @@
 
                         <div class="row mt-2">
                             <div class="col" style="text-align: center;">
-                               Earnings<sub>T</sub> ($) = TreatmentPay * (HeartActivity<sub>T</sub> + ImmuneActivity<sub>T</sub>)
+                               Earnings<sub>T</sub> ($) =(HeartPay<sub>B</sub> * HeartActivity<sub>T</sub>) + (ImmunePay<sub>B</sub> * ImmuneActivity<sub>T</sub>)
                             </div>                            
                         </div>
                         <div class="row">
-                            <div class="col" style="text-align: right;">
-                                {{parameterset_form.treatment_pay_1.label}}:
+                            <div class="col-3" style="text-align: right;">
+                                {{parameterset_form.block_1_heart_pay.label}}:
                             </div>
-                            <div class="col">
-                                <span v-html="session.parameterset.treatment_pay_1"></span>
+                            <div class="col-1">
+                                <span v-html="session.parameterset.block_1_heart_pay"></span>
                             </div>
-                            <div class="col" style="text-align: right;">
-                                {{parameterset_form.treatment_1_day_count.label}}:
+                            <div class="col-3" style="text-align: right;">
+                                {{parameterset_form.block_1_immune_pay.label}}:
                             </div>
-                            <div class="col">
-                                <span v-html="session.parameterset.treatment_1_day_count"></span>
+                            <div class="col-1">
+                                <span v-html="session.parameterset.block_1_immune_pay"></span>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col" style="text-align: right;">
-                                {{parameterset_form.treatment_pay_2.label}}:
+                            <div class="col-3" style="text-align: right;">
+                                {{parameterset_form.block_1_day_count.label}}:
                             </div>
-                            <div class="col">
-                                <span v-html="session.parameterset.treatment_pay_2"></span>
-                            </div>
-                            <div class="col" style="text-align: right;">
-                                {{parameterset_form.treatment_2_day_count.label}}:
-                            </div>
-                            <div class="col">
-                                <span v-html="session.parameterset.treatment_2_day_count"></span>
+                            <div class="col-1">
+                                <span v-html="session.parameterset.block_1_day_count"></span>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col" style="text-align: right;">
-                                {{parameterset_form.treatment_pay_3.label}}:
+                            <div class="col-3" style="text-align: right;">
+                                {{parameterset_form.block_2_heart_pay.label}}:
                             </div>
-                            <div class="col">
-                                <span v-html="session.parameterset.treatment_pay_3"></span>
+                            <div class="col-1">
+                                <span v-html="session.parameterset.block_2_heart_pay"></span>
                             </div>
-                            <div class="col" style="text-align: right;">
-                                {{parameterset_form.treatment_3_day_count.label}}:
+                            <div class="col-3" style="text-align: right;">
+                                {{parameterset_form.block_2_immune_pay.label}}:
                             </div>
-                            <div class="col">
-                                <span v-html="session.parameterset.treatment_3_day_count"></span>
+                            <div class="col-1">
+                                <span v-html="session.parameterset.block_2_immune_pay"></span>
+                            </div>
+                            <div class="col-3" style="text-align: right;">
+                                {{parameterset_form.block_2_day_count.label}}:
+                            </div>
+                            <div class="col-1">
+                                <span v-html="session.parameterset.block_2_day_count"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3" style="text-align: right;">
+                                {{parameterset_form.block_3_heart_pay.label}}:
+                            </div>
+                            <div class="col-1">
+                                <span v-html="session.parameterset.block_3_heart_pay"></span>
+                            </div>
+                            <div class="col-3" style="text-align: right;">
+                                {{parameterset_form.block_3_immune_pay.label}}:
+                            </div>
+                            <div class="col-1">
+                                <span v-html="session.parameterset.block_3_immune_pay"></span>
+                            </div>
+                            <div class="col-3" style="text-align: right;">
+                                {{parameterset_form.block_3_day_count.label}}:
+                            </div>
+                            <div class="col-1">
+                                <span v-html="session.parameterset.block_3_day_count"></span>
                             </div>
                         </div>
 
@@ -531,7 +568,10 @@
                                     Login Link                    
                                 </th>
                                 <th width="25%" style="text-align: center;">
-                                    FitBit
+                                    FitBit 
+                                    <button class="btn btn-outline-primary btn-sm" type="button" v-on:click = "showFitbitStatus()">
+                                        <span v-html = "showFitbitStatusButtonText"></span>
+                                    </button>
                                 </th>                                                      
                                 <th width="15%" style="text-align: center;">
                                     Control
@@ -547,7 +587,17 @@
                                         <span v-html="s.login_url"></span>                           
                                     </td>
                                     <td style="text-align: center;">                                        
-                                        <a :href="s.fitBitLink"><span v-html="'Setup'"></span></a>                                   
+                                        <a :href="s.fitBit_Link"><span v-html="'Setup'"></span></a>
+
+                                        <span v-if = "s.get_fitbit_status === false">
+                                            
+                                        </span>
+                                        <span v-else-if = "s.fitBit_Attached" style="color: green;">
+                                            <i class="far fa-check-circle"></i>    
+                                        </span>
+                                        <span v-else style="color: red;">
+                                            <i class="far fa-times-circle"></i>
+                                        </span>                             
                                     </td>                               
                                     <td style="text-align: center;">
                                         <button v-bind:id="'editSubject' + s.id" type="button" class="btn btn-outline-primary btn-sm" v-on:click = "showEditSubject(s.id,index)">
