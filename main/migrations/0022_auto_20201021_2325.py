@@ -10,9 +10,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='session',
-            name='treatment',
-            field=models.CharField(choices=[('Individual', 'One'), ('Individual with chat', 'Two'), ('Individual with chat and bonus', 'Three')], default='Individual', max_length=100),
-        ),
+        # migrations.AlterField(
+        #     model_name='session',
+        #     name='treatment',
+        #     field=models.CharField(choices=[('Individual', 'One'), ('Individual with chat', 'Two'), ('Individual with chat and bonus', 'Three')], default='Individual', max_length=100),
+        # ),
     ]
