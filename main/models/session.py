@@ -8,24 +8,22 @@ from django.dispatch import receiver
 from django.db.models.signals import post_delete
 
 from enum import Enum
-
-class Treatment(Enum):
-    one = "Individual"                                   
-    two = "Individual with chat" 
-    three = "Individual with chat and bonus" 
-
+from django.utils.translation import gettext_lazy as _
+   
 #experiment sessoin
 class Session(models.Model):
+
+    class Treatment(models.TextChoices):
+        ONE = 'I', _('Individual')
+        TWO = "IwC", _('Individual with chat')
+        THREE = "IwCpB", _('Individual with chat and bonus')
+
     parameterset = models.ForeignKey(Parameterset,on_delete=models.CASCADE)
 
     title = models.CharField(max_length = 300,default="*** New Session ***")    #title of session
     start_date = models.DateField(default=now)                                  #date of session
 
-    treatment = models.CharField(
-        max_length=100,
-        choices = [(tag.name, tag.value) for tag in Treatment],
-        default=Treatment.one
-    )    
+    treatment = models.CharField( max_length=100, choices=Treatment.choices,default=Treatment.ONE)    
 
     soft_delete =  models.BooleanField(default=False)                            #hide session if true
 
@@ -58,7 +56,8 @@ class Session(models.Model):
             "title":self.title,
             "start_date":self.getDateString(),
             "current_period":self.getCurrentPeriod(),
-            "currentTreatment":self.getCurrentTreatment(),
+            "treatment":self.treatment,
+            "treatment_label":self.Treatment(self.treatment).label,
             "parameterset":self.parameterset.json(),
         }
 

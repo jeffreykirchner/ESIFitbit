@@ -11,9 +11,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='session',
-            name='treatment',
-            field=models.CharField(choices=[('one', 'Individual'), ('two', 'Individual with chat'), ('three', 'Individual with chat and bonus')], default=main.models.session.Treatment['one'], max_length=100),
-        ),
+        # migrations.AddField(
+        #     model_name='session',
+        #     name='treatment',
+        #     field=models.CharField(choices=[('one', 'Individual'), ('two', 'Individual with chat'), ('three', 'Individual with chat and bonus')], default=main.models.session.Treatment['one'], max_length=100),
+        # ),
     ]

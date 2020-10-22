@@ -13,6 +13,10 @@ class Session_form(forms.ModelForm):
                                error_messages={'invalid': 'Format: M/D/YYYY'},                                                                                                           
                                widget = forms.DateTimeInput(attrs={"v-model":"session.start_date"}))
     
+    treatment = forms.TypedChoiceField(label='Treatment', 
+                                         choices=Session.Treatment.choices,                   
+                                         widget=forms.Select(attrs={"v-model":"session.treatment"}))
+    
 
     class Meta:
         model=Session
