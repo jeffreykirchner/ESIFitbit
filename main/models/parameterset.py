@@ -51,7 +51,39 @@ class Parameterset(models.Model):
         verbose_name_plural = 'Experiment Parameter Sets'
 
     def get_heart_activity(heart_activity,heart_actvity_minutes):
-        return 
+        return 0
+    
+    #copy another parameter set into this one
+    def setup(self,ps):
+        self.save()
+
+        self.heart_activity_inital = ps.heart_activity_inital
+        self.heart_parameter_1 = ps.heart_parameter_1
+        self.heart_parameter_2 = ps.heart_parameter_2
+        self.heart_parameter_3 = ps.heart_parameter_3
+        
+        self.immune_activity_inital = ps.immune_activity_inital
+        self.immune_parameter_1 = ps.immune_parameter_1
+        self.immune_parameter_2 = ps.immune_parameter_2
+        self.immune_parameter_3 = ps.immune_parameter_3
+
+        self.block_1_heart_pay = ps.block_1_heart_pay
+        self.block_2_heart_pay = ps.block_2_heart_pay
+        self.block_3_heart_pay = ps.block_3_heart_pay
+
+        self.block_1_immune_pay = ps.block_1_immune_pay
+        self.block_2_immune_pay = ps.block_2_immune_pay
+        self.block_3_immune_pay = ps.block_3_immune_pay
+
+        self.block_1_day_count = ps.block_1_day_count
+        self.block_2_day_count = ps.block_2_day_count
+        self.block_3_day_count = ps.block_3_day_count
+
+        self.treatment_3_heart_bonus = ps.treatment_3_heart_bonus
+        self.treatment_3_immune_bonus = ps.treatment_3_immune_bonus
+        self.treatment_3_bonus_target_count = ps.treatment_3_bonus_target_count
+        
+        self.save()
 
     #return json object of class
     def json(self):

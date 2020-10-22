@@ -6,6 +6,8 @@ from . import Session,Parameters
 import uuid
 from django.conf import settings
 import requests
+from datetime import datetime,timedelta,timezone,date
+import pytz
 
 #subject in session
 class Session_subject(models.Model):
@@ -50,11 +52,16 @@ class Session_subject(models.Model):
 
         #test if fitbit is already connected
         fitBit_Attached = False
-        if get_fitbit_status:
-            fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1/user/-/body/log/weight/date/today.json')
+        if get_fitbit_status and self.fitBitAccessToken != "":
+            fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1.2/user/-/body/log/weight/date/today.json')
             
             if 'weight' in fitbit_response:
                 fitBit_Attached = True
+
+                tz = pytz.timezone(p.experimentTimeZone)
+                d = datetime.now(tz)-timedelta(days=1)
+
+                #fitbit_response_sleep = self.getFitbitSleep(d)
 
         return{
             "id":self.id,
@@ -68,9 +75,22 @@ class Session_subject(models.Model):
             "fitBit_Attached" : fitBit_Attached,
             "get_fitbit_status" : get_fitbit_status,
         }
+    
+    def getFitbitSleep(self,sleep_date):
+        logger = logging.getLogger(__name__)
+        logger.info("Fitbit sleep")
+        logger.info(sleep_date) 
 
+        temp_s = sleep_date.strftime("%Y-%m-%d")
+        temp_s = "today"
+
+        fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1.2/user/-/sleep/date/' + temp_s + '.json')
+
+        return fitbit_response
+    
+    #take fitbit api url and return response
     def getFitbitInfo(self,url):
-        logger = logging.getLogger(__name__)         
+        logger = logging.getLogger(__name__)        
 
         r = self.getFitbitInfo2(url)
 

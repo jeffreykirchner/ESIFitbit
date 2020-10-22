@@ -6,7 +6,7 @@ from django.http import JsonResponse
 import logging
 from django.db.models.functions import Lower
 
-from main.forms import Parameterset_form,Session_form,Subject_form
+from main.forms import Parameterset_form,Session_form,Subject_form,Import_parameters_form
 from main.models import Session,Parameterset,Session_subject,Session_day_subject_actvity
 
 @login_required
@@ -35,6 +35,8 @@ def Staff_Session(request,id):
             return updateSubject(data,id)
         elif data["action"] ==  "showFitbitStatus":
             return showFitbitStatus(data,id)
+        elif data["action"] ==  "importParameters":
+            return importParameters(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -42,10 +44,13 @@ def Staff_Session(request,id):
         parameterset_form = Parameterset_form()
         session_form = Session_form()
         subject_form = Subject_form()
+        import_parameters_form = Import_parameters_form()
+        
         return render(request,'staff/session.html',{'id': id,
                                                     'parameterset_form':parameterset_form,
                                                     'session_form':session_form,
-                                                    'subject_form':subject_form})     
+                                                    'subject_form':subject_form,
+                                                    'import_parameters_form':import_parameters_form})     
 
 #get list of experiment sessions
 def getSession(data,id):
@@ -145,7 +150,7 @@ def updateParameters(data,id):
         return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
 
 #update session settings
-def updateSession(data,id):
+def updateParameters(data,id):
     logger = logging.getLogger(__name__) 
     logger.info("Update session")
     logger.info(data)
@@ -162,6 +167,30 @@ def updateSession(data,id):
     if form.is_valid():
         #print("valid form")                
         form.save()               
+        return JsonResponse({"status":"success","session" : getSessionJSON(id),},safe=False)                         
+                                
+    else:
+        logger.info("Invalid session form")
+        return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
+
+def importParameters(data,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Import Parameters")
+    logger.info(data)
+
+    form_data_dict = {}
+
+    s=Session.objects.get(id=id)
+
+    for field in data["formData"]:            
+        form_data_dict[field["name"]] = field["value"]
+
+    form = Import_parameters_form(form_data_dict)
+
+    if form.is_valid():
+        logger.info(form.cleaned_data['session'])
+        ps = form.cleaned_data['session'].parameterset
+        s.parameterset.setup(ps)               
         return JsonResponse({"status":"success","session" : getSessionJSON(id),},safe=False)                         
                                 
     else:
