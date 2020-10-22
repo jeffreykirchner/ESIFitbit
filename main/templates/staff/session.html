@@ -333,7 +333,7 @@
 <div class="row justify-content-lg-center">
     <div class="col col-lg-12">
         <div class="row">
-            <div class="col">
+            <div class="col-8">
                 <!-- parameters card -->
                 <div class="card">
                     <div class="card-header">
@@ -507,7 +507,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col">
+            <div class="col-4">
                 <!-- session card -->
                 <div class = "card">
                     <div class="card-header">
@@ -522,31 +522,27 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col" style="text-align: right;">
+                            <div class="col-4" style="text-align: right;">
                                 {{session_form.title.label}}:
                             </div>
-                            <div class="col">
+                            <div class="col-8">
                                 <span v-html="session.title"></span>
-                            </div>
-                            <div class="col" style="text-align: right;">
-                                {{session_form.start_date.label}}:
-                            </div>
-                            <div class="col">
-                                <span v-html="session.start_date"></span>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col" style="text-align: right;">
+                            <div class="col-4" style="text-align: right;">
                                 {{session_form.treatment.label}}:
                             </div>
-                            <div class="col">
+                            <div class="col-8">
                                 <span v-html="session.treatment_label"></span>
                             </div>
-                            <div class="col" style="text-align: right;">
-                               
+                        </div>
+                        <div class="row">
+                            <div class="col-4" style="text-align: right;">
+                                {{session_form.start_date.label}}:
                             </div>
-                            <div class="col">
-                               
+                            <div class="col-8">
+                                <span v-html="session.start_date"></span>
                             </div>
                         </div>
                     </div>
