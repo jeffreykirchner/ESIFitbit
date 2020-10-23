@@ -11,7 +11,7 @@ def Home(request):
    
     
     # logger.info("some info")
-    u=request.user  
+    #u=request.user  
 
     if request.method == 'POST':     
 

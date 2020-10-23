@@ -4,13 +4,18 @@ import json
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 import logging
+from main.models import Session_subject
 
-def Subject_Home(request):
+def Subject_Home(request,id):
     logger = logging.getLogger(__name__) 
    
     
     # logger.info("some info")
-    u=request.user  
+    #u=request.user  
+
+    session_subject = Session_subject.objects.get(login_key = id)
+
+    logger.info(session_subject)
 
     if request.method == 'POST':     
 

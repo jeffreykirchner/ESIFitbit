@@ -149,30 +149,7 @@ def updateParameters(data,id):
         logger.info("Invalid parameterset form")
         return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
 
-#update session settings
-def updateParameters(data,id):
-    logger = logging.getLogger(__name__) 
-    logger.info("Update session")
-    logger.info(data)
-
-    form_data_dict = {}
-
-    s=Session.objects.get(id=id)
-
-    for field in data["formData"]:            
-        form_data_dict[field["name"]] = field["value"]
-
-    form = Session_form(form_data_dict,instance=s)
-
-    if form.is_valid():
-        #print("valid form")                
-        form.save()               
-        return JsonResponse({"status":"success","session" : getSessionJSON(id),},safe=False)                         
-                                
-    else:
-        logger.info("Invalid session form")
-        return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
-
+#import parameterset from another session
 def importParameters(data,id):
     logger = logging.getLogger(__name__) 
     logger.info("Import Parameters")

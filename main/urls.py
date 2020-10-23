@@ -23,7 +23,9 @@ urlpatterns = [
     path('session/<id>/',views.Staff_Session,name='staff_session'),
 
     #subject
-    path('subjectHome/',views.Subject_Home,name='subject_home'),
+    path('subjectHome/',views.Home,name='home2'),
+    path('subjectHome/<uuid:id>/',views.Subject_Home,name='subject_home'),
+   
 
     path('fitBit/',views.fitBit,name='fitBit'),
     
