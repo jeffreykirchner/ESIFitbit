@@ -41,9 +41,15 @@ class Session(models.Model):
     def getCurrentPeriod(self):
         return 1
 
-    #get the current treatment for this sesssion
-    def getCurrentTreatment(self):
-        return 1
+    #add new sessions days up to today if needed
+    def addNewSessionDays(self,d_today):
+        logger = logging.getLogger(__name__)
+        
+        sd = self.session_days.order_by('-date').first()
+
+        logger.info(sd)
+
+        pass
     
     #get user readable string of start session date
     def getDateString(self):

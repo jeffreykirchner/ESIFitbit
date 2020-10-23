@@ -59,7 +59,7 @@ class Session_subject(models.Model):
                 fitBit_Attached = True
 
                 tz = pytz.timezone(p.experimentTimeZone)
-                d = datetime.now(tz)-timedelta(days=1)
+                d = datetime.now(tz)
 
                 #fitbit_response_sleep = self.getFitbitSleep(d)
 

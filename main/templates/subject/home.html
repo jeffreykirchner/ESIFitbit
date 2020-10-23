@@ -1,1 +1,73 @@
-subject home
+{%extends "base.html"%}
+{% load crispy_forms_tags %}
+
+{%block head%}
+
+    <script type="text/javascript">
+    $(document).ready(function(){
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        axios.defaults.xsrfCookieName = "csrftoken";
+
+        var app = new Vue({
+        
+            delimiters: ['[[', ']]'],
+            el: '#root',        
+            data:{
+                sessionDaySubject:[],
+                refreshFitbitButtonText : 'Refresh',
+            },
+
+            methods:{
+
+                getSessionDaySubject:function(){                    
+                    
+                    axios.post('/subjectHome/{{id}}/', {
+                                    action :"getSessionDaySubject" ,                                                                                                                                                                
+                                })
+                                .then(function (response) {     
+                                    app.updateSessionDaySubject(response);                                              
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });                        
+                },
+                
+                //update the experiment list from server
+                updateSessionDaySubject:function(response){
+                    app.$data.sessionDaySubject = response.data.session_subject_day;       
+                                    
+                },                
+                                        
+            },
+
+            mounted: function(){
+                this.getSessionDaySubject();                      
+            },
+        });
+
+    });
+
+    </script>
+
+{%endblock head%}
+
+{%block content%}
+<div class="row justify-content-lg-center">
+    <div class="col col-lg-6">
+        <div class="card">                  
+            <div class="card-header">
+                <span class="align-middle">Subject: {{session_subject.name}} | {{session_subject.contact_email}}</span>               
+                
+                
+                                                                
+            </div>
+            <div class="card-body">                      
+                                
+                                
+                
+            </div>                    
+        </div>                
+    </div>
+</div>    
+
+{%endblock content%}
