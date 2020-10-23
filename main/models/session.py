@@ -6,6 +6,12 @@ from . import Parameterset
 
 from django.dispatch import receiver
 from django.db.models.signals import post_delete
+import main
+import pytz
+
+from main.models import Parameters
+
+from datetime import datetime,timedelta
 
 from enum import Enum
 from django.utils.translation import gettext_lazy as _
@@ -44,13 +50,41 @@ class Session(models.Model):
     #add new sessions days up to today if needed
     def addNewSessionDays(self,d_today):
         logger = logging.getLogger(__name__)
-        
+        logger.info("Add new sessions: " + str(self.title))
+
         sd = self.session_days.order_by('-date').first()
+        logger.info(sd.date)
+        logger.info(d_today.date())
 
-        logger.info(sd)
+        while sd.date < d_today.date():
+            logger.info("Newest session day: " + str(sd))
+            
+            p = Parameters.objects.first()
+            tz = pytz.timezone(p.experimentTimeZone)
+            d_temp = datetime.now(tz)
+            d_temp = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
+            d_temp = d_today.replace(day=sd.date.day,month=sd.date.month, year=sd.date.year)
+            
+            d_temp += timedelta(days=1)
 
-        pass
-    
+            logger.info(d_temp)
+
+            self.addSessionDay(d_temp.date())    
+            sd = self.session_days.order_by('-date').first()        
+
+    def addSessionDay(self,d):
+        logger = logging.getLogger(__name__)
+
+        new_sd = main.models.Session_day()
+        new_sd.date = d
+        new_sd.session=self
+        new_sd.period_number=sd.period_number+1
+        new_sd.save()
+
+        logger.info("Created session day: " + str(new_sd))
+        
+
+            
     #get user readable string of start session date
     def getDateString(self):
         return  self.start_date.strftime("%#m/%#d/%Y")

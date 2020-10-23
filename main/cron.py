@@ -17,11 +17,13 @@ class checkStartNewDay(CronJobBase):
         p = Parameters.objects.first()
         tz = pytz.timezone(p.experimentTimeZone)
         d_today = datetime.now(tz)
-        d_today = d_today.replace(hour=0,minute=0, second=0)
+        d_today = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
 
         sessions = Session.objects.filter(start_date__lt = d_today,soft_delete=False)
+
+        logger.info(sessions)
 
         for s in sessions:
             s.addNewSessionDays(d_today)
 
-        logger.info(sessions)    
+            
