@@ -37,6 +37,8 @@ def Staff_Session(request,id):
             return showFitbitStatus(data,id)
         elif data["action"] ==  "importParameters":
             return importParameters(data,id)
+        elif data["action"] == "backFillSessionDays":
+            return backFillSessionDays(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -179,6 +181,23 @@ def updateSession(data,id):
         logger.info("Invalid session form")
         return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
 
+#back fill session with data for testing
+def backFillSessionDays(data,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Update session")
+    logger.info(data)
+
+    s=Session.objects.get(id=id)
+
+    #fill in session days
+    s.addNewSessionDays()
+
+    #fill with test data
+    s.fillWithTestData()
+
+    return JsonResponse({"session" : getSessionJSON(id),
+                         "session_subjects": getSubjectListJSON(id,False), 
+                                },safe=False)
 
 #import parameterset from another session
 def importParameters(data,id):

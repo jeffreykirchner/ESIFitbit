@@ -8,6 +8,7 @@ from django.conf import settings
 import requests
 from datetime import datetime,timedelta,timezone,date
 import pytz
+import random
 
 #subject in session
 class Session_subject(models.Model):
@@ -36,6 +37,30 @@ class Session_subject(models.Model):
     class Meta:
         verbose_name = 'Session Subject'
         verbose_name_plural = 'Session Subjects'
+    
+    #fill session subject activity with test data
+    def fillWithTestData(self):
+        logger = logging.getLogger(__name__) 
+
+        sada_set = self.Session_day_subject_actvities.order_by('session_day__period_number')
+
+        previous_i = None
+        for i in sada_set:
+            if i.session_day.period_number == 1:
+                i.heart_activity = self.session.parameterset.heart_activity_inital
+                i.immune_activity = self.session.parameterset.immune_activity_inital
+            else:
+                logger.info(previous_i)
+                i.calcHeartActivity(previous_i.heart_activity_minutes,previous_i.heart_activity)
+                i.calcImmuneActivity(previous_i.immune_activity_minutes,previous_i.immune_activity)
+            
+            i.heart_activity_minutes = random.randint(0,30)
+            i.heart_activity_minutes = random.randint(240,500)
+
+            i.save()
+
+            previous_i = i
+            
 
     #return json object of class
     def json(self,get_fitbit_status):

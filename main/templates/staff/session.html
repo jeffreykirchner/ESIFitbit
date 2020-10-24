@@ -70,8 +70,7 @@
                                     console.log(error);
                                 });                        
                 },
-                
-                
+                                
                 //update the experiment list from server
                 updateSession:function(response){
                     app.$data.session = response.data.session;      
@@ -168,6 +167,21 @@
                                         app.$data.cancelModal=true;                           
                                         app.displayErrors(response.data.errors);
                                     }                                   
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });                        
+                },
+
+                //for testing, back fill session days.
+                backFillSessionsDays:function(){                    
+
+                    axios.post('/session/{{id}}/', {
+                                    action :"backFillSessionDays"                                                                                                                                                          
+                                })
+                                .then(function (response) {     
+                                    app.updateSession(response);   
+                                    app.updateSubjects(response);                                      
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -292,8 +306,7 @@
                         }
                     }
                 },
-            
-                
+                            
                 //show edit parameters modal
                 showImportParameters:function(s_id,index){
 
@@ -360,12 +373,6 @@
     });
 
     </script>
-    <style>
-        .table_header{
-            font-weight:bold;
-            font-size: 16px;
-        }
-    </style>
 {%endblock head%}
 
 {%block content%}
@@ -391,7 +398,7 @@
                     <div class="card-body">
                         <div class="row mt-2">
                             <div class="col" style="text-align: center;">
-                                Activity<sub>T</sub> = Activity<sub>T-1</sub> * (1 - (1 - Activity<sub>T-1</sub>) * (P1 / P2  - FitBit<sub>T-1</sub> / (FitBit<sub>T-1</sub> + P3))
+                                Activity<sub>T</sub> = Activity<sub>T-1</sub> * (1 - (1 - Activity<sub>T-1</sub>) * (P1 / P2  - FitBit<sub>T-1</sub> / (FitBit<sub>T-1</sub> + P3)))
                             </div>                            
                         </div>
                         <div class="row">
@@ -555,7 +562,7 @@
                     <div class="card-header">
                         <span class="align-middle">Session</span>
                         
-                        <span class="float-right">
+                        <span class="float-right">                            
                             <button class="btn btn-outline-primary" type="button" v-on:click = "showEditSession()">
                                 Edit <i class="far fa-edit"></i>
                             </button>
@@ -597,8 +604,13 @@
                 <div class="card">                  
                     <div class="card-header">
                         <span class="align-middle">Subjects</span>
-                        
+
                         <span class="float-right">
+                            {%if DEBUG%}
+                            <button class="btn btn-outline-danger" type="button" v-on:click = "backFillSessionsDays()">
+                                Back Fill Data For Testing
+                            </button>
+                            {%endif%}
                             <button class="btn btn-outline-success" type="button" v-on:click = "addSubject()">
                                 <span v-html="addSubjectButtonText"></span>
                             </button>

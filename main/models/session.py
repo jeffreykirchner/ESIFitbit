@@ -48,9 +48,15 @@ class Session(models.Model):
         return 1
 
     #add new sessions days up to today if needed
-    def addNewSessionDays(self,d_today):
+    def addNewSessionDays(self):
         logger = logging.getLogger(__name__)
         logger.info("Add new sessions: " + str(self.title))
+
+        #get today's date
+        p = Parameters.objects.first()
+        tz = pytz.timezone(p.experimentTimeZone)
+        d_today = datetime.now(tz)
+        d_today = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
 
         sd = self.session_days.order_by('-date').first()
         logger.info(sd.date)
@@ -59,32 +65,39 @@ class Session(models.Model):
         while sd.date < d_today.date():
             logger.info("Newest session day: " + str(sd))
             
-            p = Parameters.objects.first()
-            tz = pytz.timezone(p.experimentTimeZone)
             d_temp = datetime.now(tz)
             d_temp = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
             d_temp = d_today.replace(day=sd.date.day,month=sd.date.month, year=sd.date.year)
             
             d_temp += timedelta(days=1)
 
-            logger.info(d_temp)
+            #logger.info(d_temp.date())
 
-            self.addSessionDay(d_temp.date())    
+            self.addSessionDay(d_temp.date(),sd.period_number+1)    
+
             sd = self.session_days.order_by('-date').first()        
 
-    def addSessionDay(self,d):
+    #add new session day to this session
+    def addSessionDay(self,new_day,new_period):
         logger = logging.getLogger(__name__)
 
         new_sd = main.models.Session_day()
-        new_sd.date = d
+        new_sd.date = new_day
         new_sd.session=self
-        new_sd.period_number=sd.period_number+1
+        new_sd.period_number=new_period
         new_sd.save()
 
-        logger.info("Created session day: " + str(new_sd))
-        
+        new_sd.addSessionDayUserActivites()
 
-            
+        logger.info("Created session day: " + str(new_sd))
+
+    #fill subjects with test data    
+    def fillWithTestData(self):
+
+        for s in self.session_subjects.all():
+            s.fillWithTestData()
+
+
     #get user readable string of start session date
     def getDateString(self):
         return  self.start_date.strftime("%#m/%#d/%Y")
