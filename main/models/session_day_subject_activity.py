@@ -25,7 +25,7 @@ class Session_day_subject_actvity(models.Model):
     updated= models.DateTimeField(auto_now= True)
 
     def __str__(self):
-        return "Period " + str(self.session_day.period_number) + " Subject " + self.session_subject
+        return "Period " + str(self.session_day.period_number) + " Subject " + self.session_subject.name
     
     class Meta:
         constraints = [
@@ -62,7 +62,9 @@ class Session_day_subject_actvity(models.Model):
     def calcActivity(self,active_time,p1,p2,p3,activityMinus1): 
         #immuneActivityTodayT-1 * (1 - (1 - immuneActivityTodayT-1) * (immune_parameter_1 / immune_parameter_2  - immuneTimeT-1 / (immuneTimeT-1 + immune_parameter_3))
 
-        return activityMinus1 * (1 - (1 - activityMinus1) * (p1 / p2  - active_time / (active_time + p3)))     
+        v = activityMinus1 * (1 - (1 - activityMinus1) * (p1 / p2  - active_time / (active_time + p3)))
+
+        return min(1,v)     
 
     #return json object of class
     def json(self):

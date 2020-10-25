@@ -52,6 +52,7 @@
                 currentSubjectIndex:-1,           //index of current subject being edited
                 addSubjectButtonText:'Add Subject <i class="fas fa-plus"></i>',
                 showFitbitStatusButtonText:'<i class="far fa-check-circle"></i>',
+                backFillButtonText:'Back Fill Data For Testing',
             },
 
             methods:{
@@ -175,13 +176,15 @@
 
                 //for testing, back fill session days.
                 backFillSessionsDays:function(){                    
-
+                    app.$data.backFillButtonText = '<i class="fas fa-spinner fa-spin"></i>';
                     axios.post('/session/{{id}}/', {
                                     action :"backFillSessionDays"                                                                                                                                                          
                                 })
                                 .then(function (response) {     
                                     app.updateSession(response);   
-                                    app.updateSubjects(response);                                      
+                                    app.updateSubjects(response);  
+
+                                    app.$data.backFillButtonText = 'Back Fill Data For Testing';                                    
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -608,7 +611,7 @@
                         <span class="float-right">
                             {%if DEBUG%}
                             <button class="btn btn-outline-danger" type="button" v-on:click = "backFillSessionsDays()">
-                                Back Fill Data For Testing
+                                <span v-html="backFillButtonText"></span>
                             </button>
                             {%endif%}
                             <button class="btn btn-outline-success" type="button" v-on:click = "addSubject()">

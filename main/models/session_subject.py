@@ -44,18 +44,27 @@ class Session_subject(models.Model):
 
         sada_set = self.Session_day_subject_actvities.order_by('session_day__period_number')
 
+        p = Parameters.objects.first()
+        tz = pytz.timezone(p.experimentTimeZone)
+        d_today = datetime.now(tz)
+        d_today = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
+
         previous_i = None
         for i in sada_set:
+            if i.session_day.date == d_today.date():
+                break
+
             if i.session_day.period_number == 1:
                 i.heart_activity = self.session.parameterset.heart_activity_inital
                 i.immune_activity = self.session.parameterset.immune_activity_inital
             else:
-                logger.info(previous_i)
+                logger.info("previous: " + str(previous_i))
+                logger.info("current: " + str(i))
                 i.calcHeartActivity(previous_i.heart_activity_minutes,previous_i.heart_activity)
                 i.calcImmuneActivity(previous_i.immune_activity_minutes,previous_i.immune_activity)
             
             i.heart_activity_minutes = random.randint(0,30)
-            i.heart_activity_minutes = random.randint(240,500)
+            i.immune_activity_minutes = random.randint(240,500)
 
             i.save()
 
