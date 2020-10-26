@@ -22,6 +22,10 @@ class Parameterset_form(forms.ModelForm):
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.heart_parameter_3"}))
 
+    heart_maintenance_minutes = forms.DecimalField(label='Heart Maintenance Minutes',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.heart_maintenance_minutes"}))
+
     immune_activity_inital = forms.DecimalField(label='Immune Activity T1',
                             min_value=0.0001,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.immune_activity_inital"}))
@@ -35,7 +39,12 @@ class Parameterset_form(forms.ModelForm):
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.immune_parameter_2"}))
     
     immune_parameter_3 = forms.DecimalField(label='Immune Parameter 3',
+                            min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.immune_parameter_3"}))
+    
+    immune_maintenance_minutes = forms.DecimalField(label='Immune Maintenance Minutes',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.immune_maintenance_minutes"}))
     
     block_1_heart_pay = forms.DecimalField(label='Block 1 Heart Pay ($)',
                             min_value=0,
