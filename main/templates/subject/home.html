@@ -13,7 +13,9 @@
             delimiters: ['[[', ']]'],
             el: '#root',        
             data:{
-                sessionDaySubject:[],
+                sessionDaySubject:{heart_activity:"--/100",
+                                   immune_activity:"--/100",},
+                parameterset:{},
                 refreshFitbitButtonText : 'Refresh',
             },
 
@@ -62,7 +64,12 @@
                                                                 
             </div>
             <div class="card-body">                      
-                                
+                <div style="text-align: center;text-decoration: underline;">Your current Health States</div>                
+                <div style="text-align: center;">Heart Health: <span v-html = sessionDaySubject.heart_activity></span></div>
+                <div style="text-align: center;">{{heart_maintenance_minutes}} minutes of exercise will be required to maintain it</div>
+                <br>
+                <div style="text-align: center;">Immune Health: <span v-html = sessionDaySubject.immune_activity></span></div>
+                <div style="text-align: center;">{{immune_maintenance_hours}} hours of sleep will be required to maintain it</div>
                                 
                 
             </div>                    

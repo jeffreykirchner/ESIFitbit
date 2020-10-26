@@ -66,9 +66,21 @@ class Session_day_subject_actvity(models.Model):
 
         return min(1,v)     
 
+    #heart activity / 100
+    def heart_activity_formatted(self):
+        v = round(self.heart_activity * 100,2)
+        return f'{v}/100'
+
+    #immune activity /100
+    def immune_activity_formatted(self):
+        v = round(self.immune_activity * 100,2)
+        return f'{v}/100'
+
     #return json object of class
     def json(self):
         return{
             "id":self.id,
-            "treatment":self.treatment,           
+            "treatment":self.treatment,      
+            "heart_activity_minutes":self.heart_activity_formatted(),     
+            "immune_activity_minutes":self.immune_activity_formatted(),
         }

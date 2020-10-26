@@ -43,9 +43,11 @@ class Session(models.Model):
         verbose_name = 'Experiment Session'
         verbose_name_plural = 'Experiment Sessions'
 
-    #get the current period number
-    def getCurrentPeriod(self):
-        return 1
+    #get the current session day
+    def getCurrentSessionDay(self):
+        logger = logging.getLogger(__name__)
+
+        se
 
     #add new sessions days up to today if needed
     def addNewSessionDays(self):

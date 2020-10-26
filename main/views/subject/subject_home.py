@@ -4,7 +4,7 @@ import json
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 import logging
-from main.models import Session_subject
+from main.models import Session_subject,Session_day_subject_actvity,Session_day
 
 def Subject_Home(request,id):
     logger = logging.getLogger(__name__) 
@@ -14,6 +14,8 @@ def Subject_Home(request,id):
     #u=request.user  
 
     session_subject = Session_subject.objects.get(login_key = id)
+    session_day = session_subject.session.getCurrentPeriod
+
     logger.info(session_subject)
 
     if request.method == 'POST':     
@@ -36,7 +38,11 @@ def Subject_Home(request,id):
             return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
         
+        heart_maintenance_minutes = session_subject.session.parameterset.heart_maintenance_minutes
+        immune_maintenance_hours = session_subject.session.parameterset.immune_maintenance_minutes/60
         return render(request,'subject/home.html',{"id":id,
+                                                   "heart_maintenance_minutes":heart_maintenance_minutes,
+                                                   "immune_maintenance_hours": immune_maintenance_hours,
                                                    "session_subject":session_subject}) 
 
 #get session subject day
@@ -45,7 +51,7 @@ def getSessionDaySubject(data,session_subject):
     logger.info("Session subject day")
     logger.info(data)
 
-    session_subject_day = ""
+    session_subject_day = Session_day_subject_actvity.objects.filter(session_subject = session_subject,
                   
     return JsonResponse({"status":"success",
                          "session_subject_day" : session_subject_day,},safe=False)                         
