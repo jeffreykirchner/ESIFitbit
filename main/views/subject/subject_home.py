@@ -14,7 +14,7 @@ def Subject_Home(request,id):
     #u=request.user  
 
     session_subject = Session_subject.objects.get(login_key = id)
-    session_day = session_subject.session.getCurrentPeriod
+    session_day = session_subject.session.getCurrentSessionDay()
 
     logger.info(session_subject)
 
@@ -24,7 +24,7 @@ def Subject_Home(request,id):
             data = json.loads(request.body.decode('utf-8'))
 
             if data["action"] == "getSessionDaySubject":
-                return getSessionDaySubject(data,session_subject)
+                return getSessionDaySubject(data,session_subject,session_day)
             # elif data["action"] == "acceptInvitation":
             #     return acceptInvitation(data,u)
             # elif data["action"] == "cancelAcceptInvitation":
@@ -46,14 +46,21 @@ def Subject_Home(request,id):
                                                    "session_subject":session_subject}) 
 
 #get session subject day
-def getSessionDaySubject(data,session_subject):
+def getSessionDaySubject(data,session_subject,session_day):
     logger = logging.getLogger(__name__) 
     logger.info("Session subject day")
     logger.info(data)
 
-    session_subject_day = Session_day_subject_actvity.objects.filter(session_subject = session_subject,
-                  
+    #mark subject checkin as true
+
+    #pull data from fitbit
+
+    #calc today's actvity
+    session_subject.calcTodaysActivity(session_day.period_number)
+
+    session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
+                
     return JsonResponse({"status":"success",
-                         "session_subject_day" : session_subject_day,},safe=False)                         
+                        "session_day_subject_actvity" : session_day_subject_actvity.json(),},safe=False)                         
                                 
      

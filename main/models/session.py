@@ -47,7 +47,7 @@ class Session(models.Model):
     def getCurrentSessionDay(self):
         logger = logging.getLogger(__name__)
 
-        se
+        return self.session_days.order_by('-period_number').first()
 
     #add new sessions days up to today if needed
     def addNewSessionDays(self):
@@ -110,7 +110,7 @@ class Session(models.Model):
             "id":self.id,
             "title":self.title,
             "start_date":self.getDateString(),
-            "current_period":self.getCurrentPeriod(),
+            "current_session_day":self.getCurrentSessionDay().json(),
             "treatment":self.treatment,
             "treatment_label":self.Treatment(self.treatment).label,
             "parameterset":self.parameterset.json(),

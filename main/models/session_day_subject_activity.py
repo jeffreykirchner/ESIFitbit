@@ -79,8 +79,11 @@ class Session_day_subject_actvity(models.Model):
     #return json object of class
     def json(self):
         return{
-            "id":self.id,
-            "treatment":self.treatment,      
-            "heart_activity_minutes":self.heart_activity_formatted(),     
-            "immune_activity_minutes":self.immune_activity_formatted(),
+            "id":self.id,             
+            "heart_activity":self.heart_activity_formatted(),     
+            "immune_activity":self.immune_activity_formatted(),
+            "heart_activity_minutes":self.heart_activity_minutes,     
+            "immune_activity_minutes":self.immune_activity_minutes,
+            "check_in_today":self.check_in_today,     
+            "paypal_today":self.paypal_today,
         }

@@ -69,7 +69,13 @@ class Session_subject(models.Model):
             i.save()
 
             previous_i = i
-            
+
+    #calc subject's activity today  
+    def calcTodaysActivity(self,current_period):
+        logger = logging.getLogger(__name__) 
+
+
+
 
     #return json object of class
     def json(self,get_fitbit_status):
