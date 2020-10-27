@@ -35,14 +35,40 @@ class Session_day(models.Model):
         # session_subjects = self.session.session_subjects
 
         for s in self.session.session_subjects.filter(soft_delete=False):
-            if not main.models.Session_day_subject_actvity.objects.filter(session_day=self,session_subject=s):
-                sdsa = main.models.Session_day_subject_actvity()
-                sdsa.session_day=self
-                sdsa.session_subject=s
-                sdsa.heart_activity_minutes=-1
-                sdsa.immune_activity_minutes=-1
-                sdsa.save()
-            
+            self.addNewSessionDayUserActivity(s)
+                
+    #add new session day user activity for a session_subject        
+    def addNewSessionDayUserActivity(self,session_subject):
+        logger = logging.getLogger(__name__)
+
+        if not main.models.Session_day_subject_actvity.objects.filter(session_day=self,session_subject=session_subject):
+            sdsa = main.models.Session_day_subject_actvity()
+            sdsa.session_day=self
+            sdsa.session_subject=session_subject
+            sdsa.heart_activity_minutes=-1
+            sdsa.immune_activity_minutes=-1
+            sdsa.save()
+
+            return sdsa
+        else:
+            return None
+    
+    #return the session day before this one
+    def getPreviousSessionDay(self):
+        logger = logging.getLogger(__name__)
+
+        if self.period_number ==1:
+            return None
+        
+        try:
+            return main.models.Session_day.objects.get(period_number=self.period_number-1,session=self.session)
+        except Exception  as e: 
+            logger.info(e)
+            return None
+
+    #get the formatted date string
+    def getDateStr(self):
+        return self.date.strftime("%m/%d/%Y")
 
     #return json object of class
     def json(self):

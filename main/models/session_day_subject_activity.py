@@ -4,6 +4,7 @@ import traceback
 from django.utils.timezone import now
 from . import Session_day,Session_subject
 import uuid
+import main
 
 from enum import Enum
 
@@ -75,6 +76,20 @@ class Session_day_subject_actvity(models.Model):
     def immune_activity_formatted(self):
         v = round(self.immune_activity * 100,2)
         return f'{v}/100'
+
+    #return the activity day before this one
+    def getPreviousActivityDay(self):
+        logger = logging.getLogger(__name__)
+
+        if self.session_day.period_number ==1:
+            return None
+        
+        try:
+            return main.models.Session_day_subject_actvity.objects.get(session_subject = self.session_subject,
+                                                                       session_day__period_number = self.session_day.period_number-1)
+        except Exception  as e: 
+            logger.info(e)
+            return None
 
     #return json object of class
     def json(self):

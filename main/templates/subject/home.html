@@ -17,6 +17,7 @@
                                    immune_activity:"--/100",},
                 parameterset:{},
                 refreshFitbitButtonText : 'Refresh',
+                toggleState:"heart",
             },
 
             methods:{
@@ -38,7 +39,9 @@
                 updateSessionDaySubject:function(response){
                     app.$data.session_day_subject_actvity = response.data.session_day_subject_actvity;       
                                     
-                },                
+                },        
+
+
                                         
             },
 
@@ -58,19 +61,46 @@
     <div class="col col-lg-6">
         <div class="card">                  
             <div class="card-header">
-                <span class="align-middle">Subject: {{session_subject.name}} | {{session_subject.contact_email}}</span>               
+                <span class="align-middle">{{session_subject.contact_email}}</span>               
                 
                 
                                                                 
             </div>
-            <div class="card-body">                      
-                <div style="text-align: center;text-decoration: underline;">Your current Health States</div>                
-                <div style="text-align: center;">Heart Health: <span style="font-weight: bold;" v-html = session_day_subject_actvity.heart_activity></span></div>
-                <div style="text-align: center;">{{heart_maintenance_minutes}} minutes of exercise will be required to maintain it</div>
-                <br>
-                <div style="text-align: center;">Immune Health: <span style="font-weight: bold;" v-html = session_day_subject_actvity.immune_activity></span></div>
-                <div style="text-align: center;">{{immune_maintenance_hours}} hours of sleep will be required to maintain it</div>
-                                
+            <div class="card-body">    
+
+                <div class="row">
+                    <div class="col" style="text-align: center;">{{session_date}}</div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col" style="text-align: center;">
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-secondary active">
+                                <input type="radio" name="options" id="option1" autocomplete="off" checked @click="toggleState = 'heart'"> <i class="far fa-heart"></i>
+                            </label>
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="options" id="option2" autocomplete="off" @click="toggleState = 'immune'"> <i class="fas fa-bed"></i>
+                            </label>                    
+                        </div>
+                    </div>
+                </div>
+            
+                <div v-if="toggleState==='heart'">
+                    <div class="row mt-2">
+                        <div class="col" style="text-align: center;">Heart Health: <span style="font-weight: bold;" v-html = session_day_subject_actvity.heart_activity></span></div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="text-align: center;">{{heart_maintenance_minutes}} minutes of exercise will be required to maintain it</div>
+                    </div>
+                </div>
+                <div v-if="toggleState==='immune'">
+                    <div class="row mt-2">
+                        <div class="col" style="text-align: center;">Immune Health: <span style="font-weight: bold;" v-html = session_day_subject_actvity.immune_activity></span></div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="text-align: center;">{{immune_maintenance_hours}} hours of sleep will be required to maintain it</div>
+                    </div>
+                </div>  
+                
                 
             </div>                    
         </div>                

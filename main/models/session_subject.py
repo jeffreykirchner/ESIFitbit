@@ -9,6 +9,7 @@ import requests
 from datetime import datetime,timedelta,timezone,date
 import pytz
 import random
+import main
 
 #subject in session
 class Session_subject(models.Model):
@@ -65,16 +66,105 @@ class Session_subject(models.Model):
             
             i.heart_activity_minutes = random.randint(0,30)
             i.immune_activity_minutes = random.randint(240,500)
+            i.check_in_today = True
 
             i.save()
 
             previous_i = i
 
+    #return total sleep from date specified
+    def getFibitImmuneMinutes(self,search_date):
+        logger = logging.getLogger(__name__)
+        logger.info("getFibitImmuneMinutes")
+        logger.info(search_date)
+
+        r = self.getFitbitSleep(search_date)
+        v = r['summary']['totalMinutesAsleep']
+
+        logger.info(v)
+        return v
+    
+     #return total sleep from date specified
+    def getFibitHeartMinutes(self,search_date):
+        logger = logging.getLogger(__name__)
+        logger.info("getFibitHeartMinutes")
+        logger.info(search_date)
+
+        r = self.getFitbitActivies(search_date)
+        v = r['summary']['veryActiveMinutes']
+
+        logger.info(v)
+        return v
+        
+
+    #get fitbit sleep object
+    def getFitbitSleep(self,sleep_date):
+        logger = logging.getLogger(__name__)
+        logger.info("Fitbit sleep")
+        logger.info(sleep_date) 
+
+        temp_s = sleep_date.strftime("%Y-%m-%d")
+        #temp_s = "today"
+
+        fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1.2/user/-/sleep/date/{temp_s}.json')
+
+        return fitbit_response
+    
+     #get fitbit sleep object
+    def getFitbitActivies(self,activity_date):
+        logger = logging.getLogger(__name__)
+        logger.info("Fitbit activity")
+        logger.info(activity_date) 
+
+        temp_s = activity_date.strftime("%Y-%m-%d")
+        #temp_s = "today"
+
+        fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/date/{temp_s}.json')
+
+        return fitbit_response
+
+
     #calc subject's activity today  
     def calcTodaysActivity(self,current_period):
         logger = logging.getLogger(__name__) 
+        
+        #get session day
+        session_day = main.models.Session_day.objects.filter(session = self.session,period_number = current_period)
 
+        if session_day:
+            session_day=session_day.first()
+        else:
+            logger.info("calcTodaysActivity session day not found: period"+ str(current_period) +  " session " + self.session.id)
+            return False
 
+        #check period is not 1
+        if current_period==1:
+            logger.info("calcTodaysActivity current period is 1: period "+ str(current_period) +  " session " + self.session.id)
+            return False
+
+        #get yesterday's activity          
+        sada_yesterday = self.Session_day_subject_actvities.filter(session_day__period_number = current_period-1)
+
+        if sada_yesterday:
+            sada_yesterday=sada_yesterday.first()
+        else:
+            logger.info("calcTodaysActivity could not find yesterday's activity: period "+ str(current_period) +  " session " + self.session.id)
+            return False
+
+        #calc today's activity
+        sada_today = self.Session_day_subject_actvities.filter(session_day__period_number = current_period)
+
+        if sada_today:
+            sada_today=sada_today.first()
+            sada_today.calcHeartActivity(sada_yesterday.heart_activity_minutes,sada_yesterday.heart_activity)
+            sada_today.calcImmuneActivity(sada_yesterday.immune_activity_minutes,sada_yesterday.immune_activity)
+
+            sada_today.save()
+        else:
+            logger.info("calcTodaysActivity could not find today's activity: period "+ str(current_period) +  " session " + self.session.id)
+            return False
+
+        return True
 
 
     #return json object of class
@@ -115,18 +205,6 @@ class Session_subject(models.Model):
             "fitBit_Attached" : fitBit_Attached,
             "get_fitbit_status" : get_fitbit_status,
         }
-    
-    def getFitbitSleep(self,sleep_date):
-        logger = logging.getLogger(__name__)
-        logger.info("Fitbit sleep")
-        logger.info(sleep_date) 
-
-        temp_s = sleep_date.strftime("%Y-%m-%d")
-        temp_s = "today"
-
-        fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1.2/user/-/sleep/date/' + temp_s + '.json')
-
-        return fitbit_response
     
     #take fitbit api url and return response
     def getFitbitInfo(self,url):

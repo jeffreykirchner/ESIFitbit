@@ -25,14 +25,7 @@ def Subject_Home(request,id):
 
             if data["action"] == "getSessionDaySubject":
                 return getSessionDaySubject(data,session_subject,session_day)
-            # elif data["action"] == "acceptInvitation":
-            #     return acceptInvitation(data,u)
-            # elif data["action"] == "cancelAcceptInvitation":
-            #     return cancelAcceptInvitation(data,u)
-            # elif data["action"] == "showAllInvitations":
-            #     return showAllInvitations(data,u)
-            # elif data["action"] == "acceptConsentForm":
-            #     return acceptConsentForm(data,u)
+           
         else:   
             logger.info("Session subject day, user not found: " + str(id))
             return JsonResponse({"response" :  "fail"},safe=False)       
@@ -40,9 +33,13 @@ def Subject_Home(request,id):
         
         heart_maintenance_minutes = session_subject.session.parameterset.heart_maintenance_minutes
         immune_maintenance_hours = session_subject.session.parameterset.immune_maintenance_minutes/60
+
+        session_date = session_day.getDateStr()
+
         return render(request,'subject/home.html',{"id":id,
                                                    "heart_maintenance_minutes":heart_maintenance_minutes,
                                                    "immune_maintenance_hours": immune_maintenance_hours,
+                                                   "session_date":session_date,
                                                    "session_subject":session_subject}) 
 
 #get session subject day
@@ -51,14 +48,29 @@ def getSessionDaySubject(data,session_subject,session_day):
     logger.info("Session subject day")
     logger.info(data)
 
-    #mark subject checkin as true
-
-    #pull data from fitbit
-
-    #calc today's actvity
-    session_subject.calcTodaysActivity(session_day.period_number)
-
     session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
+
+    session_day_subject_actvity_previous_day = session_day_subject_actvity.getPreviousActivityDay()
+
+    if session_day_subject_actvity_previous_day:
+        #create session day if needed
+        session_subject.session.addNewSessionDays()
+
+        #mark subject checkin as true
+        
+        #pull data from fitbit
+        immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.getPreviousSessionDay().date)
+        heart_activity_minutes = session_subject.getFibitHeartMinutes(session_day.getPreviousSessionDay().date)
+
+        session_day_subject_actvity_previous_day.immune_activity_minutes = immune_activity_minutes
+        session_day_subject_actvity_previous_day.heart_activity_minutes = heart_activity_minutes
+        session_day_subject_actvity_previous_day.save()
+
+        #calc today's actvity
+        session_subject.calcTodaysActivity(session_day.period_number)
+
+        #get object again after calculation
+        session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
                 
     return JsonResponse({"status":"success",
                         "session_day_subject_actvity" : session_day_subject_actvity.json(),},safe=False)                         
