@@ -63,7 +63,7 @@ class Session_day_subject_actvity(models.Model):
     def calcActivity(self,active_time,p1,p2,p3,activityMinus1): 
         #immuneActivityTodayT-1 * (1 - (1 - immuneActivityTodayT-1) * (immune_parameter_1 / immune_parameter_2  - immuneTimeT-1 / (immuneTimeT-1 + immune_parameter_3))
 
-        v = activityMinus1 * (1 - (1 - activityMinus1) * (p1 / p2  - active_time / (active_time + p3)))
+        v = float(activityMinus1) * (1 - (1 - float(activityMinus1)) * (float(p1) / float(p2)  - float(active_time) / (float(active_time) + float(p3))))
 
         return min(1,v)     
 
@@ -90,6 +90,22 @@ class Session_day_subject_actvity(models.Model):
         except Exception  as e: 
             logger.info(e)
             return None
+    
+    #get range of possible heart activities for tomorrow
+    def getHeartActivityFutureRange(self):
+
+        v = []
+
+        ps = self.session_day.session.parameterset
+
+        value_step = (ps.x_max_heart-ps.x_min_heart) / 100
+        current_value = ps.x_min_heart
+
+        for i in range(99):
+            v.append({"x":current_value, "y": self.calcHeartActivity(current_value,self.heart_activity)})
+            current_value += value_step
+
+        return v
 
     #return json object of class
     def json(self):
@@ -101,4 +117,5 @@ class Session_day_subject_actvity(models.Model):
             "immune_activity_minutes":self.immune_activity_minutes,
             "check_in_today":self.check_in_today,     
             "paypal_today":self.paypal_today,
+            "heart_activity_future":self.getHeartActivityFutureRange(),
         }

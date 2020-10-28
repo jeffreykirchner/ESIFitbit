@@ -51,25 +51,26 @@
                 //update the experiment list from server
                 updateSessions:function(response){
                     app.$data.sessions = response.data.sessions;       
-                                    
+                    //app.updateCanvas();                 
                 },
 
                 //delete the selected experiment
                 deleteSession:function(id){
-                    if(confirm("Delete Session?"))
-                    {
-                        axios.post('/staffHome/', {
-                                action :"deleteSession" ,
-                                id:id,                                                                                                                             
-                            })
-                            .then(function (response) {   
-                                app.updateSessions(response);                                                                          
-                            })
-                            .catch(function (error) {
-                                console.log(error);
-                            });                        
-                        }
-                    }                          
+                if(confirm("Delete Session?"))
+                {
+                    axios.post('/staffHome/', {
+                            action :"deleteSession" ,
+                            id:id,                                                                                                                             
+                        })
+                        .then(function (response) {   
+                            app.updateSessions(response);                                                                          
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });                        
+                    }
+                },
+                            
             },
 
             mounted: function(){

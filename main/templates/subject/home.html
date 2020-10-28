@@ -15,6 +15,7 @@
             data:{
                 session_day_subject_actvity:{heart_activity:"--/100",
                                    immune_activity:"--/100",},
+                graph_parameters:{},
                 parameterset:{},
                 refreshFitbitButtonText : 'Refresh',
                 toggleState:"heart",
@@ -37,13 +38,142 @@
                 
                 //update the experiment list from server
                 updateSessionDaySubject:function(response){
-                    app.$data.session_day_subject_actvity = response.data.session_day_subject_actvity;       
-                                    
-                },        
+                    app.$data.session_day_subject_actvity = response.data.session_day_subject_actvity;
+                    app.$data.graph_parameters = response.data.graph_parameters;       
 
+                    app.updateCanvases();                
+                },   
+
+                updateCanvases:function(){
+                           
+                    gp=app.$data.graph_parameters;
+
+                    app.drawAxis("heartSelfChart",gp.y_min_heart,gp.y_max_heart,gp.y_ticks_heart,
+                                                  gp.x_min_heart,gp.x_max_heart,gp.x_ticks_heart,
+                                                  "Tomorrow's Heart Health","Today's Minutes Exercising");
+
+                    app.drawAxis("immuneSelfChart",gp.y_min_immune,gp.y_max_immune,gp.y_ticks_immune,
+                                                  gp.x_min_immune,gp.x_max_immune,gp.x_ticks_immune,
+                                                  "Tomorrow's Immune Health","Today's Hours Sleeping");                
+                },   
+      
+                drawAxis: function (chartID,yMin,yMax,yTickCount,xMin,xMax,xTickCount,yLabel,xLabel){
+
+                    Vue.nextTick()
+                        .then(function () {
+                            if(document.getElementById(chartID) == null)
+                            {
+                                return;
+                            }
+
+                            var canvas = document.getElementById(chartID),
+                                ctx = canvas.getContext('2d');            
+
+                            var xScale = xMax-xMin;
+                            var yScale = yMax-yMin;
+
+                            var w =  ctx.canvas.width;
+                            var h = ctx.canvas.height;
+                            var marginY=55;
+                            var marginX=40;
+                            var margin2=10;
+                            var tickLength=3;
+                            
+                            var xTickValue=xScale/parseFloat(xTickCount);
+                            var yTickValue=yScale/parseFloat(yTickCount);
+                            
+                            //clear screen
+                            ctx.fillStyle = "white";
+                            ctx.fillRect(0,0,w,h);
+
+                            //axis
+                            ctx.beginPath();
+                            ctx.moveTo(marginY, margin2);
+                            ctx.lineTo(marginY, h-marginX);
+                            ctx.lineTo(w-margin2, h-marginX);
+                            ctx.lineWidth = 3;
+                            ctx.lineCap = "round";
+                            ctx.stroke();
+
+                            //y ticks
+                            ctx.beginPath();                                                               
+                            ctx.font="12px Georgia";
+                            ctx.fillStyle = "black";
+                            ctx.textAlign = "right";
+
+                            var tempY = margin2;     
+                            var tempYValue = yMax;
+
+                            for(var i=0;i<=yTickCount;i++)
+                            {                                       
+                                ctx.moveTo(marginY, tempY);                                   
+                                ctx.lineTo(marginY-5, tempY);
+                                ctx.fillText(parseFloat(tempYValue).toFixed(2),marginY-8,tempY+4);
+
+                                tempY += ((h-marginX-margin2)/ (yTickCount));
+                                tempYValue -= yTickValue;
+                            }
+
+                            ctx.stroke();
+
+                            //x ticks
+                            ctx.beginPath();                                                               
+                            ctx.textAlign = "center";
+
+                            var tempX = marginY;
+                            var tempXValue=xMin;                                
+                            for(var i=0;i<=xTickCount;i++)
+                            {                                       
+                                ctx.moveTo(tempX, h-marginX);                                   
+                                ctx.lineTo(tempX,  h-marginX+5);
+                                ctx.fillText(Math.round(tempXValue).toString(),tempX,h-marginX+18);
+
+                                tempX += ((w-marginY-margin2)/ (xTickCount));
+                                tempXValue += xTickValue;
+                            }
+
+                            ctx.stroke();
+
+                            //labels
+                            ctx.textAlign = "center";
+                            ctx.fillStyle = "DimGray";
+                            ctx.font="bold 14px Georgia"; 
+
+                            ctx.save();
+                            ctx.translate(14, h/2);
+                            ctx.rotate(-Math.PI/2);                                                              
+                            ctx.fillText(yLabel,0,0);
+                            ctx.restore();
+
+                            ctx.fillText(xLabel,w/2,h-4);
+                        })                            
+                    },
+
+                convertToX:function(tempValue,maxValue,tempWidth, markerWidth){
+                    tempT = tempWidth / maxValue;
+
+                    if(tempValue>maxValue) tempValue=maxValue;
+
+                    return(tempT * tempValue - markerWidth/2)
+                },
+
+                convertToY:function(tempValue,maxValue,tempHeight, markerHeight){
+                    tempT = tempHeight / maxValue;
+
+                    if(tempValue>maxValue) tempValue=maxValue;
+
+                    return(-1 * tempT * tempValue - markerHeight/2)
+                },
+
+                updateToogleState:function(toggleState){
+                   app.$data.toggleState = toggleState;
+                   app.updateCanvases();
+                },
 
                                         
             },
+
+
 
             mounted: function(){
                 this.getSessionDaySubject();                      
@@ -61,24 +191,18 @@
     <div class="col col-lg-6">
         <div class="card">                  
             <div class="card-header">
-                <span class="align-middle">{{session_subject.contact_email}}</span>               
-                
-                
-                                                                
+                <span >{{session_subject.contact_email}}</span>               
+                <span class="float-right">{{session_date}}</span>                                                                   
             </div>
             <div class="card-body">    
-
                 <div class="row">
-                    <div class="col" style="text-align: center;">{{session_date}}</div>
-                </div>
-                <div class="row mt-2">
                     <div class="col" style="text-align: center;">
                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                             <label class="btn btn-secondary active">
-                                <input type="radio" name="options" id="option1" autocomplete="off" checked @click="toggleState = 'heart'"> <i class="far fa-heart"></i>
+                                <input type="radio" name="options" id="option1" autocomplete="off" checked v-on:click="updateToogleState('heart')"> <i class="far fa-heart"></i>
                             </label>
                             <label class="btn btn-secondary">
-                                <input type="radio" name="options" id="option2" autocomplete="off" @click="toggleState = 'immune'"> <i class="fas fa-bed"></i>
+                                <input type="radio" name="options" id="option2" autocomplete="off" v-on:click="updateToogleState('immune')"> <i class="fas fa-bed"></i>
                             </label>                    
                         </div>
                     </div>
@@ -91,13 +215,23 @@
                     <div class="row">
                         <div class="col" style="text-align: center;">{{heart_maintenance_minutes}} minutes of exercise will be required to maintain it</div>
                     </div>
+                    <div class="row">
+                        <div class="col" style="text-align: center;">
+                            <canvas key="heartSelfChart" id="heartSelfChart" style="border-style: solid;border-width: 1px;" width="300" height="325"></canvas>
+                        </div>
+                    </div>
                 </div>
-                <div v-if="toggleState==='immune'">
+                <div v-else-if="toggleState==='immune'">
                     <div class="row mt-2">
                         <div class="col" style="text-align: center;">Immune Health: <span style="font-weight: bold;" v-html = session_day_subject_actvity.immune_activity></span></div>
                     </div>
                     <div class="row">
                         <div class="col" style="text-align: center;">{{immune_maintenance_hours}} hours of sleep will be required to maintain it</div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="text-align: center;">
+                            <canvas key="immuneSelfChart" id="immuneSelfChart" style="border-style: solid;border-width: 1px;" width="300" height="325"></canvas>
+                        </div>
                     </div>
                 </div>  
                 

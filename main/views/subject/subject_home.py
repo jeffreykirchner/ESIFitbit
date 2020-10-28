@@ -34,7 +34,7 @@ def Subject_Home(request,id):
         heart_maintenance_minutes = session_subject.session.parameterset.heart_maintenance_minutes
         immune_maintenance_hours = session_subject.session.parameterset.immune_maintenance_minutes/60
 
-        session_date = session_day.getDateStr()
+        session_date = session_day.getDateStr()        
 
         return render(request,'subject/home.html',{"id":id,
                                                    "heart_maintenance_minutes":heart_maintenance_minutes,
@@ -59,12 +59,12 @@ def getSessionDaySubject(data,session_subject,session_day):
         #mark subject checkin as true
         
         #pull data from fitbit
-        immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.getPreviousSessionDay().date)
-        heart_activity_minutes = session_subject.getFibitHeartMinutes(session_day.getPreviousSessionDay().date)
+        # immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.getPreviousSessionDay().date)
+        # heart_activity_minutes = session_subject.getFibitHeartMinutes(session_day.getPreviousSessionDay().date)
 
-        session_day_subject_actvity_previous_day.immune_activity_minutes = immune_activity_minutes
-        session_day_subject_actvity_previous_day.heart_activity_minutes = heart_activity_minutes
-        session_day_subject_actvity_previous_day.save()
+        # session_day_subject_actvity_previous_day.immune_activity_minutes = immune_activity_minutes
+        # session_day_subject_actvity_previous_day.heart_activity_minutes = heart_activity_minutes
+        # session_day_subject_actvity_previous_day.save()
 
         #calc today's actvity
         session_subject.calcTodaysActivity(session_day.period_number)
@@ -73,6 +73,7 @@ def getSessionDaySubject(data,session_subject,session_day):
         session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
                 
     return JsonResponse({"status":"success",
-                        "session_day_subject_actvity" : session_day_subject_actvity.json(),},safe=False)                         
+                        "session_day_subject_actvity" : session_day_subject_actvity.json(),
+                        "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)                         
                                 
      

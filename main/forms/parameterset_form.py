@@ -94,6 +94,54 @@ class Parameterset_form(forms.ModelForm):
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.treatment_3_bonus_target_count"}))
 
+    y_min_heart = forms.DecimalField(label='Heart Y Minimum',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.y_min_heart"}))
+    
+    y_max_heart = forms.DecimalField(label='Heart Y Maximum',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.y_max_heart"}))
+    
+    y_ticks_heart = forms.DecimalField(label='Heart Y Ticks',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.y_ticks_heart"}))
+    
+    x_min_heart = forms.DecimalField(label='Heart X Minimum',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.x_min_heart"}))
+    
+    x_max_heart = forms.DecimalField(label='Heart X Maximum',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.x_max_heart"}))
+    
+    x_ticks_heart = forms.DecimalField(label='Heart X Ticks',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.x_ticks_heart"}))
+    
+    y_min_immune = forms.DecimalField(label='Immune Y Minimum',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.y_min_immune"}))
+    
+    y_max_immune = forms.DecimalField(label='Immune Y Maximum',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.y_max_immune"}))
+    
+    y_ticks_immune = forms.DecimalField(label='Immune Y Ticks',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.y_ticks_immune"}))
+    
+    x_min_immune = forms.DecimalField(label='Immune X Minimum',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.x_min_immune"}))
+    
+    x_max_immune = forms.DecimalField(label='Immune X Maximum',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.x_max_immune"}))
+    
+    x_ticks_immune = forms.DecimalField(label='Immune X Ticks',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.x_ticks_immune"}))
+
     class Meta:
         model=Parameterset
         fields = ('__all__')

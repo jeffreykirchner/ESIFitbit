@@ -57,16 +57,13 @@
         {%endblock head%}        
     </head>
     <body style="font-size:16px"> 
+        {%if user.is_staff%}
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            {%if user.is_staff%}
+           
                 <a class="navbar-brand" href="{% url 'staff_home' %}">
                     ESI
                 </a>
-            {%else%}
-                <a class="navbar-brand" href="{% url 'home' %}">
-                    ESI
-                </a>
-            {%endif%}
+            
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -110,6 +107,7 @@
                 {% endif %}
             </div>
         </nav>
+        {%endif%}
 
         <div class="container-fluid mt-4" id="root">                    
             {%block content%}
