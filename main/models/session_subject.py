@@ -61,8 +61,8 @@ class Session_subject(models.Model):
             else:
                 logger.info("previous: " + str(previous_i))
                 logger.info("current: " + str(i))
-                i.calcHeartActivity(previous_i.heart_activity_minutes,previous_i.heart_activity)
-                i.calcImmuneActivity(previous_i.immune_activity_minutes,previous_i.immune_activity)
+                i.saveHeartActivity(previous_i.heart_activity_minutes,previous_i.heart_activity)
+                i.saveImmuneActivity(previous_i.immune_activity_minutes,previous_i.immune_activity)
             
             i.heart_activity_minutes = random.randint(0,30)
             i.immune_activity_minutes = random.randint(240,500)
@@ -156,8 +156,8 @@ class Session_subject(models.Model):
 
         if sada_today:
             sada_today=sada_today.first()
-            sada_today.calcHeartActivity(sada_yesterday.heart_activity_minutes,sada_yesterday.heart_activity)
-            sada_today.calcImmuneActivity(sada_yesterday.immune_activity_minutes,sada_yesterday.immune_activity)
+            sada_today.saveHeartActivity(sada_yesterday.heart_activity_minutes,sada_yesterday.heart_activity)
+            sada_today.saveImmuneActivity(sada_yesterday.immune_activity_minutes,sada_yesterday.immune_activity)
 
             sada_today.save()
         else:

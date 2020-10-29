@@ -37,26 +37,34 @@ class Session_day_subject_actvity(models.Model):
 
     #calc heart activity
     def calcHeartActivity(self,heart_time,heartActivityMinus1):
+        logger = logging.getLogger(__name__)
+
         p_set = self.session_day.session.parameterset
 
-        self.heart_activity = self.calcActivity(heart_time,
-                                                p_set.heart_parameter_1,
-                                                p_set.heart_parameter_2,
-                                                p_set.heart_parameter_3,
-                                                heartActivityMinus1)
+        return self.calcActivity(heart_time,
+                                p_set.heart_parameter_1,
+                                p_set.heart_parameter_2,
+                                p_set.heart_parameter_3,
+                                heartActivityMinus1)
 
+    #save heart activity    
+    def saveHeartActivity(self,heart_time,heartActivityMinus1):
+        self.heart_activity = self.calcHeartActivity(heart_time,heartActivityMinus1)
         self.save()
 
     #calc immune activity
     def calcImmuneActivity(self,immune_time,immuneActivityMinus1):
         p_set = self.session_day.session.parameterset
 
-        self.immune_activity= self.calcActivity(immune_time,
-                                                p_set.immune_parameter_1,
-                                                p_set.immune_parameter_2,
-                                                p_set.immune_parameter_3,
-                                                immuneActivityMinus1)
-        
+        return self.calcActivity(immune_time,
+                                p_set.immune_parameter_1,
+                                p_set.immune_parameter_2,
+                                p_set.immune_parameter_3,
+                                immuneActivityMinus1)
+
+    #save immune activity    
+    def saveImmuneActivity(self,immune_time,immuneActivityMinus1):
+        self.immune_activity = self.calcImmuneActivity(immune_time,immuneActivityMinus1)
         self.save()
 
     #calc activity
