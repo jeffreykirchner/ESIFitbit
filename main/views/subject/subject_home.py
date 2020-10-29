@@ -61,12 +61,12 @@ def getSessionDaySubject(data,session_subject,session_day):
         session_day_subject_actvity.save()
         
         #pull data from fitbit
-        # immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.getPreviousSessionDay().date)
-        # heart_activity_minutes = session_subject.getFibitHeartMinutes(session_day.getPreviousSessionDay().date)
+        immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.getPreviousSessionDay().date)
+        heart_activity_minutes = session_subject.getFibitHeartMinutes(session_day.getPreviousSessionDay().date)
 
-        # session_day_subject_actvity_previous_day.immune_activity_minutes = immune_activity_minutes
-        # session_day_subject_actvity_previous_day.heart_activity_minutes = heart_activity_minutes
-        # session_day_subject_actvity_previous_day.save()
+        session_day_subject_actvity_previous_day.immune_activity_minutes = immune_activity_minutes
+        session_day_subject_actvity_previous_day.heart_activity_minutes = heart_activity_minutes
+        session_day_subject_actvity_previous_day.save()
 
         #calc today's actvity
         session_subject.calcTodaysActivity(session_day.period_number)
