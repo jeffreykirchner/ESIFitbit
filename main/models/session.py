@@ -60,34 +60,46 @@ class Session(models.Model):
         d_today = datetime.now(tz)
         d_today = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
 
-        sd = self.session_days.order_by('-date').first()
-        logger.info(sd.date)
-        logger.info(d_today.date())
+        d_temp = datetime.now(tz)
+        d_temp = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
+        d_temp = d_today.replace(day=self.start_date.day,month=self.start_date.month, year=self.start_date.year)
 
-        while sd.date < d_today.date():
-            logger.info("Newest session day: " + str(sd))
-            
-            d_temp = datetime.now(tz)
-            d_temp = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
-            d_temp = d_today.replace(day=sd.date.day,month=sd.date.month, year=sd.date.year)
-            
+        #sd = self.session_days.order_by('-date').first()
+        logger.info(d_temp)
+        logger.info(d_today)
+
+        tempPeriod = 1
+
+        while d_temp < d_today:
+            #logger.info("Newest session day: " + str(sd))
+            self.addSessionDay(d_temp.date(),tempPeriod)
             d_temp += timedelta(days=1)
+            tempPeriod+=1
 
             #logger.info(d_temp.date())
 
-            self.addSessionDay(d_temp.date(),sd.period_number+1)    
+                
 
-            sd = self.session_days.order_by('-date').first()        
+            #sd = self.session_days.order_by('-date').first()        
 
     #add new session day to this session
     def addSessionDay(self,new_day,new_period):
         logger = logging.getLogger(__name__)
 
-        new_sd = main.models.Session_day()
+        #check that this session day does not already exist
+
+        check_sd = main.models.Session_day.objects.filter(session=self,period_number=new_period)
+        new_sd = None
+        
+        if check_sd:
+           new_sd = check_sd.first()
+        else: 
+            new_sd = main.models.Session_day()
+
         new_sd.date = new_day
         new_sd.session=self
         new_sd.period_number=new_period
-        new_sd.save()
+        new_sd.save()        
 
         new_sd.addSessionDayUserActivites()
 
