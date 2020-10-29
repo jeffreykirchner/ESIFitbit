@@ -19,7 +19,7 @@ class Parameterset(models.Model):
     immune_activity_inital =  models.DecimalField(decimal_places=10, default=1, max_digits=20)
     immune_parameter_1 = models.DecimalField(decimal_places=10, default=1, max_digits=20) 
     immune_parameter_2 = models.DecimalField(decimal_places=10, default=3, max_digits=20)
-    immune_parameter_3 = models.DecimalField(decimal_places=10, default=60, max_digits=20) 
+    immune_parameter_3 = models.DecimalField(decimal_places=10, default=960, max_digits=20) 
     immune_maintenance_minutes = models.IntegerField(default = 480)
 
     #heartEarnings $ = block_N_heart_pay * heartActivityToday

@@ -51,11 +51,21 @@
                     app.drawAxis("heartSelfChart",gp.y_min_heart,gp.y_max_heart,gp.y_ticks_heart,
                                                   gp.x_min_heart,gp.x_max_heart,gp.x_ticks_heart,
                                                   "Tomorrow's Heart Health","Today's Minutes Exercising");
+                    
+                    app.drawLine("heartSelfChart",gp.y_min_heart,gp.y_max_heart,
+                                                  gp.x_min_heart,gp.x_max_heart,
+                                                  app.$data.session_day_subject_actvity.heart_activity_future,0,"crimson");
 
                     app.drawAxis("immuneSelfChart",gp.y_min_immune,gp.y_max_immune,gp.y_ticks_immune,
                                                   gp.x_min_immune,gp.x_max_immune,gp.x_ticks_immune,
-                                                  "Tomorrow's Immune Health","Today's Hours Sleeping");                
+                                                  "Tomorrow's Immune Health","Today's Hours Sleeping");    
+
+                    app.drawLine("immuneSelfChart",gp.y_min_immune,gp.y_max_immune,
+                                                  gp.x_min_immune*60,gp.x_max_immune*60,
+                                                  app.$data.session_day_subject_actvity.immune_activity_future,0,"cornflowerBlue");            
                 },   
+
+
       
                 drawAxis: function (chartID,yMin,yMax,yTickCount,xMin,xMax,xTickCount,yLabel,xLabel){
 
@@ -85,6 +95,8 @@
                             //clear screen
                             ctx.fillStyle = "white";
                             ctx.fillRect(0,0,w,h);
+                            ctx.strokeStyle="black";
+                            ctx.lineWidth=3;
 
                             //axis
                             ctx.beginPath();
@@ -146,19 +158,66 @@
                             ctx.restore();
 
                             ctx.fillText(xLabel,w/2,h-4);
+                            ctx.restore();
                         })                            
                     },
 
-                convertToX:function(tempValue,maxValue,tempWidth, markerWidth){
-                    tempT = tempWidth / maxValue;
+                drawLine: function (chartID,yMin,yMax,xMin,xMax,dataSet,markerWidth,markerColor){
+
+                    Vue.nextTick()
+                        .then(function () {
+                            if(document.getElementById(chartID) == null)
+                            {
+                                return;
+                            }
+
+                            var canvas = document.getElementById(chartID),
+                                ctx = canvas.getContext('2d');           
+
+                            var w =  ctx.canvas.width;
+                            var h = ctx.canvas.height;
+                            var marginY=55;
+                            var marginX=40;
+                            var margin2=10;
+                            var tickLength=3;
+
+                            ctx.translate(marginY, h-marginX);
+                            ctx.moveTo(0, 0);
+
+                            ctx.beginPath();
+                            for(i=0;i<dataSet.length;i++)
+                            {
+                                x = app.convertToX(dataSet[i].x,xMax,xMin,w-marginY-margin2,markerWidth);
+                                y = app.convertToY(dataSet[i].y,yMax,yMin,h-marginX-margin2,markerWidth);
+
+                                ctx.lineTo(x,y);
+                            }    
+
+                            ctx.strokeStyle=markerColor;
+                            ctx.lineWidth=markerWidth;
+                            ctx.stroke();    
+                            ctx.restore();                  
+
+                        })                            
+                    },
+
+                convertToX:function(tempValue,maxValue,minValue,tempWidth, markerWidth){
+                    tempT = tempWidth / (maxValue-minValue);
+
+                    tempValue-=minValue;
 
                     if(tempValue>maxValue) tempValue=maxValue;
 
-                    return(tempT * tempValue - markerWidth/2)
+                    return (tempT * tempValue - markerWidth/2);
                 },
 
-                convertToY:function(tempValue,maxValue,tempHeight, markerHeight){
-                    tempT = tempHeight / maxValue;
+                convertToY:function(tempValue,maxValue,minValue,tempHeight, markerHeight){
+                    tempT = tempHeight / (maxValue-minValue);
+
+                    if(tempValue > maxValue) tempValue=maxValue;
+                    if(tempValue < minValue) tempValue=minValue;
+
+                    tempValue-=minValue;
 
                     if(tempValue>maxValue) tempValue=maxValue;
 

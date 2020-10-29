@@ -57,6 +57,8 @@ def getSessionDaySubject(data,session_subject,session_day):
         session_subject.session.addNewSessionDays()
 
         #mark subject checkin as true
+        session_day_subject_actvity.check_in_today=True
+        session_day_subject_actvity.save()
         
         #pull data from fitbit
         # immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.getPreviousSessionDay().date)
