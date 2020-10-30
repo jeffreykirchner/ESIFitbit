@@ -60,27 +60,27 @@ class Session(models.Model):
         d_today = datetime.now(tz)
         d_today = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
 
+        d = self.session_days.order_by('-date').first()
+
         d_temp = datetime.now(tz)
         d_temp = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
-        d_temp = d_today.replace(day=self.start_date.day,month=self.start_date.month, year=self.start_date.year)
 
-        #sd = self.session_days.order_by('-date').first()
+        tempPeriod =1
+
+        if d:            
+            d_temp = d_today.replace(day=d.date.day,month=d.date.month, year=d.date.year)
+            tempPeriod = d.period_number+1
+        else:
+            d_temp = d_today.replace(day=self.start_date.day,month=self.start_date.month, year=self.start_date.year)
+
         logger.info(d_temp)
-        logger.info(d_today)
-
-        tempPeriod = 1
+        logger.info(d_today)        
 
         while d_temp < d_today:
             #logger.info("Newest session day: " + str(sd))
             self.addSessionDay(d_temp.date(),tempPeriod)
             d_temp += timedelta(days=1)
-            tempPeriod+=1
-
-            #logger.info(d_temp.date())
-
-                
-
-            #sd = self.session_days.order_by('-date').first()        
+            tempPeriod+=1     
 
     #add new session day to this session
     def addSessionDay(self,new_day,new_period):
@@ -88,22 +88,23 @@ class Session(models.Model):
 
         #check that this session day does not already exist
 
-        check_sd = main.models.Session_day.objects.filter(session=self,period_number=new_period)
+        check_sd = main.models.Session_day.objects.filter(session=self,period_number=new_period,date = new_day)
         new_sd = None
         
         if check_sd:
-           new_sd = check_sd.first()
+            new_sd = check_sd.first()
+            logger.info(f"Created session day already exists: date {new_day} period {new_period} ")
         else: 
             new_sd = main.models.Session_day()
 
-        new_sd.date = new_day
-        new_sd.session=self
-        new_sd.period_number=new_period
-        new_sd.save()        
+            new_sd.date = new_day
+            new_sd.session=self
+            new_sd.period_number=new_period
+            new_sd.save()        
 
-        new_sd.addSessionDayUserActivites()
+            new_sd.addSessionDayUserActivites()
 
-        logger.info("Created session day: " + str(new_sd))
+            logger.info("Created session day: " + str(new_sd))
 
     #fill subjects with test data    
     def fillWithTestData(self):
@@ -115,6 +116,16 @@ class Session(models.Model):
     #get user readable string of start session date
     def getDateString(self):
         return  self.start_date.strftime("%#m/%#d/%Y")
+    
+    #return true if session parameters can still be edited
+    def editable(self):
+
+        if self.session_days.count()<=1:
+            return True
+        elif self.session_subjects.filter(soft_delete=False):
+            return False
+        else:
+            return True
 
     #return json object of class
     def json(self):
@@ -126,6 +137,7 @@ class Session(models.Model):
             "treatment":self.treatment,
             "treatment_label":self.Treatment(self.treatment).label,
             "parameterset":self.parameterset.json(),
+            "editable":self.editable(),
         }
 
 #delete associated user model when profile is deleted

@@ -164,6 +164,9 @@ def updateSession(data,id):
     for field in data["formData"]:            
         form_data_dict[field["name"]] = field["value"]
 
+    if not s.editable():
+        form_data_dict["start_date"] = s.getDateString()
+
     form = Session_form(form_data_dict,instance=s)
 
     if form.is_valid():
