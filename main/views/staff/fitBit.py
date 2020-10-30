@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 
-from main.models import Session,Session_subject
+from main.models import Session,Session_subject,Parameters
 
 import requests
 import logging
@@ -19,6 +19,8 @@ def fitBit(request):
     logger = logging.getLogger(__name__)  
     logger.info("FitBit Connect")   
     status="success"
+
+    p = Parameters.objects.first()
 
     fitBit_response = ""
     fitBit_error = ""
@@ -46,7 +48,7 @@ def fitBit(request):
             
             data = {'clientId': str(settings.FITBIT_CLIENT_ID),
                     'grant_type' : 'authorization_code',   
-                    'redirect_uri' : 'http://localhost:8000/fitBit/',
+                    'redirect_uri' : f'{p.siteURL}fitBit/',
                     'code': request.GET["code"]}
 
 

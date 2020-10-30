@@ -64,8 +64,12 @@ def getSessionDaySubject(data,session_subject,session_day):
         immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.getPreviousSessionDay().date)
         heart_activity_minutes = session_subject.getFibitHeartMinutes(session_day.getPreviousSessionDay().date)
 
-        session_day_subject_actvity_previous_day.immune_activity_minutes = immune_activity_minutes
-        session_day_subject_actvity_previous_day.heart_activity_minutes = heart_activity_minutes
+        if immune_activity_minutes:
+            session_day_subject_actvity_previous_day.immune_activity_minutes = immune_activity_minutes
+        
+        if heart_activity_minutes:
+            session_day_subject_actvity_previous_day.heart_activity_minutes = heart_activity_minutes
+
         session_day_subject_actvity_previous_day.save()
 
         #calc today's actvity
@@ -73,9 +77,11 @@ def getSessionDaySubject(data,session_subject,session_day):
 
         #get object again after calculation
         session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
-                
+        session_day_subject_actvity_previous = session_day_subject_actvity.getPreviousActivityDay()
+
     return JsonResponse({"status":"success",
                         "session_day_subject_actvity" : session_day_subject_actvity.json(),
+                        "session_day_subject_actvity_previous": session_day_subject_actvity_previous.json() if session_day_subject_actvity_previous else None,
                         "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)                         
                                 
      

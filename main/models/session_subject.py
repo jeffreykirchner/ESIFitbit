@@ -78,11 +78,15 @@ class Session_subject(models.Model):
         logger.info("getFibitImmuneMinutes")
         logger.info(search_date)
 
-        r = self.getFitbitSleep(search_date)
-        v = r['summary']['totalMinutesAsleep']
+        try:
+            r = self.getFitbitSleep(search_date)
+            v = r['summary']['totalMinutesAsleep']
 
-        logger.info(v)
-        return v
+            logger.info(v)
+            return v
+        except Exception  as e: 
+            logger.info(e)
+            return None
     
      #return total sleep from date specified
     def getFibitHeartMinutes(self,search_date):
@@ -90,11 +94,15 @@ class Session_subject(models.Model):
         logger.info("getFibitHeartMinutes")
         logger.info(search_date)
 
-        r = self.getFitbitActivies(search_date)
-        v = r['summary']['veryActiveMinutes']
+        try:
+            r = self.getFitbitActivies(search_date)
+            v = r['summary']['veryActiveMinutes']
 
-        logger.info(v)
-        return v
+            logger.info(v)
+            return v
+        except Exception  as e: 
+            logger.info(e)
+            return None
         
 
     #get fitbit sleep object
