@@ -9,14 +9,14 @@ from django.core import serializers
 class Parameterset(models.Model):
 
     #heartActivityToday = heartActivityTodayT-1 * (1 - (1 - heartActivityTodayT-1) * (heart_parameter_1 / heart_parameter_2  - heartTimeT-1 / (heartTimeT-1 + heart_parameter_3))
-    heart_activity_inital =  models.DecimalField(decimal_places=10, default=1, max_digits=20)
+    heart_activity_inital =  models.DecimalField(decimal_places=10, default=0.75, max_digits=20)
     heart_parameter_1 = models.DecimalField(decimal_places=10, default=1, max_digits=20) 
     heart_parameter_2 = models.DecimalField(decimal_places=10, default=3, max_digits=20)
     heart_parameter_3 = models.DecimalField(decimal_places=10, default=60, max_digits=20)
     heart_maintenance_minutes = models.IntegerField(default = 30)
 
     #immuneActivityToday = immuneActivityTodayT-1 * (1 - (1 - immuneActivityTodayT-1) * (immune_parameter_1 / immune_parameter_2  - immuneTimeT-1 / (immuneTimeT-1 + immune_parameter_3))
-    immune_activity_inital =  models.DecimalField(decimal_places=10, default=1, max_digits=20)
+    immune_activity_inital =  models.DecimalField(decimal_places=10, default=0.75, max_digits=20)
     immune_parameter_1 = models.DecimalField(decimal_places=10, default=1, max_digits=20) 
     immune_parameter_2 = models.DecimalField(decimal_places=10, default=3, max_digits=20)
     immune_parameter_3 = models.DecimalField(decimal_places=10, default=960, max_digits=20) 
