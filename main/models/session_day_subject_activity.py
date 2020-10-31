@@ -133,6 +133,18 @@ class Session_day_subject_actvity(models.Model):
 
         return v
 
+    #get heart payment for today
+    def getTodaysHeartEarnings(self):
+        return self.heart_activity * self.session_day.getCurrentHeartPay()
+    
+    #get immune payment for today
+    def getTodaysImmuneEarnings(self):
+        return self.immune_activity * self.session_day.getCurrentImmunePay()
+    
+    #get today's total earnings
+    def getTodaysTotalEarnings(self):
+        return self.getTodaysHeartEarnings() + self.getTodaysImmuneEarnings()
+
     #return json object of class
     def json(self):
         return{
@@ -145,4 +157,9 @@ class Session_day_subject_actvity(models.Model):
             "paypal_today":self.paypal_today,
             "heart_activity_future":self.getHeartActivityFutureRange(),
             "immune_activity_future":self.getImmuneActivityFutureRange(),
+            "current_heart_pay":f'{self.session_day.getCurrentHeartPay():0.2f}',
+            "current_immune_pay":f'{self.session_day.getCurrentImmunePay():0.2f}',
+            "current_heart_earnings":f'{self.getTodaysHeartEarnings():0.2f}',
+            "current_immune_earnings":f'{self.getTodaysImmuneEarnings():0.2f}',
+            "current_total_earnings":f'{self.getTodaysTotalEarnings():0.2f}',
         }

@@ -14,12 +14,18 @@
             el: '#root',        
             data:{
                 session_day_subject_actvity:{heart_activity:"--/100",
-                                             immune_activity:"--/100",},
+                                             immune_activity:"--/100",
+                                             current_heart_pay:"--",
+                                             current_immmune_pay:"--",
+                                             current_heart_earnings:"--",
+                                             current_immune_earnings:"--",
+                                             current_total_earnings:"--"},
                 session_day_subject_actvity_previous:{heart_activity_minutes:"--",
                                                       immune_activity_hours:"--",},
                 graph_parameters:{},
                 parameterset:{},
                 refreshFitbitButtonText : 'Refresh',
+                payMeButtonText : 'Pay Me <i class="fab fa-paypal fa-lg"></i>',
                 toggleState:"heart",
             },
 
@@ -50,6 +56,21 @@
                     app.updateCanvases();                
                 },   
 
+                payMe:function(reponse){
+                    app.$data.payMeButtonText = '<i class="fas fa-spinner fa-spin"></i>';
+
+                    axios.post('/subjectHome/{{id}}/', {
+                                    action :"payMe" ,                                                                                                                                                                
+                                })
+                                .then(function (response) {     
+                                    app.$data.session_day_subject_actvity = response.data.session_day_subject_actvity;    
+                                    app.$data.payMeButtonText = 'Pay Me <i class="fab fa-paypal fa-lg"></i>';                                         
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });
+                },
+
                 updateCanvases:function(){
                            
                     gp=app.$data.graph_parameters;
@@ -71,8 +92,6 @@
                                                   app.$data.session_day_subject_actvity.immune_activity_future,0,"cornflowerBlue");            
                 },   
 
-
-      
                 drawAxis: function (chartID,yMin,yMax,yTickCount,xMin,xMax,xTickCount,yLabel,xLabel){
 
                     Vue.nextTick()
@@ -268,6 +287,9 @@
                             </label>
                             <label class="btn btn-secondary">
                                 <input type="radio" name="options" id="option2" autocomplete="off" v-on:click="updateToogleState('immune')"> <i class="fas fa-bed"></i>
+                            </label>
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="options" id="option2" autocomplete="off" v-on:click="updateToogleState('payment')"> <i class="fas fa-dollar-sign"></i>
                             </label>                    
                         </div>
                     </div>
@@ -305,6 +327,39 @@
                         </div>
                     </div>
                 </div>  
+                <div v-else-if="toggleState==='payment'">
+                    <div class="row mt-2">
+                        <div class="col" style="text-align: center;">Your Payment today = </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col" style="text-align: center;">(Heart Pay) x (Today's Heart Health)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="text-align: center;">+ (Immune Pay) x (Today's Immune Health)</div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col" style="text-align: center;">$[[session_day_subject_actvity.current_heart_pay]] x ([[session_day_subject_actvity.heart_activity]])</div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="text-align: center;">+ $[[session_day_subject_actvity.current_heart_pay]] x ([[session_day_subject_actvity.immune_activity]])</div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col" style="text-align: center;">$[[session_day_subject_actvity.current_heart_earnings]] + $[[session_day_subject_actvity.current_immune_earnings]] = $[[session_day_subject_actvity.current_total_earnings]]</div>
+                    </div>
+                    <div class = "row mt-4">
+                        <div class="col" style="text-align: center;">
+                            <div v-if="session_day_subject_actvity.paypal_today">
+                                <span style="color: red;" v-html="'Your payment is on the way.<br>Check your email.'"></span>
+                            </div>
+                            <div v-else>
+                                <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()">
+                                    <span v-html="payMeButtonText"></span>
+                                </button>
+                            </div>    
+                            
+                        </div>
+                    </div>
+                </div>
                 
                 
             </div>                    

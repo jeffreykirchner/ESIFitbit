@@ -25,6 +25,8 @@ def Subject_Home(request,id):
 
             if data["action"] == "getSessionDaySubject":
                 return getSessionDaySubject(data,session_subject,session_day)
+            elif data["action"] == "payMe":
+                return payMe(data,session_subject,session_day)
            
         else:   
             logger.info("Session subject day, user not found: " + str(id))
@@ -41,6 +43,36 @@ def Subject_Home(request,id):
                                                    "immune_maintenance_hours": immune_maintenance_hours,
                                                    "session_date":session_date,
                                                    "session_subject":session_subject}) 
+
+#pay subject for today
+def payMe(data,session_subject,session_day):
+    logger = logging.getLogger(__name__) 
+    logger.info(f"Pay subject: subject {session_subject.id} session day {session_day.id} date {session_day.date}")
+    logger.info(data)
+
+    session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
+
+    status = "success"
+
+    if not session_day_subject_actvity:
+        status = "fail"    
+        logger.info("Could not find session_day_subject_actvity")
+    
+    if status == "success":
+        try:
+            session_day_subject_actvity.paypal_today=True
+            session_day_subject_actvity.save()
+        except Exception  as e: 
+            logger.info(e)
+            status = "fail"
+    
+    if status == "success": 
+        #add paypal code here
+        pass
+
+    return JsonResponse({"status":status,
+                         "session_day_subject_actvity" : session_day_subject_actvity.json()},safe=False)
+
 
 #get session subject day
 def getSessionDaySubject(data,session_subject,session_day):
@@ -61,14 +93,17 @@ def getSessionDaySubject(data,session_subject,session_day):
         session_day_subject_actvity.save()
         
         #pull data from fitbit
-        # immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.getPreviousSessionDay().date)
-        # heart_activity_minutes = session_subject.getFibitHeartMinutes(session_day.getPreviousSessionDay().date)
+        immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.getPreviousSessionDay().date)
+        heart_activity_minutes = session_subject.getFibitHeartMinutes(session_day.getPreviousSessionDay().date)
 
-        # if immune_activity_minutes:
-        #     session_day_subject_actvity_previous_day.immune_activity_minutes = immune_activity_minutes
+        if immune_activity_minutes >= 0:
+            session_day_subject_actvity_previous_day.immune_activity_minutes = immune_activity_minutes
+        else:
+            logger.info(f"immune_activity_minutes not found: session subject {session_subject} session day {session_day}")
         
-        # if heart_activity_minutes:
-        #     session_day_subject_actvity_previous_day.heart_activity_minutes = heart_activity_minutes
+        if heart_activity_minutes >= 0:
+            session_day_subject_actvity_previous_day.heart_activity_minutes = heart_activity_minutes
+            logger.info(f"heart_activity_minutes not found: session subject {session_subject} session day {session_day}")
 
         session_day_subject_actvity_previous_day.save()
 

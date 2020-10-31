@@ -65,6 +65,14 @@ class Session_day(models.Model):
         except Exception  as e: 
             logger.info(e)
             return None
+    
+    #return the current maximum payment for heart activty
+    def getCurrentHeartPay(self):
+        return self.session.getHeartPay(self.period_number)
+
+    #return the current maximum payment for heart activty
+    def getCurrentImmunePay(self):
+        return self.session.getImmunePay(self.period_number)
 
     #get the formatted date string
     def getDateStr(self):

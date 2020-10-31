@@ -119,6 +119,26 @@ class Parameterset(models.Model):
         
         self.save()
 
+    #return the current maximum payment for heart activty
+    def getHeartPay(self,period):
+
+        if period<=self.block_1_day_count:            
+            return self.block_1_heart_pay
+        elif period<=self.block_2_day_count:
+            return self.block_2_heart_pay
+        else:
+            return self.block_3_heart_pay        
+
+    #return the current maximum payment for heart activty
+    def getImmunePay(self,period):
+        
+        if period<=self.block_1_day_count:            
+            return self.block_1_immune_pay
+        elif period<=self.block_2_day_count:
+            return self.block_2_immune_pay
+        else:
+            return self.block_3_immune_pay
+
     #return json object of class
     def json(self):
         return{

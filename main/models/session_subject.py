@@ -86,7 +86,7 @@ class Session_subject(models.Model):
             return v
         except Exception  as e: 
             logger.info(e)
-            return None
+            return -1
     
      #return total sleep from date specified
     def getFibitHeartMinutes(self,search_date):
@@ -102,7 +102,7 @@ class Session_subject(models.Model):
             return v
         except Exception  as e: 
             logger.info(e)
-            return None
+            return -1
         
 
     #get fitbit sleep object

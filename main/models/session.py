@@ -126,6 +126,14 @@ class Session(models.Model):
             return False
         else:
             return True
+    
+    #return the current maximum payment for heart activty
+    def getHeartPay(self,period):
+        return self.parameterset.getHeartPay(period)
+
+    #return the current maximum payment for heart activty
+    def getImmunePay(self,period):
+        return self.parameterset.getImmunePay(period)
 
     #return json object of class
     def json(self):
