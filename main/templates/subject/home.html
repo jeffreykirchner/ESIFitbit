@@ -19,7 +19,8 @@
                                              current_immmune_pay:"--",
                                              current_heart_earnings:"--",
                                              current_immune_earnings:"--",
-                                             current_total_earnings:"--"},
+                                             current_total_earnings:"--",
+                                             },
                 session_day_subject_actvity_previous:{heart_activity_minutes:"--",
                                                       immune_activity_hours:"--",},
                 graph_parameters:{},
@@ -27,6 +28,7 @@
                 refreshFitbitButtonText : 'Refresh',
                 payMeButtonText : 'Pay Me <i class="fab fa-paypal fa-lg"></i>',
                 toggleState:"heart",
+                fitbitError:false,
             },
 
             methods:{
@@ -52,6 +54,7 @@
                         app.$data.session_day_subject_actvity_previous=response.data.session_day_subject_actvity_previous;
 
                     app.$data.graph_parameters = response.data.graph_parameters;       
+                    app.$data.fitbitError = response.data.fitbitError;
 
                     app.updateCanvases();                
                 },   
@@ -300,7 +303,14 @@
                         <div class="col" style="text-align: center;">Heart Health: <span style="font-weight: bold;" v-html = session_day_subject_actvity.heart_activity></span></div>
                     </div>
                     <div class="row">
-                        <div class="col" style="text-align: center;">Yesterday's Active Minutes: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.heart_activity_minutes></span></div>
+                        <div class="col" style="text-align: center;">                             
+                            <div v-if="fitbitError">
+                                Yesterday's Active Minutes: <span style="font-weight: bold;color: red;" v-html = "'FitBit Error'"></span>
+                            </div>
+                            <div v-else>
+                                Yesterday's Active Minutes: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.heart_activity_minutes></span>
+                            </div>                            
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col" style="text-align: center;">{{heart_maintenance_minutes}} minutes of exercise will be required to maintain it</div>
@@ -316,7 +326,14 @@
                         <div class="col" style="text-align: center;">Immune Health: <span style="font-weight: bold;" v-html = session_day_subject_actvity.immune_activity></span></div>
                     </div>
                     <div class="row">
-                        <div class="col" style="text-align: center;">Yesterday's Hours Asleep: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.immune_activity_hours></span></div>
+                        <div class="col" style="text-align: center;">                             
+                            <div v-if="fitbitError">
+                                Yesterday's Hours Asleep: <span style="font-weight: bold;color: red;" v-html = "'FitBit Error'"></span>
+                            </div>
+                            <div v-else>
+                                Yesterday's Hours Asleep: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.immune_activity_hours></span>
+                            </div>                            
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col" style="text-align: center;">{{immune_maintenance_hours}} hours of sleep will be required to maintain it</div>
