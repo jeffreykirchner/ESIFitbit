@@ -116,7 +116,7 @@ def getSessionDaySubject(data,session_subject,session_day):
 
     return JsonResponse({"status":"success",
                         "session_day_subject_actvity" : session_day_subject_actvity.json(),
-                        "session_day_subject_actvity_previous": session_day_subject_actvity_previous.json() if session_day_subject_actvity_previous else None,
+                        "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
                         "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)                         
                                 
      
