@@ -16,6 +16,7 @@
                 sessionParametersBeforeEdit:{},                     //store session before editing to restore if canceled
                 session:{title:"",                                  //session and parameter set values
                          start_date:"",
+                         started:false,
                          parameterset:{id:"",
                                         number_of_days:"",
                                         number_of_players:"",
@@ -53,6 +54,7 @@
                 addSubjectButtonText:'Add Subject <i class="fas fa-plus"></i>',
                 showFitbitStatusButtonText:'<i class="far fa-check-circle"></i>',
                 backFillButtonText:'Back Fill Data For Testing',
+                startSessionButtonText: 'Start <i class="far fa-play-circle"></i>',
             },
 
             methods:{
@@ -189,6 +191,21 @@
                                 .catch(function (error) {
                                     console.log(error);
                                 });                        
+                },
+
+                //activate session and fill session days
+                startSession:function(){
+                    app.$data.startSessionButtonText = '<i class="fas fa-spinner fa-spin"></i>';
+                    axios.post('/session/{{id}}/', {
+                                    action :"startSession" ,                                                                                                                                                               
+                                })
+                                .then(function (response) {     
+                                    app.updateSession(response);      
+                                    app.$data.startSessionButtonText = 'Start <i class="far fa-play-circle"></i>';                          
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                }); 
                 },
 
                 //show fitbit connection status for each subject
@@ -674,7 +691,17 @@
                     <div class="card-header">
                         <span class="align-middle">Session</span>
                         
-                        <span class="float-right">                            
+                        <span class="float-right">      
+                            <span v-if='session.started'>
+                                <button class="btn btn-outline-success" type="button" v-on:click = "startSession()" disabled>
+                                    Session Started
+                                </button>
+                            </span>
+                            <span v-else>
+                                <button class="btn btn-outline-success" type="button" v-on:click = "startSession()">
+                                    <span v-html="startSessionButtonText"></span>
+                                </button>
+                            </span>                      
                             <button class="btn btn-outline-primary" type="button" v-on:click = "showEditSession()">
                                 Edit <i class="far fa-edit"></i>
                             </button>

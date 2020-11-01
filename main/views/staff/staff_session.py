@@ -39,6 +39,8 @@ def Staff_Session(request,id):
             return importParameters(data,id)
         elif data["action"] == "backFillSessionDays":
             return backFillSessionDays(data,id)
+        elif data["action"] == "startSession":
+            return startSession(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -200,6 +202,21 @@ def backFillSessionDays(data,id):
 
     return JsonResponse({"session" : getSessionJSON(id),
                          "session_subjects": getSubjectListJSON(id,False), 
+                                },safe=False)
+
+#activate session and fill in session days
+def startSession(data,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Start session")
+    logger.info(data)
+
+    s=Session.objects.get(id=id)
+
+    s.started=True
+
+    s.save()
+
+    return JsonResponse({"session" : getSessionJSON(id), 
                                 },safe=False)
 
 #import parameterset from another session

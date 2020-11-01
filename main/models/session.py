@@ -29,6 +29,8 @@ class Session(models.Model):
     title = models.CharField(max_length = 300,default="*** New Session ***")    #title of session
     start_date = models.DateField(default=now)                                  #date of session
 
+    started =  models.BooleanField(default=False)                               #starts session and filll in session days
+
     treatment = models.CharField( max_length=100, choices=Treatment.choices,default=Treatment.ONE)    
 
     soft_delete =  models.BooleanField(default=False)                            #hide session if true
@@ -112,7 +114,6 @@ class Session(models.Model):
         for s in self.session_subjects.all():
             s.fillWithTestData()
 
-
     #get user readable string of start session date
     def getDateString(self):
         return  self.start_date.strftime("%#m/%#d/%Y")
@@ -146,6 +147,7 @@ class Session(models.Model):
             "treatment_label":self.Treatment(self.treatment).label,
             "parameterset":self.parameterset.json(),
             "editable":self.editable(),
+            "started":self.started,
         }
 
 #delete associated user model when profile is deleted
