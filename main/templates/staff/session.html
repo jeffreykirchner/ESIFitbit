@@ -110,7 +110,8 @@
                                     action :"addSubject" ,                                                                                                                                                                
                                 })
                                 .then(function (response) {     
-                                    app.updateSubjects(response);       
+                                    app.updateSubjects(response);    
+                                    app.updateSession(response);      
                                     app.$data.addSubjectButtonText = 'Add Subject <i class="fas fa-plus"></i>';                                        
                                 })
                                 .catch(function (error) {
@@ -751,7 +752,7 @@
                                 <span v-html="backFillButtonText"></span>
                             </button>
                             {%endif%}
-                            <button class="btn btn-outline-success" type="button" v-on:click = "addSubject()">
+                            <button class="btn btn-outline-success" type="button" v-on:click = "addSubject()" v-bind:disabled = "session.started">
                                 <span v-html="addSubjectButtonText"></span>
                             </button>
                         </span>

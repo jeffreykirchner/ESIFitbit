@@ -166,7 +166,6 @@ class Session(models.Model):
             "id":self.id,
             "title":self.title,
             "start_date":self.getDateString(),
-            "current_session_day":self.getCurrentSessionDay().json(),
             "treatment":self.treatment,
             "treatment_label":self.Treatment(self.treatment).label,
             "parameterset":self.parameterset.json(),

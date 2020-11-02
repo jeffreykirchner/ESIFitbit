@@ -93,21 +93,23 @@ def addSubject(data,id):
 
     s=Session.objects.get(id=id)
 
-    ss = Session_subject()
-    ss.session=s
-    ss.save()
+    if not s.started:
+        ss = Session_subject()
+        ss.session=s
+        ss.save()
 
-    sda = Session_day_subject_actvity()
-    sda.session_subject = ss
-    sda.session_day = s.session_days.filter(period_number = 1).first()
-    sda.check_in_today = True
-    sda.heart_activity_minutes = -1
-    sda.immune_activity_minutes = -1
-    sda.heart_activity = s.parameterset.heart_activity_inital
-    sda.immune_activity = s.parameterset.immune_activity_inital
-    sda.save()    
+        sda = Session_day_subject_actvity()
+        sda.session_subject = ss
+        sda.session_day = s.session_days.filter(period_number = 1).first()
+        sda.check_in_today = True
+        sda.heart_activity_minutes = -1
+        sda.immune_activity_minutes = -1
+        sda.heart_activity = s.parameterset.heart_activity_inital
+        sda.immune_activity = s.parameterset.immune_activity_inital
+        sda.save()    
 
-    return JsonResponse({"session_subjects": getSubjectListJSON(id,False), 
+    return JsonResponse({"session_subjects": getSubjectListJSON(id,False),
+                         "session" : getSessionJSON(id), 
                                 },safe=False) 
 
 #remove subject from session
