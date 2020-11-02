@@ -733,6 +733,7 @@
                                 <span v-html="session.start_date"></span>
                             </div>
                         </div>
+                        
                     </div>
                 </div>
             </div>
@@ -746,7 +747,7 @@
 
                         <span class="float-right">
                             {%if DEBUG%}
-                            <button class="btn btn-outline-danger" type="button" v-on:click = "backFillSessionsDays()">
+                            <button class="btn btn-outline-danger" type="button" v-on:click = "backFillSessionsDays()" v-bind:disabled = "session.started === false">
                                 <span v-html="backFillButtonText"></span>
                             </button>
                             {%endif%}

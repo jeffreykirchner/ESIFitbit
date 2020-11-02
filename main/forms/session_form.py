@@ -21,4 +21,4 @@ class Session_form(forms.ModelForm):
 
     class Meta:
         model=Session
-        exclude=['soft_delete','parameterset']
+        exclude=['soft_delete','parameterset','started']

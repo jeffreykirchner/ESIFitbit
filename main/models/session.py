@@ -59,57 +59,75 @@ class Session(models.Model):
         #get today's date
         p = Parameters.objects.first()
         tz = pytz.timezone(p.experimentTimeZone)
-        d_today = datetime.now(tz)
-        d_today = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
+        
+        d_start = datetime.now(tz)
+        d_start = d_start.replace(hour=0,minute=0, second=0,microsecond=0)
+        d_start = d_start.replace(day=self.start_date.day,month=self.start_date.month, year=self.start_date.year)
 
-        d = self.session_days.order_by('-date').first()
+        # d_end = datetime.now(tz)
+        # d_end = d_end.replace(hour=0,minute=0, second=0,microsecond=0)
+        # d_end  = d_start + timedelta(days=self.parameterset.block_1_day_count + self.parameterset.block_2_day_count+self.parameterset.block_3_day_count)
 
-        d_temp = datetime.now(tz)
-        d_temp = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
+        d_start += timedelta(days=1)
+        tempPeriod = 2
 
-        tempPeriod =1
+        logger.info(d_start)
+        #logger.info(d_end)     
 
-        if d:            
-            d_temp = d_today.replace(day=d.date.day,month=d.date.month, year=d.date.year)
-            tempPeriod = d.period_number+1
-        else:
-            d_temp = d_today.replace(day=self.start_date.day,month=self.start_date.month, year=self.start_date.year)
+        #add days for block 1
+        for i in range(self.parameterset.block_1_day_count):   
+            self.addSessionDay(d_start.date(),tempPeriod)
+            d_start += timedelta(days=1)
+            tempPeriod+=1
 
-        logger.info(d_temp)
-        logger.info(d_today)        
+        #add days for block 2
+        for i in range(self.parameterset.block_2_day_count):   
+            self.addSessionDay(d_start.date(),tempPeriod)
+            d_start += timedelta(days=1)
+            tempPeriod+=1 
+        
+        #add days for block 3
+        for i in range(self.parameterset.block_3_day_count):   
+            self.addSessionDay(d_start.date(),tempPeriod)
+            d_start += timedelta(days=1)
+            tempPeriod+=1 
 
-        while d_temp < d_today:
-            #logger.info("Newest session day: " + str(sd))
-            self.addSessionDay(d_temp.date(),tempPeriod)
-            d_temp += timedelta(days=1)
-            tempPeriod+=1     
+
+        # while d_start <= d_end:
+        #     #logger.info("Newest session day: " + str(sd))
+        #     self.addSessionDay(d_start.date(),tempPeriod)
+        #     d_start += timedelta(days=1)
+        #     tempPeriod+=1     
 
     #add new session day to this session
     def addSessionDay(self,new_day,new_period):
         logger = logging.getLogger(__name__)
+        logger.info(f"addSessionDay date {new_day} period number {new_period}")
 
         #check that this session day does not already exist
 
-        check_sd = main.models.Session_day.objects.filter(session=self,period_number=new_period,date = new_day)
-        new_sd = None
+        # check_sd = main.models.Session_day.objects.filter(session=self,period_number=new_period,date = new_day)
+        # new_sd = None
         
-        if check_sd:
-            new_sd = check_sd.first()
-            logger.info(f"Created session day already exists: date {new_day} period {new_period} ")
-        else: 
-            new_sd = main.models.Session_day()
+        # if check_sd:
+        #     new_sd = check_sd.first()
+        #     logger.info(f"Created session day already exists: date {new_day} period {new_period} ")
+        # else: 
+        new_sd = main.models.Session_day()
 
-            new_sd.date = new_day
-            new_sd.session=self
-            new_sd.period_number=new_period
-            new_sd.save()        
+        new_sd.date = new_day
+        new_sd.session=self
+        new_sd.period_number=new_period
+        new_sd.save()        
 
-            new_sd.addSessionDayUserActivites()
+        new_sd.addSessionDayUserActivites()
 
-            logger.info("Created session day: " + str(new_sd))
+        logger.info("Created session day: " + str(new_sd))
 
     #fill subjects with test data    
     def fillWithTestData(self):
+        logger = logging.getLogger(__name__) 
+        logger.info("fillWithTestData")
 
         for s in self.session_subjects.all():
             s.fillWithTestData()
@@ -121,13 +139,11 @@ class Session(models.Model):
     #return true if session parameters can still be edited
     def editable(self):
 
-        if self.session_days.count()<=1:
-            return True
-        elif self.session_subjects.filter(soft_delete=False):
+        if self.started:
             return False
         else:
             return True
-    
+        
     #return the current maximum payment for heart activty
     def getHeartPay(self,period):
         return self.parameterset.getHeartPay(period)

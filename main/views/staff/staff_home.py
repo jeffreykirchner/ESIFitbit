@@ -4,6 +4,7 @@ import json
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 import logging
+from django.conf import settings
 
 from main.models import Session,Parameterset,Session_day
 
@@ -73,8 +74,12 @@ def deleteSession(data):
     id = data["id"] 
 
     s = Session.objects.get(id=id)
-    s.soft_delete=True
-    s.save()
+
+    if settings.DEBUG==True:
+        s.delete()
+    else:
+        s.soft_delete=True
+        s.save()
 
     return getSessions(data) 
 

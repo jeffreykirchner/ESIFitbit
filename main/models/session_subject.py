@@ -42,9 +42,10 @@ class Session_subject(models.Model):
     #fill session subject activity with test data
     def fillWithTestData(self):
         logger = logging.getLogger(__name__) 
+        
 
         sada_set = self.Session_day_subject_actvities.order_by('session_day__period_number')
-
+        
         p = Parameters.objects.first()
         tz = pytz.timezone(p.experimentTimeZone)
         d_today = datetime.now(tz)
@@ -59,8 +60,7 @@ class Session_subject(models.Model):
                 i.heart_activity = self.session.parameterset.heart_activity_inital
                 i.immune_activity = self.session.parameterset.immune_activity_inital
             else:
-                logger.info("previous: " + str(previous_i))
-                logger.info("current: " + str(i))
+                logger.info(f"previous: {previous_i} current {i}")
                 i.saveHeartActivity(previous_i.heart_activity_minutes,previous_i.heart_activity)
                 i.saveImmuneActivity(previous_i.immune_activity_minutes,previous_i.immune_activity)
             
@@ -88,7 +88,7 @@ class Session_subject(models.Model):
             logger.info(e)
             return -1
     
-     #return total sleep from date specified
+    #return total sleep from date specified
     def getFibitHeartMinutes(self,search_date):
         logger = logging.getLogger(__name__)
         logger.info("getFibitHeartMinutes")
@@ -104,7 +104,6 @@ class Session_subject(models.Model):
             logger.info(e)
             return -1
         
-
     #get fitbit sleep object
     def getFitbitSleep(self,sleep_date):
         logger = logging.getLogger(__name__)
@@ -118,7 +117,7 @@ class Session_subject(models.Model):
 
         return fitbit_response
     
-     #get fitbit sleep object
+    #get fitbit sleep object
     def getFitbitActivies(self,activity_date):
         logger = logging.getLogger(__name__)
         logger.info("Fitbit activity")
@@ -130,7 +129,6 @@ class Session_subject(models.Model):
         fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/date/{temp_s}.json')
 
         return fitbit_response
-
 
     #calc subject's activity today  
     def calcTodaysActivity(self,current_period):
@@ -173,7 +171,6 @@ class Session_subject(models.Model):
             return False
 
         return True
-
 
     #return json object of class
     def json(self,get_fitbit_status):

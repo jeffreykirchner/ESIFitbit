@@ -189,16 +189,17 @@ def updateSession(data,id):
 #back fill session with data for testing
 def backFillSessionDays(data,id):
     logger = logging.getLogger(__name__) 
-    logger.info("Update session")
+    logger.info("Back fill session days with random data")
     logger.info(data)
 
     s=Session.objects.get(id=id)
 
     #fill in session days
-    s.addNewSessionDays()
+    #s.addNewSessionDays()
 
     #fill with test data
-    s.fillWithTestData()
+    if s.started:
+        s.fillWithTestData()
 
     return JsonResponse({"session" : getSessionJSON(id),
                          "session_subjects": getSubjectListJSON(id,False), 
@@ -212,8 +213,10 @@ def startSession(data,id):
 
     s=Session.objects.get(id=id)
 
-    s.started=True
+    if s.started==False:
+        s.addNewSessionDays()
 
+    s.started=True
     s.save()
 
     return JsonResponse({"session" : getSessionJSON(id), 
