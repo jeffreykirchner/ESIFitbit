@@ -49,7 +49,15 @@ class Session(models.Model):
     def getCurrentSessionDay(self):
         logger = logging.getLogger(__name__)
 
-        return self.session_days.order_by('-period_number').first()
+        p = Parameters.objects.first()
+        tz = pytz.timezone(p.experimentTimeZone)
+
+        d_today = datetime.now(tz)
+        d_today = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
+
+        logger.info(f"getCurrentSessionDay {d_today}")
+
+        return self.session_days.filter(date = d_today).first()
 
     #add new sessions days up to today if needed
     def addNewSessionDays(self):

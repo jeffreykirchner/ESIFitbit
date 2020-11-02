@@ -73,7 +73,6 @@ def payMe(data,session_subject,session_day):
     return JsonResponse({"status":status,
                          "session_day_subject_actvity" : session_day_subject_actvity.json()},safe=False)
 
-
 #get session subject day
 def getSessionDaySubject(data,session_subject,session_day):
     logger = logging.getLogger(__name__) 
