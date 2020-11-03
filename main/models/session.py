@@ -27,9 +27,14 @@ class Session(models.Model):
     parameterset = models.ForeignKey(Parameterset,on_delete=models.CASCADE)
 
     title = models.CharField(max_length = 300,default="*** New Session ***")    #title of session
-    start_date = models.DateField(default=now)                                  #date of session
+    start_date = models.DateField(default=now)                                  #date of session start
+    end_date = models.DateField(default=now)                                    #date of session end
 
-    started =  models.BooleanField(default=False)                               #starts session and filll in session days
+    started =  models.BooleanField(default=False)                               #starts session and filll in session 
+    
+    invitations_sent = models.BooleanField(default=False)                       #true once invititations have been sent to subjects
+    invitation_text =  models.CharField(max_length = 10000,default = "")        #text sent to subjects in experiment invititation
+    invitation_text_subject = models.CharField(max_length = 1000,default = "")  #email subject text for experiment invititation
 
     treatment = models.CharField( max_length=100, choices=Treatment.choices,default=Treatment.ONE)    
 
@@ -144,6 +149,10 @@ class Session(models.Model):
     def getDateString(self):
         return  self.start_date.strftime("%#m/%#d/%Y")
     
+    #get user readable string of end session date
+    def getEndDateString(self):
+        return  self.end_date.strftime("%#m/%#d/%Y")
+    
     #return true if session parameters can still be edited
     def editable(self):
 
@@ -160,17 +169,52 @@ class Session(models.Model):
     def getImmunePay(self,period):
         return self.parameterset.getImmunePay(period)
 
+    #return total number of days of session
+    def numberOfDays(self):
+        return self.parameterset.block_1_day_count+self.parameterset.block_2_day_count+self.parameterset.block_3_day_count
+    
+    #calc and store end date
+    def calcEndDate(self):
+        p = Parameters.objects.first()
+        tz = pytz.timezone(p.experimentTimeZone)
+        
+        d_end = datetime.now(tz)
+        d_end = d_end.replace(hour=0,minute=0, second=0,microsecond=0)
+        d_end = d_end.replace(day=self.start_date.day,month=self.start_date.month, year=self.start_date.year)
+
+        d_end += timedelta(days=self.numberOfDays())
+
+        self.end_date=d_end.date()
+        self.save()
+
+    #send email invitations to subject in the session
+    def sendInvitations(self):
+        text = self.invitation_text
+
+        text = text.replace("[start date]", self.getDateString())
+        text = text.replace("[number of days]", str(self.parameterset.block_1_day_count+self.parameterset.block_2_day_count+self.parameterset.block_3_day_count))
+
+
+        main.views.sendMassInvitations(self.session_subjects,self.invitation_text_subject,text)
+
+
     #return json object of class
     def json(self):
+        email_list=""
         return{
             "id":self.id,
             "title":self.title,
             "start_date":self.getDateString(),
+            "end_date":self.getEndDateString(),
             "treatment":self.treatment,
             "treatment_label":self.Treatment(self.treatment).label,
             "parameterset":self.parameterset.json(),
             "editable":self.editable(),
             "started":self.started,
+            "invitations_sent":self.invitations_sent,
+            "invitation_text":self.invitation_text,
+            "invitation_text_subject":self.invitation_text_subject,
+            "email_list":email_list,
         }
 
 #delete associated user model when profile is deleted

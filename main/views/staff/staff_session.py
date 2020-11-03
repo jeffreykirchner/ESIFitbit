@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 import logging
 from django.db.models.functions import Lower
+from datetime import datetime,timedelta
 
 from main.forms import Parameterset_form,Session_form,Subject_form,Import_parameters_form
 from main.models import Session,Parameterset,Session_subject,Session_day_subject_actvity
@@ -41,6 +42,8 @@ def Staff_Session(request,id):
             return backFillSessionDays(data,id)
         elif data["action"] == "startSession":
             return startSession(data,id)
+        elif data["action"] == "sendInvitations":
+            return sendInvitations(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -218,10 +221,38 @@ def startSession(data,id):
     if s.started==False:
         s.addNewSessionDays()
 
+    s.calcEndDate()
     s.started=True
     s.save()
 
     return JsonResponse({"session" : getSessionJSON(id), 
+                                },safe=False)
+
+#activate session and fill in session days
+def sendInvitations(data,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Send invitations")
+    logger.info(data)
+
+    success=True
+
+    s=Session.objects.get(id=id)
+
+    s.invitation_text_subject = data["invitation_text_subject"]
+    s.invitation_text = data["invitation_text"]
+
+    s.save()
+
+    try:
+        s.sendInvitations()
+        s.invitations_sent=True
+        s.save()
+    except Exception  as e: 
+        logger.info(e)
+        success = False   
+
+    return JsonResponse({"success" : success,
+                         "session" : getSessionJSON(id), 
                                 },safe=False)
 
 #import parameterset from another session

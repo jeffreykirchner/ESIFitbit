@@ -1,0 +1,43 @@
+{% load crispy_forms_tags %}
+<div class="modal" id="sendMessageModalCenter" tabindex="-1" role="dialog" aria-labelledby="sendMessageModalCenter" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Send Message</h5>                
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">   
+                <div class="row">
+                    <div class = "col">
+                        <div class="form-group">
+                            <label for="sendMessageSubject">Subject</label>
+                            <input type="email" class="form-control" v-model="session.invitation_text_subject" id="sendMessageSubject" width="100%">
+                          </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class = "col">                      
+                        <div class="form-group">
+                            <label for="sendMessageText">Message</label>
+                            <textarea class="form-control" v-model="session.invitation_text" id="sendMessageText" rows="3" cols="100%"></textarea>
+                          </div>
+                    </div>
+                </div>
+                <hr>                
+                <div class="row">
+                    <div class="col">
+                        <span v-html="session.email_list"></span>
+                    </div>
+                </div>                
+
+            </div>
+            <div class="modal-footer">                            
+                <button type="button" class="btn btn-outline-success" v-on:click = "sendInvitations()">
+                    <span v-html="invitationButtonText"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

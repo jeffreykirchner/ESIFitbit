@@ -6,7 +6,7 @@ from django.http import JsonResponse
 import logging
 from django.conf import settings
 
-from main.models import Session,Parameterset,Session_day
+from main.models import Session,Parameterset,Session_day,Parameters
 
 @login_required
 def Staff_Home(request):
@@ -48,13 +48,17 @@ def createSession(data):
     logger.info("Create Session")
     logger.info(data)
 
+    p = Parameters.objects.first()
+
     #create parameter set
-    p = Parameterset()
-    p.save()
+    ps = Parameterset()
+    ps.save()
 
     #create session
     s = Session()
-    s.parameterset = p
+    s.parameterset = ps
+    s.invitation_text=p.invitationText
+    s.invitation_text_subject=p.invitationTextSubject
     s.save()    
 
     #setup first session day
