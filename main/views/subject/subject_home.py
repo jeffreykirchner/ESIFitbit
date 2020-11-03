@@ -32,15 +32,10 @@ def Subject_Home(request,id):
             logger.info("Session subject day, user not found: " + str(id))
             return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
-        
-        heart_maintenance_minutes = session_subject.session.parameterset.heart_maintenance_minutes
-        immune_maintenance_hours = session_subject.session.parameterset.immune_maintenance_minutes/60
-
+               
         session_date = session_day.getDateStr()        
 
-        return render(request,'subject/home.html',{"id":id,
-                                                   "heart_maintenance_minutes":heart_maintenance_minutes,
-                                                   "immune_maintenance_hours": immune_maintenance_hours,
+        return render(request,'subject/home.html',{"id":id,                                                   
                                                    "session_date":session_date,
                                                    "session_subject":session_subject}) 
 

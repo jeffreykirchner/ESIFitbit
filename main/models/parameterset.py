@@ -9,26 +9,24 @@ from django.core import serializers
 class Parameterset(models.Model):
 
     #heartActivityToday = heartActivityTodayT-1 * (1 - (1 - heartActivityTodayT-1) * (heart_parameter_1 / heart_parameter_2  - heartTimeT-1 / (heartTimeT-1 + heart_parameter_3))
-    heart_activity_inital =  models.DecimalField(decimal_places=10, default=0.75, max_digits=20)
-    heart_parameter_1 = models.DecimalField(decimal_places=10, default=1, max_digits=20) 
-    heart_parameter_2 = models.DecimalField(decimal_places=10, default=3, max_digits=20)
-    heart_parameter_3 = models.DecimalField(decimal_places=10, default=60, max_digits=20)
-    heart_maintenance_minutes = models.IntegerField(default = 30)
+    heart_activity_inital =  models.DecimalField(decimal_places=10, default=0.6, max_digits=20)
+    heart_parameter_1 = models.DecimalField(decimal_places=10, default=0.5, max_digits=20) 
+    heart_parameter_2 = models.DecimalField(decimal_places=10, default=3.0, max_digits=20)
+    heart_parameter_3 = models.DecimalField(decimal_places=10, default=6.0, max_digits=20)
 
     #immuneActivityToday = immuneActivityTodayT-1 * (1 - (1 - immuneActivityTodayT-1) * (immune_parameter_1 / immune_parameter_2  - immuneTimeT-1 / (immuneTimeT-1 + immune_parameter_3))
-    immune_activity_inital =  models.DecimalField(decimal_places=10, default=0.75, max_digits=20)
-    immune_parameter_1 = models.DecimalField(decimal_places=10, default=1, max_digits=20) 
-    immune_parameter_2 = models.DecimalField(decimal_places=10, default=3, max_digits=20)
-    immune_parameter_3 = models.DecimalField(decimal_places=10, default=960, max_digits=20) 
-    immune_maintenance_minutes = models.IntegerField(default = 480)
+    immune_activity_inital =  models.DecimalField(decimal_places=10, default=0.6, max_digits=20)
+    immune_parameter_1 = models.DecimalField(decimal_places=10, default=0.2, max_digits=20) 
+    immune_parameter_2 = models.DecimalField(decimal_places=10, default=4.0, max_digits=20)
+    immune_parameter_3 = models.DecimalField(decimal_places=10, default=4.0, max_digits=20) 
 
     #heartEarnings $ = block_N_heart_pay * heartActivityToday
-    block_1_heart_pay = models.DecimalField(decimal_places=2, default=4.00, max_digits=6)
+    block_1_heart_pay = models.DecimalField(decimal_places=2, default=0.00, max_digits=6)
     block_2_heart_pay = models.DecimalField(decimal_places=2, default=8.00, max_digits=6)
     block_3_heart_pay = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
 
     #immuneEarnings $ = block_N_immune_pay * immuneActivityToday
-    block_1_immune_pay = models.DecimalField(decimal_places=2, default=4.00, max_digits=6)
+    block_1_immune_pay = models.DecimalField(decimal_places=2, default=0.00, max_digits=6)
     block_2_immune_pay = models.DecimalField(decimal_places=2, default=8.00, max_digits=6)
     block_3_immune_pay = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
 
@@ -79,13 +77,11 @@ class Parameterset(models.Model):
         self.heart_parameter_1 = ps.heart_parameter_1
         self.heart_parameter_2 = ps.heart_parameter_2
         self.heart_parameter_3 = ps.heart_parameter_3
-        self.heart_maintenance_minutes = ps.heart_maintenance_minutes
         
         self.immune_activity_inital = ps.immune_activity_inital
         self.immune_parameter_1 = ps.immune_parameter_1
         self.immune_parameter_2 = ps.immune_parameter_2
         self.immune_parameter_3 = ps.immune_parameter_3
-        self.immune_maintenance_minutes = ps.immune_maintenance_minutes
 
         self.block_1_heart_pay = ps.block_1_heart_pay
         self.block_2_heart_pay = ps.block_2_heart_pay
@@ -149,13 +145,11 @@ class Parameterset(models.Model):
             "heart_parameter_1":self.heart_parameter_1,
             "heart_parameter_2":self.heart_parameter_2,
             "heart_parameter_3":self.heart_parameter_3,
-            "heart_maintenance_minutes":self.heart_maintenance_minutes,
 
             "immune_activity_inital":self.immune_activity_inital,
             "immune_parameter_1":self.immune_parameter_1,
             "immune_parameter_2":self.immune_parameter_2,
             "immune_parameter_3":self.immune_parameter_3,
-            "immune_maintenance_minutes":self.immune_maintenance_minutes,
 
             "block_1_heart_pay":self.block_1_heart_pay,
             "block_2_heart_pay":self.block_2_heart_pay,

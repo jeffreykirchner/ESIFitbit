@@ -480,7 +480,9 @@
                         <!-- activity formula -->
                         <div class="row mt-2">
                             <div class="col" style="text-align: center;">
-                                Activity<sub>T</sub> = Activity<sub>T-1</sub> * (1 - (1 - Activity<sub>T-1</sub>) * (P1 / P2  - FitBit<sub>T-1</sub> / (FitBit<sub>T-1</sub> + P3)))
+                                <!-- Activity<sub>T</sub> = P1 * Activity<sub>T-1</sub> * (1 - (1 - Activity<sub>T-1</sub>) * (P1 / P2  - FitBit<sub>T-1</sub> / (FitBit<sub>T-1</sub> + P3))) -->
+
+                                Activity<sub>T</sub> = P1 * Activity<sub>T-1</sub> + 0.5 * (1 + P1 * Activity<sub>T-1</sub>) * (1 - P1 * Activity<sub>T-1</sub>) * (FitBit<sub>T-1</sub><sup>P2</sup> / (P3 + FitBit<sub>T-1</sub><sup>P2</sup>)) 
                             </div>                            
                         </div>
                         <div class="row">
@@ -537,20 +539,6 @@
                             </div>
                             <div class="col">
                                 <span v-html="session.parameterset.immune_parameter_3"></span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col" style="text-align: right;">
-                                {{parameterset_form.heart_maintenance_minutes.label}}:
-                            </div>
-                            <div class="col">
-                                <span v-html="session.parameterset.heart_maintenance_minutes"></span>
-                            </div>
-                            <div class="col" style="text-align: right;">
-                                {{parameterset_form.immune_maintenance_minutes.label}}:
-                            </div>
-                            <div class="col">
-                                <span v-html="session.parameterset.immune_maintenance_minutes"></span>
                             </div>
                         </div>
 

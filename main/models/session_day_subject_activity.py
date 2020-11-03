@@ -5,6 +5,7 @@ from django.utils.timezone import now
 from . import Session_day,Session_subject
 import uuid
 import main
+import math
 
 from enum import Enum
 
@@ -41,7 +42,7 @@ class Session_day_subject_actvity(models.Model):
 
         p_set = self.session_day.session.parameterset
 
-        return self.calcActivity(heart_time,
+        return self.calcActivity(heart_time/15,
                                 p_set.heart_parameter_1,
                                 p_set.heart_parameter_2,
                                 p_set.heart_parameter_3,
@@ -56,7 +57,7 @@ class Session_day_subject_actvity(models.Model):
     def calcImmuneActivity(self,immune_time,immuneActivityMinus1):
         p_set = self.session_day.session.parameterset
 
-        return self.calcActivity(immune_time,
+        return self.calcActivity(immune_time/240,
                                 p_set.immune_parameter_1,
                                 p_set.immune_parameter_2,
                                 p_set.immune_parameter_3,
@@ -73,9 +74,42 @@ class Session_day_subject_actvity(models.Model):
         #immuneActivityTodayT-1 * (1 - (1 - immuneActivityTodayT-1) * (immune_parameter_1 / immune_parameter_2  - immuneTimeT-1 / (immuneTimeT-1 + immune_parameter_3))
 
         #logger.info(f'{active_time} {p1} {p2} {p3} {activityMinus1}')
-        v = float(activityMinus1) * (1 - (1 - float(activityMinus1)) * (float(p1) / float(p2)  - float(active_time) / (float(active_time) + float(p3))))
+        #v = float(activityMinus1) * (1 - (1 - float(activityMinus1)) * (float(p1) / float(p2)  - float(active_time) / (float(active_time) + float(p3))))
 
+        v = float(p1) * float(activityMinus1) + 0.5 * (1 + float(p1) * float(activityMinus1)) * (1- float(p1) * float(activityMinus1)) * ((float(active_time)**float(p2)) / (float(p3) + float(active_time)**float(p2))) 
         return min(1,v)     
+    
+    #get number of minutes for heart maintenance
+    def getHeartMaintenance(self):
+        logger = logging.getLogger(__name__)
+
+        p_set = self.session_day.session.parameterset
+
+        return self.calcMaintenance(p_set.heart_parameter_1,
+                                    p_set.heart_parameter_2,
+                                    p_set.heart_parameter_3,
+                                    self.heart_activity,
+                                    15)
+
+    #get number of minutes for heart maintenance
+    def getImmuneMaintenance(self):
+        logger = logging.getLogger(__name__) 
+
+        p_set = self.session_day.session.parameterset
+
+        return self.calcMaintenance(p_set.immune_parameter_1,
+                                    p_set.immune_parameter_2,
+                                    p_set.immune_parameter_3,
+                                    self.immune_activity,
+                                    240)
+
+    #calc minutes required to maintain target actvitity level
+    def calcMaintenance(self,a,b,c,d,e):
+        logger = logging.getLogger(__name__)
+
+        v = 2**(1/b) * e * ((a * c * d - c * d)/(a**2 * d**2 - 2 * a * d + 2 * d - 1))**(1/b)
+
+        return v
 
     #heart activity / 100
     def heart_activity_formatted(self):
@@ -162,4 +196,6 @@ class Session_day_subject_actvity(models.Model):
             "current_heart_earnings":f'{self.getTodaysHeartEarnings():0.2f}',
             "current_immune_earnings":f'{self.getTodaysImmuneEarnings():0.2f}',
             "current_total_earnings":f'{self.getTodaysTotalEarnings():0.2f}',
+            "heart_maintenance_minutes" : math.ceil(self.getHeartMaintenance()),
+            "immune_maintenance_hours" : round(self.getImmuneMaintenance()/60,2),
         }

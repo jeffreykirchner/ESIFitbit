@@ -20,6 +20,8 @@
                                              current_heart_earnings:"--",
                                              current_immune_earnings:"--",
                                              current_total_earnings:"--",
+                                             heart_maintenance_minutes:"--",
+                                             immune_maintenance_hours:"--",                                          
                                              },
                 session_day_subject_actvity_previous:{heart_activity_minutes:"--",
                                                       immune_activity_hours:"--",},
@@ -29,6 +31,7 @@
                 payMeButtonText : 'Pay Me <i class="fab fa-paypal fa-lg"></i>',
                 toggleState:"heart",
                 fitbitError:false,
+               
             },
 
             methods:{
@@ -313,7 +316,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col" style="text-align: center;">{{heart_maintenance_minutes}} minutes of exercise will be required to maintain it</div>
+                        <div class="col" style="text-align: center;"><span v-html="session_day_subject_actvity.heart_maintenance_minutes"></span> minutes of exercise will be required to maintain it</div>
                     </div>
                     <div class="row">
                         <div class="col" style="text-align: center;">
@@ -336,7 +339,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col" style="text-align: center;">{{immune_maintenance_hours}} hours of sleep will be required to maintain it</div>
+                        <div class="col" style="text-align: center;"><span v-html="session_day_subject_actvity.immune_maintenance_hours"></span> hours of sleep will be required to maintain it</div>
                     </div>
                     <div class="row">
                         <div class="col" style="text-align: center;">
