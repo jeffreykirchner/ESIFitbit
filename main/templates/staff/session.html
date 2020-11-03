@@ -545,8 +545,28 @@
                         <!-- time blocks -->
                         <div class="row mt-2 border-top">
                             <div class="col" style="text-align: center;">
-                               Earnings<sub>T</sub> ($) =(HeartPay<sub>B</sub> * HeartActivity<sub>T</sub>) + (ImmunePay<sub>B</sub> * ImmuneActivity<sub>T</sub>)
+                               Earnings<sub>T</sub> ($) = FixedPayPerDay + (HeartPay<sub>B</sub> * HeartActivity<sub>T</sub>) + (ImmunePay<sub>B</sub> * ImmuneActivity<sub>T</sub>)
                             </div>                            
+                        </div>
+                        <div class="row">
+                            <div class="col-3" style="text-align: right;">
+                                {{parameterset_form.fixed_pay_per_day.label}}:
+                            </div>
+                            <div class="col-1">
+                                <span v-html="session.parameterset.fixed_pay_per_day"></span>
+                            </div>
+                            <div class="col-3" style="text-align: right;">
+                               
+                            </div>
+                            <div class="col-1">
+                                
+                            </div>
+                            <div class="col-3" style="text-align: right;">
+                                
+                            </div>
+                            <div class="col-1">
+                                
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-3" style="text-align: right;">

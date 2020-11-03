@@ -37,6 +37,10 @@ class Parameterset_form(forms.ModelForm):
     immune_parameter_3 = forms.DecimalField(label='Immune Parameter 3',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.immune_parameter_3"}))
+
+    fixed_pay_per_day = forms.DecimalField(label='Fixed Pay per Day ($)',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.fixed_pay_per_day"}))
     
     block_1_heart_pay = forms.DecimalField(label='Block 1 Heart Pay ($)',
                             min_value=0,

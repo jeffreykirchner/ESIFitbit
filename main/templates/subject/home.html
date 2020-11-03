@@ -351,20 +351,26 @@
                     <div class="row mt-2">
                         <div class="col" style="text-align: center;">Your Payment today = </div>
                     </div>
-                    <div class="row mt-2">
-                        <div class="col" style="text-align: center;">(Heart Pay) x (Today's Heart Health)</div>
+                    <div class="row mt-3">
+                        <div class="col" style="text-align: center;">(Fixed Pay per Day)</div>
+                    </div>
+                    <div class="row mt">
+                        <div class="col" style="text-align: center;">+ (Heart Pay) x (Today's Heart Health)</div>
                     </div>
                     <div class="row">
                         <div class="col" style="text-align: center;">+ (Immune Pay) x (Today's Immune Health)</div>
                     </div>
-                    <div class="row mt-2">
-                        <div class="col" style="text-align: center;">$[[session_day_subject_actvity.current_heart_pay]] x ([[session_day_subject_actvity.heart_activity]])</div>
+                    <div class="row mt-3">
+                        <div class="col" style="text-align: center;">$[[session_day_subject_actvity.fixed_pay_per_day]]</div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="text-align: center;">+ $[[session_day_subject_actvity.current_heart_pay]] x ([[session_day_subject_actvity.heart_activity]])</div>
                     </div>
                     <div class="row">
                         <div class="col" style="text-align: center;">+ $[[session_day_subject_actvity.current_heart_pay]] x ([[session_day_subject_actvity.immune_activity]])</div>
                     </div>
-                    <div class="row mt-2">
-                        <div class="col" style="text-align: center;">$[[session_day_subject_actvity.current_heart_earnings]] + $[[session_day_subject_actvity.current_immune_earnings]] = $[[session_day_subject_actvity.current_total_earnings]]</div>
+                    <div class="row mt-3">
+                        <div class="col" style="text-align: center;">$[[session_day_subject_actvity.fixed_pay_per_day]] + $[[session_day_subject_actvity.current_heart_earnings]] + $[[session_day_subject_actvity.current_immune_earnings]] = $[[session_day_subject_actvity.current_total_earnings]]</div>
                     </div>
                     <div class = "row mt-4">
                         <div class="col" style="text-align: center;">

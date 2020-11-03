@@ -30,6 +30,9 @@ class Parameterset(models.Model):
     block_2_immune_pay = models.DecimalField(decimal_places=2, default=8.00, max_digits=6)
     block_3_immune_pay = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
 
+    #fixed pay per day $
+    fixed_pay_per_day = models.DecimalField(decimal_places=2, default=4.00, max_digits=6)
+
     #number of days for each time block
     block_1_day_count = models.IntegerField(default = 1)
     block_2_day_count = models.IntegerField(default = 1)
@@ -95,6 +98,8 @@ class Parameterset(models.Model):
         self.block_2_day_count = ps.block_2_day_count
         self.block_3_day_count = ps.block_3_day_count
 
+        self.fixed_pay_per_day = p.fixed_pay_per_day
+
         self.treatment_3_heart_bonus = ps.treatment_3_heart_bonus
         self.treatment_3_immune_bonus = ps.treatment_3_immune_bonus
         self.treatment_3_bonus_target_count = ps.treatment_3_bonus_target_count
@@ -158,6 +163,8 @@ class Parameterset(models.Model):
             "block_1_immune_pay":self.block_1_immune_pay,
             "block_2_immune_pay":self.block_2_immune_pay,
             "block_3_immune_pay":self.block_3_immune_pay,
+
+            "fixed_pay_per_day":self.fixed_pay_per_day,
 
             "treatment_3_heart_bonus":self.treatment_3_heart_bonus,
             "treatment_3_immune_bonus":self.treatment_3_immune_bonus,

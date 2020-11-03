@@ -76,7 +76,7 @@ class Session_day_subject_actvity(models.Model):
         #logger.info(f'{active_time} {p1} {p2} {p3} {activityMinus1}')
         #v = float(activityMinus1) * (1 - (1 - float(activityMinus1)) * (float(p1) / float(p2)  - float(active_time) / (float(active_time) + float(p3))))
 
-        v = float(p1) * float(activityMinus1) + 0.5 * (1 + float(p1) * float(activityMinus1)) * (1- float(p1) * float(activityMinus1)) * ((float(active_time)**float(p2)) / (float(p3) + float(active_time)**float(p2))) 
+        v = float(p1) * float(activityMinus1) + 0.5 * (1 + float(activityMinus1)) * (1- float(p1) * float(activityMinus1)) * ((float(active_time)**float(p2)) / (float(p3) + float(active_time)**float(p2))) 
         return min(1,v)     
     
     #get number of minutes for heart maintenance
@@ -107,7 +107,9 @@ class Session_day_subject_actvity(models.Model):
     def calcMaintenance(self,a,b,c,d,e):
         logger = logging.getLogger(__name__)
 
-        v = 2**(1/b) * e * ((a * c * d - c * d)/(a**2 * d**2 - 2 * a * d + 2 * d - 1))**(1/b)
+        #v = 2**(1/b) * e * ((a * c * d - c * d)/(a**2 * d**2 - 2 * a * d + 2 * d - 1))**(1/b)
+
+        v = 2**(1 / b) * e * ((a * c * d - c * d)/((d - 1) * (a * d + 1)))**(1/b)
 
         return v
 
@@ -177,7 +179,7 @@ class Session_day_subject_actvity(models.Model):
     
     #get today's total earnings
     def getTodaysTotalEarnings(self):
-        return self.getTodaysHeartEarnings() + self.getTodaysImmuneEarnings()
+        return self.session_day.session.parameterset.fixed_pay_per_day + self.getTodaysHeartEarnings() + self.getTodaysImmuneEarnings()
 
     #return json object of class
     def json(self):
@@ -196,6 +198,7 @@ class Session_day_subject_actvity(models.Model):
             "current_heart_earnings":f'{self.getTodaysHeartEarnings():0.2f}',
             "current_immune_earnings":f'{self.getTodaysImmuneEarnings():0.2f}',
             "current_total_earnings":f'{self.getTodaysTotalEarnings():0.2f}',
+            "fixed_pay_per_day" : f'{self.session_day.session.parameterset.fixed_pay_per_day:0.2f}',
             "heart_maintenance_minutes" : math.ceil(self.getHeartMaintenance()),
             "immune_maintenance_hours" : round(self.getImmuneMaintenance()/60,2),
         }
