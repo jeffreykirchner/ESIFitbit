@@ -231,8 +231,8 @@
                     app.$data.invitationButtonText = '<i class="fas fa-spinner fa-spin"></i>';
                     axios.post('/session/{{id}}/', {
                                     action :"sendInvitations" ,  
-                                    invitation_text_subject:app.$data.invitation_text_subject, 
-                                    invitation_text:app.$data.invitation_text,                                                                                                                                                            
+                                    invitation_text_subject:app.$data.session.invitation_text_subject, 
+                                    invitation_text:app.$data.session.invitation_text,                                                                                                                                                            
                                 })
                                 .then(function (response) {     
                                     app.updateSession(response);      

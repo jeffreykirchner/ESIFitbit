@@ -177,7 +177,7 @@ class Session(models.Model):
     def calcEndDate(self):
         p = Parameters.objects.first()
         tz = pytz.timezone(p.experimentTimeZone)
-        
+
         d_end = datetime.now(tz)
         d_end = d_end.replace(hour=0,minute=0, second=0,microsecond=0)
         d_end = d_end.replace(day=self.start_date.day,month=self.start_date.month, year=self.start_date.year)
@@ -189,18 +189,27 @@ class Session(models.Model):
 
     #send email invitations to subject in the session
     def sendInvitations(self):
+        p = Parameters.objects.first()
         text = self.invitation_text
 
         text = text.replace("[start date]", self.getDateString())
-        text = text.replace("[number of days]", str(self.parameterset.block_1_day_count+self.parameterset.block_2_day_count+self.parameterset.block_3_day_count))
+        text = text.replace("[number of days]", str(self.numberOfDays()))
+        text = text.replace("[end date]", self.getEndDateString())
+        text = text.replace("[contact email]", p.contactEmail)
 
-
-        main.views.sendMassInvitations(self.session_subjects,self.invitation_text_subject,text)
+        return main.views.sendMassInvitations(self.session_subjects.all(),self.invitation_text_subject,text)
 
 
     #return json object of class
     def json(self):
+
         email_list=""
+        for s in self.session_subjects.all():
+            if email_list != "":
+                email_list +=", "
+
+            email_list += s.contact_email
+
         return{
             "id":self.id,
             "title":self.title,

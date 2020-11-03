@@ -243,15 +243,19 @@ def sendInvitations(data,id):
 
     s.save()
 
+    result = ""
+
     try:
-        s.sendInvitations()
+        result = s.sendInvitations()
         s.invitations_sent=True
         s.save()
     except Exception  as e: 
         logger.info(e)
+        result = e
         success = False   
 
     return JsonResponse({"success" : success,
+                         "result" : result,
                          "session" : getSessionJSON(id), 
                                 },safe=False)
 

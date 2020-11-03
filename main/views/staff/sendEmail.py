@@ -6,13 +6,15 @@ import logging
 import random
 from django.template.loader import render_to_string
 from django.utils.crypto import get_random_string
-from main.models import parameters
+from main.models import Parameters
 from django.utils.html import strip_tags
 from django.core.mail import send_mail
 
 def sendMassInvitations(subjectList,subject,message):
     logger = logging.getLogger(__name__)
     logger.info("Send mass email to list")
+
+    p = Parameters.objects.first()
 
     message_list = []
     message_list.append(())
@@ -27,7 +29,8 @@ def sendMassInvitations(subjectList,subject,message):
             block_count += 1
             message_list.append(())
 
-        new_message = s.name + ",\n\n" + message
+        new_message = message.replace("[subject name]",s.name)
+        new_message = new_message.replace("[log in link]",p.siteURL + "subjectHome/" +str(s.login_key))
 
         #fill in subject parameters
 
@@ -38,7 +41,7 @@ def sendMassInvitations(subjectList,subject,message):
 
         c+=1
     
-    sendMassEmail(block_count,message_list)
+    return sendMassEmail(block_count,message_list)
 
 #send mass email to list,takes a list
 def sendMassEmail(block_count,message_list):
@@ -50,7 +53,7 @@ def sendMassEmail(block_count,message_list):
     if len(message_list)>0 :
         try:
             for x in range(block_count+1):            
-                logger.info("Sending Block " + str(x+1) + " of " + str(i+1))
+                logger.info("Sending Block " + str(x+1) + " of " + str(block_count+1))
                 mailCount += send_mass_mail(message_list[x], fail_silently=False) 
         except SMTPException as e:
             logger.info('There was an error sending email: ' + str(e)) 
