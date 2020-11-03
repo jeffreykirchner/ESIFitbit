@@ -113,7 +113,7 @@
                             var xScale = xMax-xMin;
                             var yScale = yMax-yMin;
 
-                            var w =  ctx.canvas.width;
+                            var w = ctx.canvas.width;
                             var h = ctx.canvas.height;
                             var marginY=55;
                             var marginX=40;
@@ -144,8 +144,8 @@
                             ctx.fillStyle = "black";
                             ctx.textAlign = "right";
 
-                            var tempY = margin2;     
-                            var tempYValue = yMax;
+                            var tempY = h-marginX;     
+                            var tempYValue = yMin;
 
                             for(var i=0;i<=yTickCount;i++)
                             {                                       
@@ -153,8 +153,8 @@
                                 ctx.lineTo(marginY-5, tempY);
                                 ctx.fillText(parseFloat(tempYValue).toFixed(2),marginY-8,tempY+4);
 
-                                tempY += ((h-marginX-margin2)/ (yTickCount));
-                                tempYValue -= yTickValue;
+                                tempY -= ((h-marginX-margin2)/ (yTickCount));
+                                tempYValue += yTickValue;
                             }
 
                             ctx.stroke();

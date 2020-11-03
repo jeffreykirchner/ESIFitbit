@@ -41,20 +41,20 @@ class Parameterset(models.Model):
     treatment_3_bonus_target_count = models.IntegerField(default = 1)
 
     #heart graph self
-    y_min_heart = models.DecimalField(decimal_places=2, default=0.6, max_digits=4)
-    y_max_heart = models.DecimalField(decimal_places=2, default=0.8, max_digits=4)
-    y_ticks_heart = models.IntegerField(default = 11)
+    y_min_heart = models.DecimalField(decimal_places=2, default=0.0, max_digits=4)
+    y_max_heart = models.DecimalField(decimal_places=2, default=1.0, max_digits=4)
+    y_ticks_heart = models.IntegerField(default = 10)
     x_min_heart = models.IntegerField(default = 0)
     x_max_heart = models.IntegerField(default = 180)
     x_ticks_heart = models.IntegerField(default = 6)
 
     #immune graph self
-    y_min_immune = models.DecimalField(decimal_places=2, default=0.45, max_digits=4)
-    y_max_immune = models.DecimalField(decimal_places=2, default=0.65, max_digits=4)
-    y_ticks_immune = models.IntegerField(default = 11)
+    y_min_immune = models.DecimalField(decimal_places=2, default=0.0, max_digits=4)
+    y_max_immune = models.DecimalField(decimal_places=2, default=1.0, max_digits=4)
+    y_ticks_immune = models.IntegerField(default = 10)
     x_min_immune = models.IntegerField(default = 0)
     x_max_immune = models.IntegerField(default = 13)
-    x_ticks_immune = models.IntegerField(default = 14)
+    x_ticks_immune = models.IntegerField(default = 13)
 
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
