@@ -247,7 +247,11 @@ def sendInvitations(data,id):
 
     try:
         result = s.sendInvitations()
-        s.invitations_sent=True
+
+        if result['errorMessage'] != "":
+            s.invitations_sent=False
+        else:
+            s.invitations_sent=True
         s.save()
     except Exception  as e: 
         logger.info(e)

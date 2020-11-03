@@ -30,8 +30,12 @@
                     <div class="col">
                         <span v-html="session.email_list"></span>
                     </div>
-                </div>                
-
+                </div>               
+                <div class="row">
+                    <div class="col" style="text-align: center;color:red">
+                        <span v-html="emailResult"></span>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">                            
                 <button type="button" class="btn btn-outline-success" v-on:click = "sendInvitations()">

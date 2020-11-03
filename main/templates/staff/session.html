@@ -60,6 +60,7 @@
                 backFillButtonText:'Back Fill Data For Testing',
                 startSessionButtonText: 'Start Session <i class="far fa-play-circle"></i>',
                 invitationButtonText: 'Send Invitations <i class="far fa-envelope"></i>',
+                emailResult:'',
             },
 
             methods:{
@@ -236,7 +237,20 @@
                                 })
                                 .then(function (response) {     
                                     app.updateSession(response);      
-                                    app.$data.invitationButtonText = 'Send Invitations <i class="far fa-envelope"></i>';                          
+                                    app.$data.invitationButtonText = 'Send Invitations <i class="far fa-envelope"></i>';   
+
+                                    if( response.data.success)
+                                    {
+                                        if(response.data.result.errorMessage != "")
+                                            app.$data.emailResult = "Error: " + response.data.result.errorMessage;
+                                        else
+                                            app.$data.emailResult = response.data.result.mailCount + " email(s) were sent.";                                     
+                                    }
+                                    else
+                                    {
+                                        app.$data.emailResult =response.data.result;
+                                    }
+                                                           
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -370,7 +384,7 @@
 
                 //hide send invitation
                 hideSendInvitations:function(){
-                    
+                    app.$data.emailResult="";
                 },
                             
                 //show edit parameters modal
