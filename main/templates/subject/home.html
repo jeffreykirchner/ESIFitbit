@@ -13,8 +13,8 @@
             delimiters: ['[[', ']]'],
             el: '#root',        
             data:{
-                session_day_subject_actvity:{heart_activity:"--/100",
-                                             immune_activity:"--/100",
+                session_day_subject_actvity:{heart_activity:"--",
+                                             immune_activity:"--",
                                              current_heart_pay:"--",
                                              current_immmune_pay:"--",
                                              current_heart_earnings:"--",
@@ -91,7 +91,7 @@
 
                     app.drawAxis("immuneSelfChart",gp.y_min_immune,gp.y_max_immune,gp.y_ticks_immune,
                                                   gp.x_min_immune,gp.x_max_immune,gp.x_ticks_immune,
-                                                  "Tomorrow's Immune Health","Today's Hours Sleeping");    
+                                                  "Tomorrow's Sleep Health","Today's Hours Sleeping");    
 
                     app.drawLine("immuneSelfChart",gp.y_min_immune,gp.y_max_immune,
                                                   gp.x_min_immune*60,gp.x_max_immune*60,
@@ -318,7 +318,9 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col" style="text-align: center;"><span v-html="session_day_subject_actvity.heart_maintenance_minutes"></span> minutes of exercise will be required to maintain it</div>
+                            <div class="col" style="text-align: center;">
+                                Minutes Required to<br>Maintain Health at <span v-html = session_day_subject_actvity.heart_activity></span>: <span v-html="session_day_subject_actvity.heart_maintenance_minutes"></span>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col" style="text-align: center;">
@@ -328,20 +330,22 @@
                     </div>
                     <div v-else-if="toggleState==='immune'">
                         <div class="row mt-2">
-                            <div class="col" style="text-align: center;">Immune Health: <span style="font-weight: bold;" v-html = session_day_subject_actvity.immune_activity></span></div>
+                            <div class="col" style="text-align: center;">Sleep Health: <span style="font-weight: bold;" v-html = session_day_subject_actvity.immune_activity></span></div>
                         </div>
                         <div class="row">
                             <div class="col" style="text-align: center;">                             
                                 <div v-if="fitbitError">
-                                    Yesterday's Hours Asleep: <span style="font-weight: bold;color: red;" v-html = "'FitBit Error'"></span>
+                                    Yesterday's Hours Sleeping: <span style="font-weight: bold;color: red;" v-html = "'FitBit Error'"></span>
                                 </div>
                                 <div v-else>
-                                    Yesterday's Hours Asleep: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.immune_activity_hours></span>
+                                    Yesterday's Hours Sleeping: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.immune_activity_hours></span>
                                 </div>                            
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col" style="text-align: center;"><span v-html="session_day_subject_actvity.immune_maintenance_hours"></span> hours of sleep will be required to maintain it</div>
+                            <div class="col" style="text-align: center;">
+                                Hours Required to<br>Maintain Health at <span v-html = session_day_subject_actvity.immune_activity></span>: <span v-html="session_day_subject_actvity.immune_maintenance_hours"></span>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col" style="text-align: center;">

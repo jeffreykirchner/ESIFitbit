@@ -116,12 +116,12 @@ class Session_day_subject_actvity(models.Model):
     #heart activity / 100
     def heart_activity_formatted(self):
         v = round(self.heart_activity * 100,2)
-        return f'{v}/100'
+        return f'{v}'
 
     #immune activity /100
     def immune_activity_formatted(self):
         v = round(self.immune_activity * 100,2)
-        return f'{v}/100'
+        return f'{v}'
 
     #return the activity day before this one
     def getPreviousActivityDay(self):
@@ -181,14 +181,22 @@ class Session_day_subject_actvity(models.Model):
     def getTodaysTotalEarnings(self):
         return self.session_day.session.parameterset.fixed_pay_per_day + self.getTodaysHeartEarnings() + self.getTodaysImmuneEarnings()
 
+    
+
     #return json object of class
     def json(self):
+        immune_activity_minutes=int(self.immune_activity_minutes)
+        immune_activity_hours = f'{math.floor(immune_activity_minutes/60)}hrs {immune_activity_minutes%60}mins'
+
+        immune_maintenance_minutes = math.ceil(self.getImmuneMaintenance())
+        immune_maintenance_hours = f'{math.floor(immune_maintenance_minutes/60)}hrs {immune_maintenance_minutes%60}mins'
+
         return{
             "id":self.id,             
             "heart_activity":self.heart_activity_formatted(),     
             "immune_activity":self.immune_activity_formatted(),
-            "heart_activity_minutes":int(self.heart_activity_minutes),     
-            "immune_activity_hours":round(self.immune_activity_minutes/60,1),
+            "heart_activity_minutes":f'{int(self.heart_activity_minutes)}mins',     
+            "immune_activity_hours":immune_activity_hours,
             "check_in_today":self.check_in_today,     
             "paypal_today":self.paypal_today,
             "heart_activity_future":self.getHeartActivityFutureRange(),
@@ -199,6 +207,6 @@ class Session_day_subject_actvity(models.Model):
             "current_immune_earnings":f'{self.getTodaysImmuneEarnings():0.2f}',
             "current_total_earnings":f'{self.getTodaysTotalEarnings():0.2f}',
             "fixed_pay_per_day" : f'{self.session_day.session.parameterset.fixed_pay_per_day:0.2f}',
-            "heart_maintenance_minutes" : math.ceil(self.getHeartMaintenance()),
-            "immune_maintenance_hours" : round(self.getImmuneMaintenance()/60,2),
+            "heart_maintenance_minutes" : f'{math.ceil(self.getHeartMaintenance())}mins',
+            "immune_maintenance_hours" : immune_maintenance_hours,
         }
