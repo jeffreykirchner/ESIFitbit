@@ -35,7 +35,9 @@ def Subject_Home(request,id):
                
         session_date = session_day.getDateStr()        
 
-        return render(request,'subject/home.html',{"id":id,                                                   
+        return render(request,'subject/home.html',{"id":id,           
+                                                   "session_started":session_subject.session.started, 
+                                                   "start_date":session_subject.session.getDateString(),                                
                                                    "session_date":session_date,
                                                    "session_subject":session_subject}) 
 
@@ -115,7 +117,7 @@ def getSessionDaySubject(data,session_subject,session_day):
 
     else:
         #first day check for fitbit connection
-        immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.getPreviousSessionDay().date)
+        immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.date)
         if immune_activity_minutes == -1:
             fitbitError=True
 
