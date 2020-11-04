@@ -115,7 +115,7 @@
 
                             var w = ctx.canvas.width;
                             var h = ctx.canvas.height;
-                            var marginY=55;
+                            var marginY=45;
                             var marginX=40;
                             var margin2=10;
                             var tickLength=3;
@@ -151,7 +151,7 @@
                             {                                       
                                 ctx.moveTo(marginY, tempY);                                   
                                 ctx.lineTo(marginY-5, tempY);
-                                ctx.fillText(parseFloat(tempYValue).toFixed(2),marginY-8,tempY+4);
+                                ctx.fillText(tempYValue,marginY-8,tempY+4);
 
                                 tempY -= ((h-marginX-margin2)/ (yTickCount));
                                 tempYValue += yTickValue;
@@ -207,7 +207,7 @@
 
                             var w =  ctx.canvas.width;
                             var h = ctx.canvas.height;
-                            var marginY=55;
+                            var marginY=45;
                             var marginX=40;
                             var margin2=10;
                             var tickLength=3;

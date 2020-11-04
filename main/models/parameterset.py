@@ -44,20 +44,20 @@ class Parameterset(models.Model):
     treatment_3_bonus_target_count = models.IntegerField(default = 1)
 
     #heart graph self
-    y_min_heart = models.DecimalField(decimal_places=2, default=0.0, max_digits=4)
-    y_max_heart = models.DecimalField(decimal_places=2, default=1.0, max_digits=4)
+    y_min_heart = models.IntegerField(default=0)
+    y_max_heart = models.IntegerField(default=100)
     y_ticks_heart = models.IntegerField(default = 10)
     x_min_heart = models.IntegerField(default = 0)
-    x_max_heart = models.IntegerField(default = 180)
-    x_ticks_heart = models.IntegerField(default = 6)
+    x_max_heart = models.IntegerField(default = 90)
+    x_ticks_heart = models.IntegerField(default = 3)
 
     #immune graph self
-    y_min_immune = models.DecimalField(decimal_places=2, default=0.0, max_digits=4)
-    y_max_immune = models.DecimalField(decimal_places=2, default=1.0, max_digits=4)
+    y_min_immune = models.IntegerField(default=0)
+    y_max_immune = models.IntegerField(default=100)
     y_ticks_immune = models.IntegerField(default = 10)
     x_min_immune = models.IntegerField(default = 0)
-    x_max_immune = models.IntegerField(default = 13)
-    x_ticks_immune = models.IntegerField(default = 13)
+    x_max_immune = models.IntegerField(default = 12)
+    x_ticks_immune = models.IntegerField(default = 6)
 
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)

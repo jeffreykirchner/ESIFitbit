@@ -109,8 +109,8 @@ class Session_day_subject_actvity(models.Model):
 
         #v = 2**(1/b) * e * ((a * c * d - c * d)/(a**2 * d**2 - 2 * a * d + 2 * d - 1))**(1/b)
 
-        v = 2**(1 / b) * e * ((a * c * d - c * d)/((d - 1) * (a * d + 1)))**(1/b)
-
+        v = 2.0**(1 / float(b)) * float(e) * ((float(a) * float(c) * float(d) - float(c) * float(d))/((float(d) - 1.0) * (float(a) * float(d) + 1.0)))**(1.0/float(b))
+        logger.info(f"calcMaintenance {v}")
         return v
 
     #heart activity / 100
@@ -148,7 +148,7 @@ class Session_day_subject_actvity(models.Model):
         current_value = ps.x_min_heart
 
         for i in range(99):
-            v.append({"x":current_value, "y": self.calcHeartActivity(current_value,self.heart_activity)})
+            v.append({"x":current_value, "y": self.calcHeartActivity(current_value,self.heart_activity)*100})
             current_value += value_step
 
         return v
@@ -164,7 +164,7 @@ class Session_day_subject_actvity(models.Model):
         current_value = ps.x_min_immune*60
 
         for i in range(99):
-            v.append({"x":current_value, "y": self.calcImmuneActivity(current_value,self.immune_activity)})
+            v.append({"x":current_value, "y": self.calcImmuneActivity(current_value,self.immune_activity)*100})
             current_value += value_step
 
         return v
