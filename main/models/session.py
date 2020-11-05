@@ -71,22 +71,14 @@ class Session(models.Model):
         else:
             return False
 
-    #add new sessions days up to today if needed
+    #add new sessions days when experiment is started
     def addNewSessionDays(self):
         logger = logging.getLogger(__name__)
         logger.info("Add new sessions: " + str(self.title))
 
         #get today's date
-        p = Parameters.objects.first()
-        tz = pytz.timezone(p.experimentTimeZone)
-        
-        d_start = datetime.now(tz)
-        d_start = d_start.replace(hour=0,minute=0, second=0,microsecond=0)
+        d_start = todaysDate()
         d_start = d_start.replace(day=self.start_date.day,month=self.start_date.month, year=self.start_date.year)
-
-        # d_end = datetime.now(tz)
-        # d_end = d_end.replace(hour=0,minute=0, second=0,microsecond=0)
-        # d_end  = d_start + timedelta(days=self.parameterset.block_1_day_count + self.parameterset.block_2_day_count+self.parameterset.block_3_day_count)
 
         d_start += timedelta(days=1)
         tempPeriod = 2

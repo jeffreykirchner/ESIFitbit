@@ -199,9 +199,6 @@ def backFillSessionDays(data,id):
 
     s=Session.objects.get(id=id)
 
-    #fill in session days
-    #s.addNewSessionDays()
-
     #fill with test data
     if s.started:
         s.fillWithTestData()

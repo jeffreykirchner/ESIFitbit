@@ -98,7 +98,6 @@ def getSessionDaySubject(data,session_subject,session_day):
 
         if session_day_subject_actvity_previous_day:
             #create session day if needed
-            #session_subject.session.addNewSessionDays()
 
             #mark subject checkin as true
             session_day_subject_actvity.check_in_today=True

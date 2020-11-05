@@ -18,7 +18,4 @@ class checkStartNewDay(CronJobBase):
 
         logger.info(sessions)
 
-        for s in sessions:
-            s.addNewSessionDays()
-
             
