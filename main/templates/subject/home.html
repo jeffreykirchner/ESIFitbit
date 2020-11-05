@@ -22,7 +22,7 @@
                                              current_total_earnings:"--",
                                              heart_maintenance_minutes:"--",
                                              immune_maintenance_hours:"--", 
-                                             health_improvment_minutes:{target_activity: "--",target_minutes:"--"},
+                                             heart_improvment_minutes:{target_activity: "--",target_minutes:"--"},
                                              immune_improvment_hours:{target_activity: "--",target_hours:"--"}                                      
                                              },
                 session_day_subject_actvity_previous:{heart_activity_minutes:"--",
@@ -58,10 +58,13 @@
                     if (response.data.session_day_subject_actvity_previous)
                         app.$data.session_day_subject_actvity_previous=response.data.session_day_subject_actvity_previous;
 
-                    app.$data.graph_parameters = response.data.graph_parameters;       
-                    app.$data.fitbitError = response.data.fitbitError;
+                    if (app.$data.session_day_subject_actvity)
+                    {
+                        app.$data.graph_parameters = response.data.graph_parameters;       
+                        app.$data.fitbitError = response.data.fitbitError;
 
-                    app.updateCanvases();                
+                        app.updateCanvases();                
+                    }
                 },   
 
                 payMe:function(reponse){
@@ -287,8 +290,14 @@
                 <span class="float-right">{{session_date}}</span>                                                                   
             </div>
             <div class="card-body">    
-                {%if session_started%}
-
+                {%if not session_started or before_start_date %}
+                    <div class="row">
+                        <div class="col" style="text-align: center;">
+                            The experiment has not yet started.<br>
+                            It will begin on {{start_date}}.
+                        </div>
+                    </div>
+                {%else%}
                     <div class="row">
                         <div class="col" style="text-align: center;">
                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -402,13 +411,6 @@
                                 </div>    
                                 
                             </div>
-                        </div>
-                    </div>
-                {%else%}
-                    <div class="row">
-                        <div class="col" style="text-align: center;">
-                            The experiment has not yet started.<br>
-                            It will begin on {{session_date}}.
                         </div>
                     </div>
                 {%endif%}

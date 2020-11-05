@@ -9,6 +9,8 @@ from django.db.models.signals import post_delete
 import main
 import pytz
 
+from main.globals import todaysDate
+
 from main.models import Parameters
 
 from datetime import datetime,timedelta
@@ -54,15 +56,20 @@ class Session(models.Model):
     def getCurrentSessionDay(self):
         logger = logging.getLogger(__name__)
 
-        p = Parameters.objects.first()
-        tz = pytz.timezone(p.experimentTimeZone)
+        d_today = todaysDate()
 
-        d_today = datetime.now(tz)
-        d_today = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
-
-        logger.info(f"getCurrentSessionDay {d_today}")
+        #logger.info(f"getCurrentSessionDay {d_today}")
 
         return self.session_days.filter(date = d_today).first()
+    
+    #return true if today is before the start date
+    def isBeforeStartDate(self):
+        logger = logging.getLogger(__name__)
+
+        if todaysDate().date() < self.start_date:
+            return True
+        else:
+            return False
 
     #add new sessions days up to today if needed
     def addNewSessionDays(self):
@@ -197,7 +204,7 @@ class Session(models.Model):
         text = text.replace("[end date]", self.getEndDateString())
         text = text.replace("[contact email]", p.contactEmail)
 
-        return main.views.sendMassInvitations(self.session_subjects.all(),self.invitation_text_subject,text)
+        return main.globals.sendMassInvitations(self.session_subjects.all(),self.invitation_text_subject,text)
 
 
     #return json object of class

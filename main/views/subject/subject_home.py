@@ -32,10 +32,15 @@ def Subject_Home(request,id):
             logger.info("Session subject day, user not found: " + str(id))
             return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
-               
-        session_date = session_day.getDateStr()        
 
-        return render(request,'subject/home.html',{"id":id,           
+        session_date = "--"
+        if session_day:       
+            session_date = session_day.getDateStr()        
+        
+        
+
+        return render(request,'subject/home.html',{"id":id,      
+                                                   "before_start_date":session_subject.session.isBeforeStartDate(), 
                                                    "session_started":session_subject.session.started, 
                                                    "start_date":session_subject.session.getDateString(),                                
                                                    "session_date":session_date,
@@ -77,54 +82,65 @@ def getSessionDaySubject(data,session_subject,session_day):
     logger.info(data)
 
     fitbitError=False
+    status = "success"
+    session_day_subject_actvity=None
+    session_day_subject_actvity_previous_day=None
 
-    session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
+    if not session_day:
+        status = "fail"
 
-    session_day_subject_actvity_previous_day = session_day_subject_actvity.getPreviousActivityDay()
-
-    if session_day_subject_actvity_previous_day:
-        #create session day if needed
-        #session_subject.session.addNewSessionDays()
-
-        #mark subject checkin as true
-        session_day_subject_actvity.check_in_today=True
-        session_day_subject_actvity.save()
-        
-        #pull data from fitbit
-        immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.getPreviousSessionDay().date)
-        heart_activity_minutes = session_subject.getFibitHeartMinutes(session_day.getPreviousSessionDay().date)
-
-        if immune_activity_minutes >= 0:
-            session_day_subject_actvity_previous_day.immune_activity_minutes = immune_activity_minutes
-        else:
-            logger.info(f"immune_activity_minutes not found: session subject {session_subject} session day {session_day}")
-            fitbitError=True
-        
-        if heart_activity_minutes >= 0:
-            session_day_subject_actvity_previous_day.heart_activity_minutes = heart_activity_minutes
-        else:
-            logger.info(f"heart_activity_minutes not found: session subject {session_subject} session day {session_day}")
-            fitbitError=True
-
-        session_day_subject_actvity_previous_day.save()
-
-        #calc today's actvity
-        session_subject.calcTodaysActivity(session_day.period_number)
-
-        #get object again after calculation
+    if status == "success":
         session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
-        session_day_subject_actvity_previous = session_day_subject_actvity.getPreviousActivityDay()
 
-    else:
-        #first day check for fitbit connection
-        immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.date)
-        if immune_activity_minutes == -1:
-            fitbitError=True
+        if session_day_subject_actvity:
+            session_day_subject_actvity_previous_day = session_day_subject_actvity.getPreviousActivityDay()
+    
 
-    return JsonResponse({"status":"success",
+        if session_day_subject_actvity_previous_day:
+            #create session day if needed
+            #session_subject.session.addNewSessionDays()
+
+            #mark subject checkin as true
+            session_day_subject_actvity.check_in_today=True
+            session_day_subject_actvity.save()
+            
+            #pull data from fitbit
+            immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.getPreviousSessionDay().date)
+            heart_activity_minutes = session_subject.getFibitHeartMinutes(session_day.getPreviousSessionDay().date)
+
+            if immune_activity_minutes >= 0:
+                session_day_subject_actvity_previous_day.immune_activity_minutes = immune_activity_minutes
+            else:
+                logger.info(f"immune_activity_minutes not found: session subject {session_subject} session day {session_day}")
+                fitbitError=True
+            
+            if heart_activity_minutes >= 0:
+                session_day_subject_actvity_previous_day.heart_activity_minutes = heart_activity_minutes
+            else:
+                logger.info(f"heart_activity_minutes not found: session subject {session_subject} session day {session_day}")
+                fitbitError=True
+
+            session_day_subject_actvity_previous_day.save()
+
+            #calc today's actvity
+            session_subject.calcTodaysActivity(session_day.period_number)
+
+            #get object again after calculation
+            session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
+            session_day_subject_actvity_previous = session_day_subject_actvity.getPreviousActivityDay()
+
+        else:
+            #first day check for fitbit connection
+            if status == "success":
+                immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.date)
+                if immune_activity_minutes == -1:
+                    fitbitError=True
+
+
+    return JsonResponse({"status":status,
                         "fitbitError":fitbitError,
-                        "session_day_subject_actvity" : session_day_subject_actvity.json(),
+                        "session_day_subject_actvity" : session_day_subject_actvity.json() if session_day_subject_actvity else None,
                         "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
-                        "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)                         
+                        "graph_parameters" : session_day.session.parameterset.json_graph() if session_day else None,},safe=False)                         
                                 
      
