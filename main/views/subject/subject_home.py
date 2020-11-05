@@ -33,17 +33,10 @@ def Subject_Home(request,id):
             return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
 
-        session_date = "--"
-        if session_day:       
-            session_date = session_day.getDateStr()        
-        
-        
-
         return render(request,'subject/home.html',{"id":id,      
                                                    "before_start_date":session_subject.session.isBeforeStartDate(), 
                                                    "session_started":session_subject.session.started, 
                                                    "start_date":session_subject.session.getDateString(),                                
-                                                   "session_date":session_date,
                                                    "session_subject":session_subject}) 
 
 #pay subject for today
@@ -135,9 +128,16 @@ def getSessionDaySubject(data,session_subject,session_day):
                 if immune_activity_minutes == -1:
                     fitbitError=True
 
+    
+    session_date = "--/--/----"
+        
+    if session_day:       
+        session_date = session_day.getDateStr()
+
 
     return JsonResponse({"status":status,
                         "fitbitError":fitbitError,
+                        "session_date":session_date,
                         "session_day_subject_actvity" : session_day_subject_actvity.json() if session_day_subject_actvity else None,
                         "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
                         "graph_parameters" : session_day.session.parameterset.json_graph() if session_day else None,},safe=False)                         

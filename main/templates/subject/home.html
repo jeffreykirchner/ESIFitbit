@@ -29,31 +29,43 @@
                                                       immune_activity_hours:"--",},
                 graph_parameters:{},
                 parameterset:{},
-                refreshFitbitButtonText : 'Refresh',
                 payMeButtonText : 'Pay Me <i class="fab fa-paypal fa-lg"></i>',
+                refreshButtonText : '<i class="fas fa-sync fa-spin"></i>',
                 toggleState:"heart",
                 fitbitError:false,
+                session_date:"--/--/----"
                
             },
 
             methods:{
 
+               
+
                 getSessionDaySubject:function(){                    
                     
+
                     axios.post('/subjectHome/{{id}}/', {
                                     action :"getSessionDaySubject" ,                                                                                                                                                                
                                 })
                                 .then(function (response) {     
-                                    app.updateSessionDaySubject(response);                                              
+                                    app.updateSessionDaySubject(response);    
+                                    app.$data.refreshButtonText = '<i class="fas fa-sync"></i>';                                          
                                 })
                                 .catch(function (error) {
                                     console.log(error);
                                 });                        
                 },
+
+                getSessionDaySubjectButton:function()
+                {
+                    app.$data.refreshButtonText = '<i class="fas fa-sync fa-spin"></i>';
+                    app.getSessionDaySubject();
+                },
                 
-                //update the experiment list from server
                 updateSessionDaySubject:function(response){
                     app.$data.session_day_subject_actvity = response.data.session_day_subject_actvity;
+
+                    app.$data.session_date = response.data.session_date;
 
                     if (response.data.session_day_subject_actvity_previous)
                         app.$data.session_day_subject_actvity_previous=response.data.session_day_subject_actvity_previous;
@@ -63,7 +75,7 @@
                         app.$data.graph_parameters = response.data.graph_parameters;       
                         app.$data.fitbitError = response.data.fitbitError;
 
-                        app.updateCanvases();                
+                        Vue.nextTick(app.updateCanvases());          
                     }
                 },   
 
@@ -86,155 +98,159 @@
                            
                     gp=app.$data.graph_parameters;
 
-                    app.drawAxis("heartSelfChart",gp.y_min_heart,gp.y_max_heart,gp.y_ticks_heart,
+                    if(app.$data.toggleState == "heart")
+                    {
+                    app.drawAxis("healthChart",gp.y_min_heart,gp.y_max_heart,gp.y_ticks_heart,
                                                   gp.x_min_heart,gp.x_max_heart,gp.x_ticks_heart,
                                                   "Tomorrow's Heart Health","Today's Minutes Exercising");
                     
-                    app.drawLine("heartSelfChart",gp.y_min_heart,gp.y_max_heart,
+                    app.drawLine("healthChart",gp.y_min_heart,gp.y_max_heart,
                                                   gp.x_min_heart,gp.x_max_heart,
                                                   app.$data.session_day_subject_actvity.heart_activity_future,0,"crimson");
-
-                    app.drawAxis("immuneSelfChart",gp.y_min_immune,gp.y_max_immune,gp.y_ticks_immune,
+                    }
+                    else
+                    {
+                    app.drawAxis("healthChart",gp.y_min_immune,gp.y_max_immune,gp.y_ticks_immune,
                                                   gp.x_min_immune,gp.x_max_immune,gp.x_ticks_immune,
                                                   "Tomorrow's Sleep Health","Today's Hours Sleeping");    
 
-                    app.drawLine("immuneSelfChart",gp.y_min_immune,gp.y_max_immune,
+                    app.drawLine("healthChart",gp.y_min_immune,gp.y_max_immune,
                                                   gp.x_min_immune*60,gp.x_max_immune*60,
-                                                  app.$data.session_day_subject_actvity.immune_activity_future,0,"cornflowerBlue");            
+                                                  app.$data.session_day_subject_actvity.immune_activity_future,0,"cornflowerBlue");  
+                    }          
                 },   
 
                 drawAxis: function (chartID,yMin,yMax,yTickCount,xMin,xMax,xTickCount,yLabel,xLabel){
+            
+                    if(document.getElementById(chartID) == null)
+                    {
+                        return;
+                    }
 
-                    Vue.nextTick()
-                        .then(function () {
-                            if(document.getElementById(chartID) == null)
-                            {
-                                return;
-                            }
+                    var canvas = document.getElementById(chartID),
+                        ctx = canvas.getContext('2d');     
 
-                            var canvas = document.getElementById(chartID),
-                                ctx = canvas.getContext('2d');            
+                    var xScale = xMax-xMin;
+                    var yScale = yMax-yMin;
 
-                            var xScale = xMax-xMin;
-                            var yScale = yMax-yMin;
+                    var w = ctx.canvas.width;
+                    var h = ctx.canvas.height;
+                    var marginY=45;
+                    var marginX=40;
+                    var margin2=10;
+                    var tickLength=3;
+                    
+                    var xTickValue=xScale/parseFloat(xTickCount);
+                    var yTickValue=yScale/parseFloat(yTickCount);
+                
+                    ctx.moveTo(0,0);
 
-                            var w = ctx.canvas.width;
-                            var h = ctx.canvas.height;
-                            var marginY=45;
-                            var marginX=40;
-                            var margin2=10;
-                            var tickLength=3;
-                            
-                            var xTickValue=xScale/parseFloat(xTickCount);
-                            var yTickValue=yScale/parseFloat(yTickCount);
-                            
-                            //clear screen
-                            ctx.fillStyle = "white";
-                            ctx.fillRect(0,0,w,h);
-                            ctx.strokeStyle="black";
-                            ctx.lineWidth=3;
+                    //clear screen
+                    // ctx.fillStyle = "white";
+                    // ctx.fillRect(0,0,w,h);
+                    ctx.clearRect(0,0,w,h);
+                    ctx.strokeStyle="black";
+                    ctx.lineWidth=3;
 
-                            //axis
-                            ctx.beginPath();
-                            ctx.moveTo(marginY, margin2);
-                            ctx.lineTo(marginY, h-marginX);
-                            ctx.lineTo(w-margin2, h-marginX);
-                            ctx.lineWidth = 3;
-                            ctx.lineCap = "round";
-                            ctx.stroke();
+                    //axis
+                    ctx.beginPath();
+                    ctx.moveTo(marginY, margin2);
+                    ctx.lineTo(marginY, h-marginX);
+                    ctx.lineTo(w-margin2, h-marginX);
+                    ctx.lineWidth = 3;
+                    ctx.lineCap = "round";
+                    ctx.stroke();
 
-                            //y ticks
-                            ctx.beginPath();                                                               
-                            ctx.font="12px Georgia";
-                            ctx.fillStyle = "black";
-                            ctx.textAlign = "right";
+                    //y ticks
+                    ctx.beginPath();                                                               
+                    ctx.font="12px Georgia";
+                    ctx.fillStyle = "black";
+                    ctx.textAlign = "right";
 
-                            var tempY = h-marginX;     
-                            var tempYValue = yMin;
+                    var tempY = h-marginX;     
+                    var tempYValue = yMin;
 
-                            for(var i=0;i<=yTickCount;i++)
-                            {                                       
-                                ctx.moveTo(marginY, tempY);                                   
-                                ctx.lineTo(marginY-5, tempY);
-                                ctx.fillText(tempYValue,marginY-8,tempY+4);
+                    for(var i=0;i<=yTickCount;i++)
+                    {                                       
+                        ctx.moveTo(marginY, tempY);                                   
+                        ctx.lineTo(marginY-5, tempY);
+                        ctx.fillText(tempYValue,marginY-8,tempY+4);
 
-                                tempY -= ((h-marginX-margin2)/ (yTickCount));
-                                tempYValue += yTickValue;
-                            }
+                        tempY -= ((h-marginX-margin2)/ (yTickCount));
+                        tempYValue += yTickValue;
+                    }
 
-                            ctx.stroke();
+                    ctx.stroke();
 
-                            //x ticks
-                            ctx.beginPath();                                                               
-                            ctx.textAlign = "center";
+                    //x ticks
+                    ctx.beginPath();                                                               
+                    ctx.textAlign = "center";
 
-                            var tempX = marginY;
-                            var tempXValue=xMin;                                
-                            for(var i=0;i<=xTickCount;i++)
-                            {                                       
-                                ctx.moveTo(tempX, h-marginX);                                   
-                                ctx.lineTo(tempX,  h-marginX+5);
-                                ctx.fillText(Math.round(tempXValue).toString(),tempX,h-marginX+18);
+                    var tempX = marginY;
+                    var tempXValue=xMin;                                
+                    for(var i=0;i<=xTickCount;i++)
+                    {                                       
+                        ctx.moveTo(tempX, h-marginX);                                   
+                        ctx.lineTo(tempX,  h-marginX+5);
+                        ctx.fillText(Math.round(tempXValue).toString(),tempX,h-marginX+18);
 
-                                tempX += ((w-marginY-margin2)/ (xTickCount));
-                                tempXValue += xTickValue;
-                            }
+                        tempX += ((w-marginY-margin2)/ (xTickCount));
+                        tempXValue += xTickValue;
+                    }
 
-                            ctx.stroke();
+                    ctx.stroke();
 
-                            //labels
-                            ctx.textAlign = "center";
-                            ctx.fillStyle = "DimGray";
-                            ctx.font="bold 14px Georgia"; 
+                    //labels
+                    ctx.textAlign = "center";
+                    ctx.fillStyle = "DimGray";
+                    ctx.font="bold 14px Georgia"; 
 
-                            ctx.save();
-                            ctx.translate(14, h/2);
-                            ctx.rotate(-Math.PI/2);                                                              
-                            ctx.fillText(yLabel,0,0);
-                            ctx.restore();
+                    ctx.save();
+                    ctx.translate(14, h/2);
+                    ctx.rotate(-Math.PI/2);                                                              
+                    ctx.fillText(yLabel,0,0);
+                    ctx.restore();
 
-                            ctx.fillText(xLabel,w/2,h-4);
-                            ctx.restore();
-                        })                            
+                    ctx.fillText(xLabel,w/2,h-4);
+                    ctx.restore();                       
                     },
 
                 drawLine: function (chartID,yMin,yMax,xMin,xMax,dataSet,markerWidth,markerColor){
 
-                    Vue.nextTick()
-                        .then(function () {
-                            if(document.getElementById(chartID) == null)
-                            {
-                                return;
-                            }
 
-                            var canvas = document.getElementById(chartID),
-                                ctx = canvas.getContext('2d');           
+                    if(document.getElementById(chartID) == null)
+                    {
+                        return;
+                    }
 
-                            var w =  ctx.canvas.width;
-                            var h = ctx.canvas.height;
-                            var marginY=45;
-                            var marginX=40;
-                            var margin2=10;
-                            var tickLength=3;
+                    var canvas = document.getElementById(chartID),
+                        ctx = canvas.getContext('2d');           
 
-                            ctx.translate(marginY, h-marginX);
-                            ctx.moveTo(0, 0);
+                    var w =  ctx.canvas.width;
+                    var h = ctx.canvas.height;
+                    var marginY=45;
+                    var marginX=40;
+                    var margin2=10;
+                    var tickLength=3;
 
-                            ctx.beginPath();
-                            for(i=0;i<dataSet.length;i++)
-                            {
-                                x = app.convertToX(dataSet[i].x,xMax,xMin,w-marginY-margin2,markerWidth);
-                                y = app.convertToY(dataSet[i].y,yMax,yMin,h-marginX-margin2,markerWidth);
+                    ctx.save();
 
-                                ctx.lineTo(x,y);
-                            }    
+                    ctx.translate(marginY, h-marginX);
+                    ctx.moveTo(0, 0);
 
-                            ctx.strokeStyle=markerColor;
-                            ctx.lineWidth=markerWidth;
-                            ctx.stroke();    
-                            ctx.restore();                  
+                    ctx.beginPath();
+                    for(i=0;i<dataSet.length;i++)
+                    {
+                        x = app.convertToX(dataSet[i].x,xMax,xMin,w-marginY-margin2,markerWidth);
+                        y = app.convertToY(dataSet[i].y,yMax,yMin,h-marginX-margin2,markerWidth);
 
-                        })                            
+                        ctx.lineTo(x,y);
+                    }    
+
+                    ctx.strokeStyle=markerColor;
+                    ctx.lineWidth=markerWidth;
+                    ctx.stroke();    
+                    ctx.restore();                                         
                     },
 
                 convertToX:function(tempValue,maxValue,minValue,tempWidth, markerWidth){
@@ -262,13 +278,11 @@
 
                 updateToogleState:function(toggleState){
                    app.$data.toggleState = toggleState;
-                   app.updateCanvases();
+                   Vue.nextTick(app.updateCanvases());    
                 },
 
                                         
             },
-
-
 
             mounted: function(){
                 this.getSessionDaySubject();                      
@@ -287,7 +301,14 @@
         <div class="card">                  
             <div class="card-header">
                 <span >{{session_subject.contact_email}}</span>               
-                <span class="float-right">{{session_date}}</span>                                                                   
+                <span class="float-right">
+                    {%if session_started and not before_start_date %}
+                        <button class="btn btn-outline-primary btn-sm" type="button" v-on:click = "getSessionDaySubjectButton()">
+                            <span v-html='refreshButtonText'></span>
+                        </button>                    
+                        <span v-html = "session_date"></span>
+                    {%endif%}
+                </span>                                                                  
             </div>
             <div class="card-body">    
                 {%if not session_started or before_start_date %}
@@ -338,11 +359,6 @@
                                 Minutes Required to<br>Improve Health to <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_activity></span>: <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_minutes></span>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col" style="text-align: center;">
-                                <canvas key="heartSelfChart" id="heartSelfChart" style="border-style: solid;border-width: 1px;" width="300" height="325"></canvas>
-                            </div>
-                        </div>
                     </div>
                     <div v-else-if="toggleState==='immune'">
                         <div class="row mt-2">
@@ -366,11 +382,6 @@
                         <div class="row">
                             <div class="col" style="text-align: center;">
                                 Hours Required to<br>Improve Health to <span v-html = session_day_subject_actvity.immune_improvment_hours.target_activity></span>: <span v-html="session_day_subject_actvity.immune_improvment_hours.target_hours"></span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col" style="text-align: center;">
-                                <canvas key="immuneSelfChart" id="immuneSelfChart" style="border-style: solid;border-width: 1px;" width="300" height="325"></canvas>
                             </div>
                         </div>
                     </div>  
@@ -410,6 +421,14 @@
                                     </button>
                                 </div>    
                                 
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-show="toggleState != 'payment'">
+                        <div class="row">
+                            <div class="col" style="text-align: center;">
+                                <canvas key="healthChart" id="healthChart" style="border-style: solid;border-width: 1px;" width="300" height="325"></canvas>
                             </div>
                         </div>
                     </div>
