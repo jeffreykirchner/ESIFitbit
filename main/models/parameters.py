@@ -18,6 +18,8 @@ class Parameters(models.Model):
 
     consentForm = models.CharField(max_length = 50000, default ="")                        #consent for subject must agree to before participation 
 
+    trackerDataOnly = models.BooleanField(default=True)                                    #only use data collected from fitness tracker
+
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
 

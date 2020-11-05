@@ -78,9 +78,20 @@ class Session_subject(models.Model):
         logger.info("getFibitImmuneMinutes")
         logger.info(search_date)
 
+        p = Parameters.objects.first()
+
         try:
             r = self.getFitbitSleep(search_date)
-            v = r['summary']['totalMinutesAsleep']
+
+            v = 0
+
+            if p.trackerDataOnly:
+                for s in r['sleep']:
+                    if s['type']=='stages':
+                        v+=s['minutesAsleep']
+
+            else:
+                v = r['summary']['totalMinutesAsleep']
 
             logger.info(v)
             return v
@@ -94,11 +105,25 @@ class Session_subject(models.Model):
         logger.info("getFibitHeartMinutes")
         logger.info(search_date)
 
+        p = Parameters.objects.first()
+
         try:
             r = self.getFitbitActivies(search_date)
-            v = r['summary']['veryActiveMinutes']
+            v =  0
 
-            logger.info(v)
+            keyStr = ""
+            
+            if p.trackerDataOnly:
+                keyStr = "activities-tracker-minutesVeryActive"
+            else:
+                keyStr = "activities-minutesVeryActive"
+
+            for a in r[keyStr]:
+                logger.info(a)
+                v += int(a['value'])
+
+
+            logger.info(f'getFibitHeartMinutes minutes {v}')
             return v
         except Exception  as e: 
             logger.info(e)
@@ -110,8 +135,9 @@ class Session_subject(models.Model):
         logger.info("Fitbit sleep")
         logger.info(sleep_date) 
 
-        temp_s = sleep_date.strftime("%Y-%m-%d")
+        #temp_s = sleep_date.strftime("%Y-%m-%d")
         #temp_s = "today"
+        temp_s="2020-10-22"
 
         fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1.2/user/-/sleep/date/{temp_s}.json')
 
@@ -123,10 +149,16 @@ class Session_subject(models.Model):
         logger.info("Fitbit activity")
         logger.info(activity_date) 
 
+        p = Parameters.objects.first()
+
         temp_s = activity_date.strftime("%Y-%m-%d")
         #temp_s = "today"
+        #temp_s="2020-10-22"
 
-        fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/date/{temp_s}.json')
+        if p.trackerDataOnly:
+            fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/tracker/minutesVeryActive/date/{temp_s}/1d.json')
+        else:
+            fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/minutesVeryActive/date/{temp_s}/1d/15min.json')
 
         return fitbit_response
 

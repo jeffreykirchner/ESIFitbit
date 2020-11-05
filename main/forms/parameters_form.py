@@ -26,7 +26,7 @@ class Parameters_form(forms.ModelForm):
 
 
     cancelationTextSubject = forms.CharField(label='Cancelation Email, Subject',
-                                         widget=forms.TextInput(attrs={"size":"125"}))
+                                        widget=forms.TextInput(attrs={"size":"125"}))
 
     cancelationText = forms.CharField(label='Cancelation Email, Text',
                                      widget=forms.Textarea(attrs={"rows":"15", "cols":"125"}))
@@ -37,6 +37,10 @@ class Parameters_form(forms.ModelForm):
 
     experimentTimeZone = forms.ChoiceField(label="Experiment Timezone",
                                         choices=[(tz, tz) for tz in pytz.all_timezones])
+    
+    trackerDataOnly = forms.ChoiceField(label='Only Fitness Tracker Data',
+                                        choices=((True, 'Yes'), (False,'No' )),                 
+                                        widget=forms.Select)
 
     class Meta:
         model=Parameters
