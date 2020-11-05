@@ -21,7 +21,9 @@
                                              current_immune_earnings:"--",
                                              current_total_earnings:"--",
                                              heart_maintenance_minutes:"--",
-                                             immune_maintenance_hours:"--",                                          
+                                             immune_maintenance_hours:"--", 
+                                             health_improvment_minutes:{target_activity: "--",target_minutes:"--"},
+                                             immune_improvment_hours:{target_activity: "--",target_hours:"--"}                                      
                                              },
                 session_day_subject_actvity_previous:{heart_activity_minutes:"--",
                                                       immune_activity_hours:"--",},
@@ -324,6 +326,11 @@
                         </div>
                         <div class="row">
                             <div class="col" style="text-align: center;">
+                                Minutes Required to<br>Improve Health to <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_activity></span>: <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_minutes></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" style="text-align: center;">
                                 <canvas key="heartSelfChart" id="heartSelfChart" style="border-style: solid;border-width: 1px;" width="300" height="325"></canvas>
                             </div>
                         </div>
@@ -345,6 +352,11 @@
                         <div class="row">
                             <div class="col" style="text-align: center;">
                                 Hours Required to<br>Maintain Health at <span v-html = session_day_subject_actvity.immune_activity></span>: <span v-html="session_day_subject_actvity.immune_maintenance_hours"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" style="text-align: center;">
+                                Hours Required to Improve Health to <span v-html = session_day_subject_actvity.immune_improvment_hours.target_activity></span>: <span v-html="session_day_subject_actvity.immune_improvment_hours.target_hours"></span>
                             </div>
                         </div>
                         <div class="row">

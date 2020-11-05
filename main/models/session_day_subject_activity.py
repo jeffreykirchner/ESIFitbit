@@ -113,12 +113,12 @@ class Session_day_subject_actvity(models.Model):
         logger.info(f"calcMaintenance {v}")
         return v
 
-    #heart activity / 100
+    #heart activity * 100
     def heart_activity_formatted(self):
         v = round(self.heart_activity * 100,2)
         return f'{v}'
 
-    #immune activity /100
+    #immune activity * 100
     def immune_activity_formatted(self):
         v = round(self.immune_activity * 100,2)
         return f'{v}'
@@ -181,7 +181,47 @@ class Session_day_subject_actvity(models.Model):
     def getTodaysTotalEarnings(self):
         return self.session_day.session.parameterset.fixed_pay_per_day + self.getTodaysHeartEarnings() + self.getTodaysImmuneEarnings()
 
-    
+    #get health improvment minutes
+    def getTodaysHeartImprovmentMinutes(self):
+        logger = logging.getLogger(__name__)
+        p_set = self.session_day.session.parameterset
+
+        max_activity = self.calcHeartActivity(1440,self.heart_activity)
+
+        target_activity = (float(self.heart_activity) + max_activity)/2
+
+        target_minutes = self.calcMaintenance(p_set.heart_parameter_1,
+                                    p_set.heart_parameter_2,
+                                    p_set.heart_parameter_3,
+                                    target_activity,
+                                    15)
+
+        logger.info(f'getTodaysHeartImprovmentMinutes heart_activity {self.heart_activity} max_activity {max_activity} target_activity {target_activity} target_minutes {target_minutes}')
+
+        target_minutes = math.ceil(target_minutes)
+
+        return {"target_activity": f'{target_activity*100:0.2f}',"target_minutes":f' {target_minutes}mins'}
+
+    #get immune improvment minutes
+    def getTodaysImmuneImprovmentHours(self):
+        logger = logging.getLogger(__name__)
+        p_set = self.session_day.session.parameterset
+
+        max_activity = self.calcImmuneActivity(1440,self.immune_activity)
+
+        target_activity = (float(self.immune_activity) + max_activity)/2
+
+        target_minutes = self.calcMaintenance(p_set.immune_parameter_1,
+                                    p_set.immune_parameter_2,
+                                    p_set.immune_parameter_3,
+                                    target_activity,
+                                    240)
+
+        logger.info(f'getTodaysimmuneImprovmentMinutes immune_activity {self.immune_activity} max_activity {max_activity} target_activity {target_activity} target_minutes {target_minutes}')
+
+        target_minutes = math.ceil(target_minutes)
+
+        return {"target_activity": f'{target_activity*100:0.2f}',"target_hours":f'{math.floor(target_minutes/60)}hrs {target_minutes%60}mins'}
 
     #return json object of class
     def json(self):
@@ -209,4 +249,6 @@ class Session_day_subject_actvity(models.Model):
             "fixed_pay_per_day" : f'{self.session_day.session.parameterset.fixed_pay_per_day:0.2f}',
             "heart_maintenance_minutes" : f'{math.ceil(self.getHeartMaintenance())}mins',
             "immune_maintenance_hours" : immune_maintenance_hours,
+            "heart_improvment_minutes" : self.getTodaysHeartImprovmentMinutes(),
+            "immune_improvment_hours":self.getTodaysImmuneImprovmentHours(),
         }
