@@ -4,6 +4,7 @@ from django.views.generic.base import RedirectView
 from django.conf.urls import include,url
 from django.conf import settings
 from . import views
+from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
     #admin site
@@ -24,7 +25,7 @@ urlpatterns = [
 
     #subject
     path('subjectHome/',views.Home,name='home2'),
-    path('subjectHome/<uuid:id>/',views.Subject_Home,name='subject_home'),
+    path('subjectHome/<uuid:id>/',csrf_exempt(views.Subject_Home),name='subject_home'),
    
 
     path('fitBit/',views.fitBit,name='fitBit'),
