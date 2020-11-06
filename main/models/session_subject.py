@@ -135,9 +135,9 @@ class Session_subject(models.Model):
         logger.info("Fitbit sleep")
         logger.info(sleep_date) 
 
-        #temp_s = sleep_date.strftime("%Y-%m-%d")
+        temp_s = sleep_date.strftime("%Y-%m-%d")
         #temp_s = "today"
-        temp_s="2020-10-22"
+        #temp_s="2020-10-22"
 
         fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1.2/user/-/sleep/date/{temp_s}.json')
 
