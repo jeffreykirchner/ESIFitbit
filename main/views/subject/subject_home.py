@@ -83,6 +83,9 @@ def getSessionDaySubject(data,session_subject,session_day):
         status = "fail"
 
     if status == "success":
+        #check if subject missed past days
+        session_subject.fitBitCatchUp()
+
         session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
 
         if session_day_subject_actvity:
@@ -95,26 +98,11 @@ def getSessionDaySubject(data,session_subject,session_day):
             #mark subject checkin as true
             session_day_subject_actvity.check_in_today=True
             session_day_subject_actvity.save()
-            
+
             #pull data from fitbit
-            immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.getPreviousSessionDay().date)
-            heart_activity_minutes = session_subject.getFibitHeartMinutes(session_day.getPreviousSessionDay().date)
+            fitbitError = session_day_subject_actvity_previous_day.pullFitbitActvities()
 
-            if immune_activity_minutes >= 0:
-                session_day_subject_actvity_previous_day.immune_activity_minutes = immune_activity_minutes
-            else:
-                logger.info(f"immune_activity_minutes not found: session subject {session_subject} session day {session_day}")
-                fitbitError=True
-            
-            if heart_activity_minutes >= 0:
-                session_day_subject_actvity_previous_day.heart_activity_minutes = heart_activity_minutes
-            else:
-                logger.info(f"heart_activity_minutes not found: session subject {session_subject} session day {session_day}")
-                fitbitError=True
-
-            session_day_subject_actvity_previous_day.save()
-
-            #calc today's actvity
+            # #calc today's actvity
             session_subject.calcTodaysActivity(session_day.period_number)
 
             #get object again after calculation

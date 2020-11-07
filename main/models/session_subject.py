@@ -10,6 +10,7 @@ from datetime import datetime,timedelta,timezone,date
 import pytz
 import random
 import main
+from main.globals import todaysDate
 
 #subject in session
 class Session_subject(models.Model):
@@ -41,21 +42,37 @@ class Session_subject(models.Model):
     
     #fill session subject activity with test data
     def fillWithTestData(self):
-        logger = logging.getLogger(__name__) 
-        
+        logger = logging.getLogger(__name__)         
 
         sada_set = self.Session_day_subject_actvities.order_by('session_day__period_number')
         
-        p = Parameters.objects.first()
-        tz = pytz.timezone(p.experimentTimeZone)
-        d_today = datetime.now(tz)
-        d_today = d_today.replace(hour=0,minute=0, second=0,microsecond=0)
+        d_today = todaysDate()
 
         previous_i = None
         for i in sada_set:
             if i.session_day.date == d_today.date():
                 break
+            
+            i.heart_activity_minutes = random.randint(0,30)
+            i.immune_activity_minutes = random.randint(240,500)
+            i.check_in_today = True
 
+            i.save()
+        
+        self.reCalcAllActvity()
+
+    def reCalcAllActvity(self):
+        logger = logging.getLogger(__name__)    
+
+        d_today = todaysDate()
+
+        sada_set = self.Session_day_subject_actvities.filter(session_day__date__lt=d_today.date()).order_by('session_day__period_number')
+        
+        logger.info(f"reCalcAllActvity date {d_today.date()}")
+
+        previous_i = None
+        for i in sada_set:
+           
             if i.session_day.period_number == 1:
                 i.heart_activity = self.session.parameterset.heart_activity_inital
                 i.immune_activity = self.session.parameterset.immune_activity_inital
@@ -63,14 +80,39 @@ class Session_subject(models.Model):
                 logger.info(f"previous: {previous_i} current {i}")
                 i.saveHeartActivity(previous_i.heart_activity_minutes,previous_i.heart_activity)
                 i.saveImmuneActivity(previous_i.immune_activity_minutes,previous_i.immune_activity)
-            
-            i.heart_activity_minutes = random.randint(0,30)
-            i.immune_activity_minutes = random.randint(240,500)
-            i.check_in_today = True
 
             i.save()
 
             previous_i = i
+
+    #look back to check for missed days checked in
+    def fitBitCatchUp(self):
+        logger = logging.getLogger(__name__)
+        logger.info(f"fitBitCatchUp name {self.name} session {self.session.id}")
+
+        d_today = todaysDate()
+
+        sa_list  = self.Session_day_subject_actvities.all().filter(check_in_today = False,session_day__date__lt = d_today.date())
+
+        logger.info(f'fitBitCatchUp date {d_today.date()} subject activities {sa_list}')
+
+        #pull in actvity dor days not checked in
+        for s in sa_list:
+            #if s.session_day.date < d_today.date():
+
+            s.check_in_today=True
+            s.save()
+
+            logger.info(f'fitBitCatchUp {s.id}')
+
+            previous_sa = s.getPreviousActivityDay()
+
+            if previous_sa:
+                v = previous_sa.pullFitbitActvities()                  
+        
+        #recalc activtivity scores
+        if sa_list:
+            self.reCalcAllActvity()
 
     #return total sleep from date specified
     def getFibitImmuneMinutes(self,search_date):

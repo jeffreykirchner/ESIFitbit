@@ -223,6 +223,31 @@ class Session_day_subject_actvity(models.Model):
 
         return {"target_activity": f'{target_activity*100:0.2f}',"target_hours":f'{math.floor(target_minutes/60)}hrs {target_minutes%60}mins'}
 
+    #pull actvities from fitbit and store
+    def pullFitbitActvities(self):
+        logger = logging.getLogger(__name__)
+
+        fitbitError = False
+
+        immune_activity_minutes = self.session_subject.getFibitImmuneMinutes(self.session_day.date)
+        heart_activity_minutes = self.session_subject.getFibitHeartMinutes(self.session_day.date)
+
+        if immune_activity_minutes >= 0:
+            self.immune_activity_minutes = immune_activity_minutes
+        else:
+            logger.info(f"immune_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")
+            fitbitError=True
+        
+        if heart_activity_minutes >= 0:
+            self.heart_activity_minutes = heart_activity_minutes
+        else:
+            logger.info(f"heart_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")
+            fitbitError=True
+
+        self.save()
+
+        return fitbitError
+
     #return json object of class
     def json(self):
         immune_activity_minutes=int(self.immune_activity_minutes)
