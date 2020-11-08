@@ -34,6 +34,10 @@ class Parameters_form(forms.ModelForm):
     
     consentForm = forms.CharField(label='Consent Form',
                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
+    
+    consentFormRequired = forms.ChoiceField(label='Consent Form Required',
+                                        choices=((True, 'Yes'), (False,'No' )),                 
+                                        widget=forms.Select)
 
     experimentTimeZone = forms.ChoiceField(label="Experiment Timezone",
                                         choices=[(tz, tz) for tz in pytz.all_timezones])

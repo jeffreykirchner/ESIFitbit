@@ -1,0 +1,22 @@
+{% load crispy_forms_tags %}
+<!-- consent modal -->  
+<div class="modal" id="consentModal" tabindex="-1" role="dialog" aria-labelledby="consentModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="consentModalTitle">Informed Consent</h5>
+            
+            </div>
+            <div class="modal-body">
+                <textarea  class="form-control" v-model = "consent_form_text" style="width: 100%;" rows="15">
+                </textarea>                                                             
+            </div>
+            <div class="modal-footer">
+                <b>I agree to the statement above.</b>             
+                <button type="button" class="btn btn-outline-primary" v-on:click = "acceptConsentForm()">
+                    Submit <i class="fas fa-sign-in-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

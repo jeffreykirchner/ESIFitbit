@@ -17,6 +17,7 @@ class Parameters(models.Model):
     cancelationText = models.CharField(max_length = 10000,default = "")                    #email text when an experiment is canceled
 
     consentForm = models.CharField(max_length = 50000, default ="")                        #consent for subject must agree to before participation 
+    consentFormRequired = models.BooleanField(default=True)                                #true if subject must agree to special consent form before doing experiment
 
     trackerDataOnly = models.BooleanField(default=True)                                    #only use data collected from fitness tracker
 

@@ -33,23 +33,29 @@
                 refreshButtonText : '<i class="fas fa-sync fa-spin"></i>',
                 toggleState:"heart",
                 fitbitError:false,
-                session_date:"--/--/----"
+                consent_required:false,
+                consent_form_text:"",
+                session_date:"--/--/----",
+                paymentError:false,
                
             },
 
             methods:{
 
-               
-
                 getSessionDaySubject:function(){                    
                     
-
                     axios.post('/subjectHome/{{id}}/', {
                                     action :"getSessionDaySubject" ,                                                                                                                                                                
                                 })
                                 .then(function (response) {     
                                     app.updateSessionDaySubject(response);    
-                                    app.$data.refreshButtonText = '<i class="fas fa-sync"></i>';                                          
+                                    app.$data.refreshButtonText = '<i class="fas fa-sync"></i>';  
+
+                                    app.$data.consent_required = response.data.consent_required;
+                                    app.$data.consent_form_text = response.data.consent_form_text;
+
+                                    app.toggleConsentForm();
+                                                                           
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -79,6 +85,36 @@
                     }
                 },   
 
+                toggleConsentForm:function()
+                {
+                    if(app.$data.consent_required)
+                    {
+                        $('#consentModal').modal({backdrop: 'static', keyboard: false}).show();
+                    }
+                    else
+                    {
+                        if(($("#consentModal").data('bs.modal') || {})._isShown)
+                        {
+                            $('#consentModal').modal('toggle');
+                        }
+                    } 
+                },
+
+                acceptConsentForm:function(){
+
+                    axios.post('/subjectHome/{{id}}/', {
+                                    action :"acceptConsentForm",                                                                                                                                                                
+                                })
+                                .then(function (response) {    
+                                    
+                                    app.$data.consent_required = response.data.consent_required;
+                                    app.toggleConsentForm();
+                                })
+                                .catch(function (error) {
+                                    console.log(error);                                    
+                                });                        
+                },
+
                 payMe:function(reponse){
                     app.$data.payMeButtonText = '<i class="fas fa-spinner fa-spin"></i>';
 
@@ -87,7 +123,13 @@
                                 })
                                 .then(function (response) {     
                                     app.$data.session_day_subject_actvity = response.data.session_day_subject_actvity;    
-                                    app.$data.payMeButtonText = 'Pay Me <i class="fab fa-paypal fa-lg"></i>';                                         
+                                    app.$data.payMeButtonText = 'Pay Me <i class="fab fa-paypal fa-lg"></i>';     
+
+                                    if(response.data.status == "fail")
+                                        app.$data.paymentError=true;
+                                    else
+                                        app.$data.paymentError=false;    
+
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -419,6 +461,9 @@
                                     <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()">
                                         <span v-html="payMeButtonText"></span>
                                     </button>
+                                    <div v-show="paymentError">
+                                        <span v-html="'***Payment Error***'" style="color: red;"></span>
+                                    </div>
                                 </div>    
                                 
                             </div>
@@ -439,5 +484,7 @@
         </div>                
     </div>
 </div>    
+
+{%include "modals/consentModal.html"%}
 
 {%endblock content%}
