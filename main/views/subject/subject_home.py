@@ -38,7 +38,8 @@ def Subject_Home(request,id):
         return render(request,'subject/home.html',{"id":id,      
                                                    "before_start_date":session_subject.session.isBeforeStartDate(), 
                                                    "session_started":session_subject.session.started, 
-                                                   "start_date":session_subject.session.getDateString(),                                
+                                                   "start_date":session_subject.session.getDateString(),    
+                                                   "session_complete":session_subject.session.complete(),                            
                                                    "session_subject":session_subject}) 
 
 #subject accepts consent form
@@ -69,10 +70,16 @@ def payMe(data,session_subject,session_day):
         status = "fail"    
         logger.info("Consent required")
 
-    if not session_day_subject_actvity:
-        status = "fail"    
-        logger.info("Could not find session_day_subject_actvity")
-    
+    if status == "success":
+        if not session_day_subject_actvity:
+            status = "fail"    
+            logger.info("Could not find session_day_subject_actvity")
+
+    if status == "success":
+        if session_day.session.session_complete():
+            status = "fail"    
+            logger.info("Session is already complete")      
+
     if status == "success":
         if session_day_subject_actvity.paypal_today:
             status="fail"
@@ -95,7 +102,6 @@ def payMe(data,session_subject,session_day):
                          "session_complete":session_subject.sessionComplete(),
                          "session_day_subject_actvity" : session_day_subject_actvity.json()},safe=False)
 
-
 #get session subject day
 def getSessionDaySubject(data,session_subject,session_day):
     logger = logging.getLogger(__name__) 
@@ -111,6 +117,15 @@ def getSessionDaySubject(data,session_subject,session_day):
 
     if not session_day:
         status = "fail"
+        logger.info("Session day not found.")
+
+    if not session_subject:
+        status = "fail"
+        logger.info("Session subject not found.")
+    
+    if session_subject.session.complete():
+        status = "fail"
+        logger.info("The session is complete.")
 
     if status == "success":
         #check if subject missed past days
@@ -166,7 +181,7 @@ def getSessionDaySubject(data,session_subject,session_day):
                         "session_date":session_date,
                         "consent_required":consent_required,
                         "consent_form_text":consent_form_text,
-                        "session_complete":session_subject.sessionComplete(), #if session_subject else False,
+                        "session_complete":session_subject.sessionComplete() if session_subject else False,
                         "session_day_subject_actvity" : session_day_subject_actvity.json() if session_day_subject_actvity else None,
                         "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
                         "graph_parameters" : session_day.session.parameterset.json_graph() if session_day else None,},safe=False)                         

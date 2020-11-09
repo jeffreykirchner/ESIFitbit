@@ -255,6 +255,9 @@ class Session_subject(models.Model):
         
         sa=self.Session_day_subject_actvities.filter(session_day__date = self.session.end_date).first()
 
+        if not sa:
+            return False
+
         if sa.paypal_today:
             return True
         else:
