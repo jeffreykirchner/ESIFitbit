@@ -92,6 +92,7 @@ def payMe(data,session_subject,session_day):
         pass
 
     return JsonResponse({"status":status,
+                         "session_complete":session_subject.sessionComplete(),
                          "session_day_subject_actvity" : session_day_subject_actvity.json()},safe=False)
 
 
@@ -165,6 +166,7 @@ def getSessionDaySubject(data,session_subject,session_day):
                         "session_date":session_date,
                         "consent_required":consent_required,
                         "consent_form_text":consent_form_text,
+                        "session_complete":session_subject.sessionComplete(), #if session_subject else False,
                         "session_day_subject_actvity" : session_day_subject_actvity.json() if session_day_subject_actvity else None,
                         "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
                         "graph_parameters" : session_day.session.parameterset.json_graph() if session_day else None,},safe=False)                         

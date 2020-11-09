@@ -32,6 +32,7 @@
                 payMeButtonText : 'Pay Me <i class="fab fa-paypal fa-lg"></i>',
                 refreshButtonText : '<i class="fas fa-sync fa-spin"></i>',
                 toggleState:"heart",
+                session_complete:false,
                 fitbitError:false,
                 consent_required:false,
                 consent_form_text:"",
@@ -53,6 +54,7 @@
 
                                     app.$data.consent_required = response.data.consent_required;
                                     app.$data.consent_form_text = response.data.consent_form_text;
+                                    app.$data.session_complete = response.data.session_complete;
 
                                     app.toggleConsentForm();
                                                                            
@@ -122,7 +124,9 @@
                                     action :"payMe" ,                                                                                                                                                                
                                 })
                                 .then(function (response) {     
-                                    app.$data.session_day_subject_actvity = response.data.session_day_subject_actvity;    
+                                    app.$data.session_day_subject_actvity = response.data.session_day_subject_actvity;  
+                                    app.$data.session_complete = response.data.session_complete;
+                                      
                                     app.$data.payMeButtonText = 'Pay Me <i class="fab fa-paypal fa-lg"></i>';     
 
                                     if(response.data.status == "fail")
@@ -456,6 +460,9 @@
                             <div class="col" style="text-align: center;">
                                 <div v-if="session_day_subject_actvity.paypal_today">
                                     <span style="color: red;" v-html="'Your payment is on the way.<br>Check your email.'"></span>
+                                    <div v-show="session_complete">
+                                        <span style="color: red;" v-html="'The experiment is complete, thank you for your participation!'"></span>
+                                    </div>
                                 </div>
                                 <div v-else>
                                     <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()">

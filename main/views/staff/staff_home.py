@@ -59,6 +59,7 @@ def createSession(data):
     s.parameterset = ps
     s.invitation_text=p.invitationText
     s.invitation_text_subject=p.invitationTextSubject
+    s.calcEndDate()
     s.save()    
 
     #setup first session day
@@ -69,7 +70,7 @@ def createSession(data):
 
     return getSessions(data) 
 
-
+#delete sesssion
 def deleteSession(data):
     logger = logging.getLogger(__name__) 
     logger.info("Delete Session")

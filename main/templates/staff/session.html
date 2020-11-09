@@ -16,6 +16,7 @@
                 sessionParametersBeforeEdit:{},                     //store session before editing to restore if canceled
                 session:{title:"",                                  //session and parameter set values
                          start_date:"",
+                         end_date:"",
                          started:false,
                          invitations_sent:false,
                          invitation_text:"",
@@ -791,7 +792,14 @@
                                 <span v-html="session.start_date"></span>
                             </div>
                         </div>
-                        
+                        <div class="row">
+                            <div class="col-4" style="text-align: right;">
+                                End Date:
+                            </div>
+                            <div class="col-8">
+                                <span v-html="session.end_date"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <br>

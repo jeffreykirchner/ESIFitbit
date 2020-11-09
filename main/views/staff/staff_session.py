@@ -156,7 +156,9 @@ def updateParameters(data,id):
 
     if form.is_valid():
         #print("valid form")                
-        form.save()               
+        form.save()           
+        s.calcEndDate()
+            
         return JsonResponse({"status":"success","session" : getSessionJSON(id),},safe=False)                         
                                 
     else:
@@ -189,6 +191,8 @@ def updateSession(data,id):
         sd = s.session_days.order_by('-date').first()
         sd.date=s.start_date
         sd.save()
+
+        s.calcEndDate()
 
         return JsonResponse({"status":"success","session" : getSessionJSON(id),},safe=False)                         
                                 

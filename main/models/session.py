@@ -174,11 +174,8 @@ class Session(models.Model):
     
     #calc and store end date
     def calcEndDate(self):
-        p = Parameters.objects.first()
-        tz = pytz.timezone(p.experimentTimeZone)
 
-        d_end = datetime.now(tz)
-        d_end = d_end.replace(hour=0,minute=0, second=0,microsecond=0)
+        d_end = todaysDate()
         d_end = d_end.replace(day=self.start_date.day,month=self.start_date.month, year=self.start_date.year)
 
         d_end += timedelta(days=self.numberOfDays())
@@ -198,6 +195,12 @@ class Session(models.Model):
 
         return main.globals.sendMassInvitations(self.session_subjects.all(),self.invitation_text_subject,text)
 
+    #return true if today's date past end date
+    def complete(self):
+        if todaysDate().date()>self.end_date:
+            return True
+        else:
+            return False
 
     #return json object of class
     def json(self):

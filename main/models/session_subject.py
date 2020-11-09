@@ -248,6 +248,18 @@ class Session_subject(models.Model):
 
         return True
 
+    #return true if subject has completed the experiment
+    def sessionComplete(self):
+        if self.session.complete():
+            return True
+        
+        sa=self.Session_day_subject_actvities.filter(session_day__date = self.session.end_date).first()
+
+        if sa.paypal_today:
+            return True
+        else:
+            return False
+
     #return json object of class
     def json(self,get_fitbit_status):
         p = Parameters.objects.first()
