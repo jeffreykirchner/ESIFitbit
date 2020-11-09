@@ -147,6 +147,11 @@ def updateParameters(data,id):
     for field in data["formData"]:            
         form_data_dict[field["name"]] = field["value"]
 
+    if not s.editable():
+        form_data_dict["block_1_day_count"] = s.parameterset.block_1_day_count
+        form_data_dict["block_2_day_count"] = s.parameterset.block_2_day_count
+        form_data_dict["block_3_day_count"] = s.parameterset.block_3_day_count
+
     form = Parameterset_form(form_data_dict,instance=s.parameterset)
 
     if form.is_valid():

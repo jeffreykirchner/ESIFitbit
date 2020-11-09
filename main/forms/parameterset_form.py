@@ -68,15 +68,18 @@ class Parameterset_form(forms.ModelForm):
 
     block_1_day_count = forms.DecimalField(label='Block 1 Days',
                             min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_1_day_count"}))
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_1_day_count",
+                                                            "v-bind:disabled" :"session.editable === false"}))
     
     block_2_day_count = forms.DecimalField(label='Block 2 Days',
                             min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_2_day_count"}))
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_2_day_count",
+                                                            "v-bind:disabled" :"session.editable === false"}))
 
     block_3_day_count = forms.DecimalField(label='Block 3 Days',
                             min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_3_day_count"}))
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_3_day_count",
+                                                            "v-bind:disabled" :"session.editable === false"}))
 
     treatment_3_heart_bonus = forms.DecimalField(label='Heart Bonus ($)',
                             min_value=0,
