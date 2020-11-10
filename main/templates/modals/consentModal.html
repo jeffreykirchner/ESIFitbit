@@ -8,14 +8,31 @@
             
             </div>
             <div class="modal-body">
-                <textarea  class="form-control" v-model = "consent_form_text" style="width: 100%;" rows="15">
-                </textarea>                                                             
-            </div>
-            <div class="modal-footer">
-                <b>I agree to the statement above.</b>             
-                <button type="button" class="btn btn-outline-primary" v-on:click = "acceptConsentForm()">
-                    Submit <i class="fas fa-sign-in-alt"></i>
-                </button>
+                <div class="row">
+                    <div class="col">
+                        <textarea  class="form-control" v-model = "consent_form_text" style="width: 100%;" rows="15">
+                        </textarea>
+                    </div>
+                </div>
+                
+                <div class="row mt-2">
+                    <div class="col" style="text-align: right;">
+                        <b>I agree to the statement above.</b>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col" style="text-align: right;">
+                        <input style="text-align:right;" class="form-control" v-model="consent_signature" id="consentSignature" placeholder="Type your full name">
+                    </div>
+                </div>             
+                <div class="row mt-2">
+                    <div class="col" style="text-align: right;">
+                        <span v-html = "consent_signature" style="font-family:Brush Script MT;font-size: larger;"></span>
+                        <button type="button" class="btn btn-outline-primary" v-on:click = "acceptConsentForm()">
+                            Submit <i class="fas fa-sign-in-alt"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

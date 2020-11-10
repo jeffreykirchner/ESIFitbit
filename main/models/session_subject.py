@@ -23,7 +23,9 @@ class Session_subject(models.Model):
     gmail_address = models.CharField(max_length = 300,default = 'Gmail Address',verbose_name = 'Gmail Address')         #gmail address asigned to subject for experiment 
     gmail_password = models.CharField(max_length = 300,default = 'Gmail Password',verbose_name = 'Gmail Password')      #password for above 
     
-    consent_required = models.BooleanField(default=True)          #true if subject has done consent form    
+    consent_required = models.BooleanField(default=True)          #true if subject has done consent form  
+    consent_signature = models.CharField(max_length = 300,default = '',verbose_name = 'Consent Signature')
+
     questionnaire1_required = models.BooleanField(default=True)   #pre experiment questionnaire
     questionnaire2_required = models.BooleanField(default=True)   #post experiment questionnaire                                                 
 

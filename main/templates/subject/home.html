@@ -35,6 +35,7 @@
                 session_complete:false,
                 fitbitError:false,
                 consent_required:false,
+                consent_signature:"",
                 questionnaire1_required:false,
                 questionnaire2_required:false,
                 consent_form_text:"",
@@ -163,8 +164,15 @@
 
                 acceptConsentForm:function(){
 
+                    if(app.$data.consent_signature=="")
+                    {
+                        alert("Please type your full name.")
+                        return;
+                    }
+
                     axios.post('/subjectHome/{{id}}/', {
-                                    action :"acceptConsentForm",                                                                                                                                                                
+                                    action :"acceptConsentForm",   
+                                    consent_signature : app.$data.consent_signature,                                                                                                                                                             
                                 })
                                 .then(function (response) {    
                                     

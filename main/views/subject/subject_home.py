@@ -92,6 +92,7 @@ def acceptConsentForm(data,session_subject):
     logger.info(data)
 
     session_subject.consent_required=False
+    session_subject.consent_signature = data['consent_signature']
     session_subject.save()
 
 
