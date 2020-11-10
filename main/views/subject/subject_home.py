@@ -4,7 +4,8 @@ import json
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 import logging
-from main.models import Session_subject,Session_day_subject_actvity,Session_day,Parameters
+from main.models import Session_subject,Session_day_subject_actvity,Session_day,Parameters,Session_subject_questionnaire1
+from main.forms import Session_subject_questionnaire1_form
 
 def Subject_Home(request,id):
     logger = logging.getLogger(__name__) 
@@ -29,18 +30,60 @@ def Subject_Home(request,id):
                 return payMe(data,session_subject,session_day)
             elif data["action"] == "acceptConsentForm":
                 return acceptConsentForm(data,session_subject)
+            elif data["action"] == "submitQuestionnaire1":
+                return submitQuestionnaire1(data,session_subject)
            
         else:   
             logger.info("Session subject day, user not found: " + str(id))
             return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
 
+        session_subject_questionnaire1_form = Session_subject_questionnaire1_form()
+
+        session_subject_questionnaire1_form_ids=[]
+
+        for f in session_subject_questionnaire1_form:
+            session_subject_questionnaire1_form_ids.append(str(f.html_name))
+
         return render(request,'subject/home.html',{"id":id,      
                                                    "before_start_date":session_subject.session.isBeforeStartDate(), 
-                                                   "session_started":session_subject.session.started, 
+                                                   "session_started":session_subject.session.started,                                                   
                                                    "start_date":session_subject.session.getDateString(),    
-                                                   "session_complete":session_subject.session.complete(),                            
+                                                   "session_complete":session_subject.session.complete(),  
+                                                   "session_subject_questionnaire1_form_ids":session_subject_questionnaire1_form_ids,
+                                                   "session_subject_questionnaire1_form":session_subject_questionnaire1_form,                          
                                                    "session_subject":session_subject}) 
+
+#take pre session questionnaire
+def submitQuestionnaire1(data,session_subject):
+    logger = logging.getLogger(__name__) 
+    logger.info("acceptConsentForm")
+    logger.info(data)
+
+    form_data_dict = {}
+
+    for field in data["formData"]:            
+        form_data_dict[field["name"]] = field["value"]
+
+    q = Session_subject_questionnaire1()
+    q.session_subject = session_subject    
+
+    form = Session_subject_questionnaire1_form(form_data_dict,instance=q)
+
+    if form.is_valid():
+        #print("valid form")                
+        form.save()         
+        q.save()  
+        
+        session_subject.questionnaire1_required=False
+        session_subject.save()
+            
+        return JsonResponse({"status":"success",
+                             "questionnaire1_required":session_subject.questionnaire1_required,},safe=False)                         
+                                
+    else:
+        logger.info("Invalid questionnaire1 form")
+        return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
 
 #subject accepts consent form
 def acceptConsentForm(data,session_subject):
@@ -176,14 +219,20 @@ def getSessionDaySubject(data,session_subject,session_day):
         consent_required = False
         consent_form_text=""
 
-    return JsonResponse({"status":status,
+    if status == "fail":
+        return JsonResponse({"status":status,
+                             },safe=False)
+    else:
+        return JsonResponse({"status":status,
                         "fitbitError":fitbitError,
                         "session_date":session_date,
                         "consent_required":consent_required,
+                        "questionnaire1_required":session_subject.questionnaire1_required,
+                        "questionnaire2_required":session_subject.questionnaire2_required,
                         "consent_form_text":consent_form_text,
-                        "session_complete":session_subject.sessionComplete() if session_subject else False,
-                        "session_day_subject_actvity" : session_day_subject_actvity.json() if session_day_subject_actvity else None,
+                        "session_complete":session_subject.sessionComplete(),
+                        "session_day_subject_actvity" : session_day_subject_actvity.json(),
                         "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
-                        "graph_parameters" : session_day.session.parameterset.json_graph() if session_day else None,},safe=False)                         
+                        "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)                         
                                 
      

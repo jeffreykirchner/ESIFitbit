@@ -23,7 +23,9 @@ class Session_subject(models.Model):
     gmail_address = models.CharField(max_length = 300,default = 'Gmail Address',verbose_name = 'Gmail Address')         #gmail address asigned to subject for experiment 
     gmail_password = models.CharField(max_length = 300,default = 'Gmail Password',verbose_name = 'Gmail Password')      #password for above 
     
-    consent_required = models.BooleanField(default=True)                                                                #true if subject has done consent form
+    consent_required = models.BooleanField(default=True)          #true if subject has done consent form    
+    questionnaire1_required = models.BooleanField(default=True)   #pre experiment questionnaire
+    questionnaire2_required = models.BooleanField(default=True)   #post experiment questionnaire                                                 
 
     #fitbit    
     fitBitAccessToken = models.CharField(max_length=1000, default="",verbose_name = 'FitBit Access Token')
@@ -301,6 +303,8 @@ class Session_subject(models.Model):
             "fitBit_Attached" : fitBit_Attached,
             "get_fitbit_status" : get_fitbit_status,
             "consent_required": self.consent_required,
+            "questionnaire1_required":self.questionnaire1_required,
+            "questionnaire2_required":self.questionnaire2_required,
         }
     
     #take fitbit api url and return response

@@ -35,11 +35,14 @@
                 session_complete:false,
                 fitbitError:false,
                 consent_required:false,
+                questionnaire1_required:false,
+                questionnaire2_required:false,
                 consent_form_text:"",
                 session_date:"--/--/----",
                 paymentError:false,
                 status:"success",
-               
+                questionnaire1_ids : {{session_subject_questionnaire1_form_ids|safe|escape}},
+                questionnaire2_ids : [],                                
             },
 
             methods:{
@@ -60,14 +63,44 @@
                                         app.$data.consent_required = response.data.consent_required;
                                         app.$data.consent_form_text = response.data.consent_form_text;
                                         app.$data.session_complete = response.data.session_complete;
+                                        app.$data.questionnaire1_required = response.data.questionnaire1_required;
+                                        app.$data.questionnaire2_required = response.data.questionnaire2_required;
+
 
                                         app.toggleConsentForm();
+                                        app.toggleQuesionnaire1();
                                     }
                                     else
                                     {
                                         app.$data.refreshButtonText = '<i class="fas fa-exclamation-circle"></i>';
                                     }
                                                                            
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });                        
+                },
+
+                submitQuestionnaire1:function(){                    
+                   
+                    axios.post('/subjectHome/{{id}}/', {
+                                    action :"submitQuestionnaire1" ,      
+                                    formData : $("#questionnaire1Form").serializeArray(),                                                                                                                                                          
+                                })
+                                .then(function (response) {     
+                                    status=response.data.status;                               
+
+                                    app.clearMainFormErrors();
+
+                                    if(status=="success")
+                                    {
+                                        app.$data.questionnaire1_required = response.data.questionnaire1_required;
+                                        app.toggleQuesionnaire1();
+                                    } 
+                                    else
+                                    {                                                                 
+                                        app.displayErrors(response.data.errors);
+                                    }                                   
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -112,6 +145,21 @@
                     } 
                 },
 
+                toggleQuesionnaire1:function()
+                {                    
+                    if(app.$data.questionnaire1_required && !app.$data.consent_required)
+                    {
+                        $('#questionnaire1Modal').modal({backdrop: 'static', keyboard: false}).show();
+                    }
+                    else
+                    {
+                        if(($("#questionnaire1Modal").data('bs.modal') || {})._isShown)
+                        {
+                            $('#questionnaire1Modal').modal('toggle');
+                        }
+                    } 
+                },
+
                 acceptConsentForm:function(){
 
                     axios.post('/subjectHome/{{id}}/', {
@@ -121,6 +169,7 @@
                                     
                                     app.$data.consent_required = response.data.consent_required;
                                     app.toggleConsentForm();
+                                    app.toggleQuesionnaire1();
                                 })
                                 .catch(function (error) {
                                     console.log(error);                                    
@@ -337,6 +386,41 @@
                    Vue.nextTick(app.updateCanvases());    
                 },
 
+                displayErrors:function(errors){
+                    for(var e in errors)
+                    {
+                        $("#id_" + e).attr("class","form-control is-invalid")
+                        var str='<span id=id_errors_'+ e +' class="text-danger">';
+                        
+                        for(var i in errors[e])
+                        {
+                            str +=errors[e][i] + '<br>';
+                        }
+
+                        str+='</span>';
+                        $("#div_id_" + e).append(str); 
+
+                        var elmnt = document.getElementById("div_id_" + e);
+                        elmnt.scrollIntoView(); 
+
+                    }
+                }, 
+
+                clearMainFormErrors:function(){
+                    for(i=0;i<app.$data.questionnaire1_ids.length;i++)
+                    {
+                        item = app.$data.questionnaire1_ids[i];
+                        $("#id_" + item).attr("class","form-control");
+                        $("#id_errors_" + item).remove();
+                    }
+
+                    for(var item in app.$data.questionnaire2_ids)
+                    {
+                        $("#id_" + item).attr("class","form-control");
+                        $("#id_errors_" + item).remove();
+                    }
+
+                },
                                         
             },
 
@@ -520,5 +604,6 @@
 </div>    
 
 {%include "modals/consentModal.html"%}
+{%include "modals/questionnaire1Modal.html"%}
 
 {%endblock content%}

@@ -19,6 +19,9 @@ class Parameters(models.Model):
     consentForm = models.CharField(max_length = 50000, default ="")                        #consent for subject must agree to before participation 
     consentFormRequired = models.BooleanField(default=True)                                #true if subject must agree to special consent form before doing experiment
 
+    questionnaire1Required = models.BooleanField(default=True)                             #enable pre experiment questionnaire
+    questionnaire2Required = models.BooleanField(default=True)                             #enable post experiment questionnaire
+
     trackerDataOnly = models.BooleanField(default=True)                                    #only use data collected from fitness tracker
 
     timestamp = models.DateTimeField(auto_now_add= True)
