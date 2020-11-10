@@ -59,21 +59,22 @@
                                     {
                                         app.updateSessionDaySubject(response);    
                                         app.$data.refreshButtonText = '<i class="fas fa-sync"></i>';  
-
-                                        app.$data.consent_required = response.data.consent_required;
-                                        app.$data.consent_form_text = response.data.consent_form_text;
-                                        app.$data.session_complete = response.data.session_complete;
-                                        app.$data.questionnaire1_required = response.data.questionnaire1_required;
+                                        
+                                        app.$data.session_complete = response.data.session_complete;                                        
                                         app.$data.questionnaire2_required = response.data.questionnaire2_required;
-
-
-                                        app.toggleConsentForm();
-                                        app.toggleQuesionnaire1();
+                                        
                                     }
                                     else
                                     {
                                         app.$data.refreshButtonText = '<i class="fas fa-exclamation-circle"></i>';
                                     }
+
+                                    app.$data.consent_required = response.data.consent_required;
+                                    app.$data.consent_form_text = response.data.consent_form_text;
+                                    app.$data.questionnaire1_required = response.data.questionnaire1_required;
+
+                                    app.toggleConsentForm();
+                                    app.toggleQuesionnaire1();
                                                                            
                                 })
                                 .catch(function (error) {

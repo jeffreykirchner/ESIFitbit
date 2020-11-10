@@ -221,6 +221,9 @@ def getSessionDaySubject(data,session_subject,session_day):
 
     if status == "fail":
         return JsonResponse({"status":status,
+                             "questionnaire1_required":session_subject.getQuestionnaire1Required(),
+                             "consent_required":consent_required,
+                             "consent_form_text":consent_form_text,
                              },safe=False)
     else:
         return JsonResponse({"status":status,
