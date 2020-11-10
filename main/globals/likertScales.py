@@ -3,6 +3,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 class Likert_importance(models.TextChoices):
+    DEFAULT = "", _('')
+    ZERO = 0, _('N/A')
     ONE = 1, _('Very Unimportant')
     TWO = 2, _('Unimportant')
     THREE = 3, _('Somewhat Unimportant')
@@ -12,6 +14,8 @@ class Likert_importance(models.TextChoices):
     SEVEN = 7, _('Very Important')
 
 class Likert_satisfaction(models.TextChoices):
+    DEFAULT = "", _('')
+    ZERO = 0, _('N/A')
     ONE = 1, _('Very Unsatisfied')
     TWO = 2, _('Unsatisfied')
     THREE = 3, _('Somewhat Unsatisfied')
@@ -21,10 +25,23 @@ class Likert_satisfaction(models.TextChoices):
     SEVEN = 7, _('Very Satisfied')
 
 class Likert_variation(models.TextChoices):
-    ONE = 1, _('Very High')
-    TWO = 2, _('High')
-    THREE = 3, _('Somewhat High')
-    FOUR = 4, _('Average')
-    FIVE = 5, _('Somewhat Low')
-    SIX = 6, _('Low')
-    SEVEN = 7, _('Very Low')
+    DEFAULT = "", _('')
+    ZERO = 0, _('N/A')
+    ONE = 1, _('No two nights are the same')
+    TWO = 2, _('Very much variation')
+    THREE = 3, _('Much variation')
+    FOUR = 4, _('Average amount of variation')
+    FIVE = 5, _('Little variation')
+    SIX = 6, _('Very little variation')
+    SEVEN = 7, _('No variation')
+
+class Likert_variation2(models.TextChoices):
+    DEFAULT = "", _('')
+    ZERO = 0, _('N/A')
+    ONE = 1, _('No two days are the same')
+    TWO = 2, _('Very much variation')
+    THREE = 3, _('Much variation')
+    FOUR = 4, _('Average amount of variation')
+    FIVE = 5, _('Little variation')
+    SIX = 6, _('Very little variation')
+    SEVEN = 7, _('No variation')
