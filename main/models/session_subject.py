@@ -265,6 +265,24 @@ class Session_subject(models.Model):
         else:
             return False
 
+    #get questionnaire 1 required status
+    def getQuestionnaire1Required(self):
+        p = Parameters.objects.first()
+
+        if not p.questionnaire1Required:
+            return False
+        
+        return self.questionnaire1_required
+    
+    #get questionnaire 2 required status
+    def getQuestionnaire2Required(self):
+        p = Parameters.objects.first()
+
+        if not p.questionnaire2Required:
+            return False
+        
+        return self.questionnaire1_required
+
     #return json object of class
     def json(self,get_fitbit_status):
         p = Parameters.objects.first()
