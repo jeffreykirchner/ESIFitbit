@@ -3,8 +3,6 @@ import logging
 import traceback
 from django.contrib.auth.models import User
 
-from django.utils.translation import gettext_lazy as _
-
 from main.models import Session_subject
 from main.globals.likertScales import Likert_importance,Likert_satisfaction,Likert_variation,Likert_variation2
 
