@@ -9,7 +9,7 @@ from main.globals.likertScales import Likert_importance,Likert_satisfaction,Like
 #gloabal parameters for site
 class Session_subject_questionnaire2(models.Model):
 
-    session_subject = models.ForeignKey(Session_subject,on_delete=models.CASCADE,related_name="Session_subject_questionnaire1")
+    session_subject = models.ForeignKey(Session_subject,on_delete=models.CASCADE,related_name="Session_subject_questionnaire2")
 
     sleep_changed = models.BooleanField(default=False,verbose_name="Sleep Changed")
     sleep_changed_explaination = models.CharField(max_length = 10000, default = '',verbose_name = 'Sleep Changed Explanation')

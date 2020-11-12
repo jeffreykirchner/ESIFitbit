@@ -67,6 +67,7 @@ class Session_subject(models.Model):
         
         self.reCalcAllActvity()
 
+    #re calculate all activity scores from period 1
     def reCalcAllActvity(self):
         logger = logging.getLogger(__name__)    
 
@@ -283,7 +284,7 @@ class Session_subject(models.Model):
         if not p.questionnaire2Required:
             return False
         
-        return self.questionnaire1_required
+        return self.questionnaire2_required
 
     #return json object of class
     def json(self,get_fitbit_status):

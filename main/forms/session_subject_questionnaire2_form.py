@@ -1,11 +1,12 @@
 from django import forms
-from main.models import Session_subject_questionnaire1
+from main.models import Session_subject_questionnaire2
 from django.contrib.auth.models import User
 from django.forms import ModelChoiceField
 import pytz
 from main.globals.likertScales import Yes_No
+from django.utils.safestring import mark_safe
 
-class Session_subject_questionnaire1_form(forms.ModelForm):
+class Session_subject_questionnaire2_form(forms.ModelForm):
         
     sleep_changed = forms.TypedChoiceField(label='Did participating in this study change your sleep habits while you were participating?', 
                                          choices=Yes_No.choices,    
@@ -30,10 +31,10 @@ class Session_subject_questionnaire1_form(forms.ModelForm):
                                          initial=Yes_No.DEFAULT,         
                                          widget=forms.Select(attrs={}))
     
-    health_concern_explaination = forms.CharField(label='If YES: how will you change? If NO: why won’t you change?',
-                                        required=False,
+    health_concern_explaination = forms.CharField(label=mark_safe('If YES: how will you change?<br>If NO: why won’t you change?'),
+                                        required=True,
                                         widget=forms.Textarea(attrs={"rows":"5", "cols":"75"}))
 
     class Meta:
-        model=Session_subject_questionnaire1
+        model=Session_subject_questionnaire2
         exclude=['session_subject']

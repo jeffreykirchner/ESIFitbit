@@ -1,0 +1,28 @@
+{% load crispy_forms_tags %}
+<!-- consent modal -->  
+<div class="modal" id="questionnaire2Modal" tabindex="-1" role="dialog" aria-labelledby="helpModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="helpModalTitle">Questionnaire</h5>
+               
+            </div>
+            <div class="modal-body">
+                <form id="questionnaire2Form">
+                    {% for i in session_subject_questionnaire2_form %}
+                    <div class="row">
+                        <div class = "col col-md-10 offset-md-1">  
+                            {{ i|as_crispy_field }}         
+                        </div>            
+                    </div> 
+                    {% endfor %}
+                </form>                                                                
+            </div>    
+            <div class="modal-footer">             
+                <button type="button" class="btn btn-outline-primary" v-on:click = "submitQuestionnaire2()">
+                    Submit <i class="fas fa-sign-in-alt"></i>
+                </button>
+            </div>        
+        </div>
+    </div>
+</div>

@@ -4,8 +4,9 @@ import json
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 import logging
-from main.models import Session_subject,Session_day_subject_actvity,Session_day,Parameters,Session_subject_questionnaire1
-from main.forms import Session_subject_questionnaire1_form
+from main.models import Session_subject,Session_day_subject_actvity,Session_day
+from main.models import Parameters,Session_subject_questionnaire1,Session_subject_questionnaire2
+from main.forms import Session_subject_questionnaire1_form,Session_subject_questionnaire2_form
 
 def Subject_Home(request,id):
     logger = logging.getLogger(__name__) 
@@ -32,12 +33,14 @@ def Subject_Home(request,id):
                 return acceptConsentForm(data,session_subject)
             elif data["action"] == "submitQuestionnaire1":
                 return submitQuestionnaire1(data,session_subject)
+            elif data["action"] == "submitQuestionnaire2":
+                return submitQuestionnaire2(data,session_subject)
            
         else:   
             logger.info("Session subject day, user not found: " + str(id))
             return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
-
+        #questionnaire 1 setup
         session_subject_questionnaire1_form = Session_subject_questionnaire1_form()
 
         session_subject_questionnaire1_form_ids=[]
@@ -45,19 +48,29 @@ def Subject_Home(request,id):
         for f in session_subject_questionnaire1_form:
             session_subject_questionnaire1_form_ids.append(str(f.html_name))
 
+        #questionnaire 2 setup
+        session_subject_questionnaire2_form = Session_subject_questionnaire2_form()
+
+        session_subject_questionnaire2_form_ids=[]
+
+        for f in session_subject_questionnaire2_form:
+            session_subject_questionnaire2_form_ids.append(str(f.html_name))
+
         return render(request,'subject/home.html',{"id":id,      
                                                    "before_start_date":session_subject.session.isBeforeStartDate(), 
                                                    "session_started":session_subject.session.started,                                                   
                                                    "start_date":session_subject.session.getDateString(),    
                                                    "session_complete":session_subject.session.complete(),  
                                                    "session_subject_questionnaire1_form_ids":session_subject_questionnaire1_form_ids,
-                                                   "session_subject_questionnaire1_form":session_subject_questionnaire1_form,                          
+                                                   "session_subject_questionnaire1_form":session_subject_questionnaire1_form,
+                                                   "session_subject_questionnaire2_form_ids":session_subject_questionnaire2_form_ids,
+                                                   "session_subject_questionnaire2_form":session_subject_questionnaire2_form,                          
                                                    "session_subject":session_subject}) 
 
 #take pre session questionnaire
 def submitQuestionnaire1(data,session_subject):
     logger = logging.getLogger(__name__) 
-    logger.info("acceptConsentForm")
+    logger.info("submitQuestionnaire1")
     logger.info(data)
 
     form_data_dict = {}
@@ -85,6 +98,36 @@ def submitQuestionnaire1(data,session_subject):
         logger.info("Invalid questionnaire1 form")
         return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
 
+def submitQuestionnaire2(data,session_subject):
+    logger = logging.getLogger(__name__) 
+    logger.info("submitQuestionnaire2")
+    logger.info(data)
+
+    form_data_dict = {}
+
+    for field in data["formData"]:            
+        form_data_dict[field["name"]] = field["value"]
+
+    q = Session_subject_questionnaire2()
+    q.session_subject = session_subject    
+
+    form = Session_subject_questionnaire2_form(form_data_dict,instance=q)
+
+    if form.is_valid():
+        #print("valid form")                
+        form.save()         
+        q.save()  
+        
+        session_subject.questionnaire2_required=False
+        session_subject.save()
+            
+        return JsonResponse({"status":"success",
+                             "questionnaire2_required":session_subject.questionnaire2_required,},safe=False)                         
+                                
+    else:
+        logger.info("Invalid questionnaire2 form")
+        return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
+
 #subject accepts consent form
 def acceptConsentForm(data,session_subject):
     logger = logging.getLogger(__name__) 
@@ -110,24 +153,34 @@ def payMe(data,session_subject,session_day):
 
     status = "success"
 
+    #check for consent form
     if p.consentFormRequired and session_subject.consent_required:
         status = "fail"    
         logger.info("Consent required")
 
+    #check that session day activity exists
     if status == "success":
         if not session_day_subject_actvity:
             status = "fail"    
             logger.info("Could not find session_day_subject_actvity")
 
+    #check that session is not complete
     if status == "success":
-        if session_day.session.session_complete():
+        if session_day.session.complete():
             status = "fail"    
             logger.info("Session is already complete")      
 
+    #check that subject has not already been paid
     if status == "success":
         if session_day_subject_actvity.paypal_today:
             status="fail"
             logger.info("Error: Double payment attempt")
+    
+    #check that questionnaire two is done before last payment
+    if status == "success":
+        if p.questionnaire2Required and session_subject.getQuestionnaire2Required() :
+            status = "fail"    
+            logger.info("Questionnaire 2 required")
     
     if status == "success":
         try:
@@ -207,9 +260,11 @@ def getSessionDaySubject(data,session_subject,session_day):
 
     
     session_date = "--/--/----"
+    session_last_day = False
         
     if session_day:       
         session_date = session_day.getDateStr()
+        session_last_day = session_day.lastDay()
 
     consent_required = False
 
@@ -235,6 +290,7 @@ def getSessionDaySubject(data,session_subject,session_day):
                         "questionnaire2_required":session_subject.getQuestionnaire2Required(),
                         "consent_form_text":consent_form_text,
                         "session_complete":session_subject.sessionComplete(),
+                        "session_last_day":session_last_day,
                         "session_day_subject_actvity" : session_day_subject_actvity.json(),
                         "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
                         "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)                         
