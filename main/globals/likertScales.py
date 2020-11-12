@@ -46,6 +46,17 @@ class Likert_variation2(models.TextChoices):
     SIX = 6, _('Very little variation')
     SEVEN = 7, _('No variation')
 
+class Likert_change(models.TextChoices):
+    DEFAULT = "", _('')
+    ZERO = 0, _('N/A')
+    ONE = 1, _('Very much more')
+    TWO = 2, _('Much more')
+    THREE = 3, _('A little more')
+    FOUR = 4, _('The same')
+    FIVE = 5, _('A little less')
+    SIX = 6, _('Much less')
+    SEVEN = 7, _('Very much less')
+
 class Yes_No(models.TextChoices):
     DEFAULT = "", _('')
     TRUE = True, _('Yes')
