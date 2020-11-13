@@ -61,6 +61,7 @@
                 backFillButtonText:'Back Fill Data For Testing',
                 startSessionButtonText: 'Start Session <i class="far fa-play-circle"></i>',
                 invitationButtonText: 'Send Invitations <i class="far fa-envelope"></i>',
+                downloadDataButtonText:'Download Data <i class="fas fa-scroll fa-xs"></i>',
                 emailResult:'',
             },
 
@@ -297,6 +298,35 @@
                                         app.$data.cancelModal=true;                           
                                         app.displayErrors(response.data.errors);
                                     }                                   
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });                        
+                },
+
+                //down load data
+                downloadData:function(){                    
+                    app.$data.downloadDataButtonText = '<i class="fas fa-spinner fa-spin"></i>';
+                    axios.post('/session/{{id}}/', {
+                                    action :"downloadData" ,                                                                                                                                                                                              
+                                })
+                                .then(function (response) {     
+                                                             
+                                    
+                                    console.log(response.data);
+
+                                    var downloadLink = document.createElement("a");
+                                    var blob = new Blob(["\ufeff", response.data]);
+                                    var url = URL.createObjectURL(blob);
+                                    downloadLink.href = url;
+                                    downloadLink.download = "FitBit_Session_" + app.$data.session.id +"_Data.csv";
+
+                                    document.body.appendChild(downloadLink);
+                                    downloadLink.click();
+                                    document.body.removeChild(downloadLink);
+
+                                    app.$data.downloadDataButtonText ='Download Data <i class="fas fa-scroll fa-xs"></i>';
+                                                                    
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -849,7 +879,17 @@
                                     Invitations Not Sent
                                 </div>
                             </div> 
-                        </div>                                             
+                        </div>    
+                        <div class="row mt-2"> 
+                            <div class="col" style="text-align: right;">                                
+                                <button class="btn btn-outline-primary" type="button" v-on:click = "downloadData()" v-bind:disabled = "session.started === false">
+                                   <span v-html="downloadDataButtonText"></span>
+                                </button>                                
+                            </div>
+                            <div class="col">
+                                
+                            </div> 
+                        </div>                                         
                     </div>
                 </div>
             </div>

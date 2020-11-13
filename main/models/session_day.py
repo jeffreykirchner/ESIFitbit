@@ -85,6 +85,14 @@ class Session_day(models.Model):
         else:
             return False
 
+    #return CSV response for data download
+    def getCSVResponse(self,writer):
+        sdsa_list = self.Session_day_subject_actvities_SD.all().order_by('session_subject__id_number')
+
+        for sdsa in sdsa_list:
+            sdsa.getCSVResponse(writer)
+
+
     #return json object of class
     def json(self):
         return{

@@ -44,6 +44,8 @@ def Staff_Session(request,id):
             return startSession(data,id)
         elif data["action"] == "sendInvitations":
             return sendInvitations(data,id)
+        elif data["action"] == "downloadData":
+            return downloadData(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -226,6 +228,7 @@ def startSession(data,id):
 
     if s.started==False:
         s.addNewSessionDays()
+        s.assignSubjectIdNumbers()
 
     s.calcEndDate()
     s.started=True
@@ -328,7 +331,14 @@ def showFitbitStatus(data,id):
             
     return JsonResponse({"status":"success","session_subjects": getSubjectListJSON(id,True), },safe=False)                         
 
+#down session data
+def downloadData(data,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Download data")
+    logger.info(data)
 
-    
+    s=Session.objects.get(id=id)
+
+    return s.getCSVResponse()    
 
 

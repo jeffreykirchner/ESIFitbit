@@ -16,6 +16,8 @@ from main.globals import todaysDate
 class Session_subject(models.Model):
     session = models.ForeignKey(Session,on_delete=models.CASCADE,related_name="session_subjects")
 
+    id_number = models.IntegerField(null=True)                   #local id number in session
+
     login_key = models.UUIDField(default=uuid.uuid4, editable=False,verbose_name = 'Login Key')                         #log in key used to ID subject for URL login
     name = models.CharField(max_length = 300,default = 'Subject Name', verbose_name = 'Subject Name')                   #subject name 
     contact_email = models.CharField(max_length = 300,default = 'Subject Email',verbose_name = 'Subject Email')         #contact email address
@@ -43,6 +45,9 @@ class Session_subject(models.Model):
         return self.name
     
     class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['id_number', 'session'], name='Session_subject')
+        ]
         verbose_name = 'Session Subject'
         verbose_name_plural = 'Session Subjects'
     
@@ -66,6 +71,40 @@ class Session_subject(models.Model):
             i.save()
         
         self.reCalcAllActvity()
+
+        #save earnings
+        sada_set = self.Session_day_subject_actvities.order_by('session_day__period_number')
+
+        for i in sada_set:
+            if i.session_day.date == d_today.date():
+                break
+            
+            i.paypal_today = True
+            i.storeTodaysTotalEarnings()
+            i.save()
+
+        #consent form
+        self.consent_required=False
+        self.consent_signature=self.name
+        self.save()
+
+        #questionnaires
+        #logger.info(f"fillWithTestData {self.Session_subject_questionnaire1}")
+        if not self.Session_subject_questionnaire1.all():
+            q1 = main.models.Session_subject_questionnaire1()
+            q1.session_subject=self
+            q1.save()
+           
+        self.Session_subject_questionnaire1.first().fillWithTestData()
+
+        if todaysDate().date()>self.session.end_date:
+            if not self.Session_subject_questionnaire2.all():
+                q2 = main.models.Session_subject_questionnaire2()
+                q2.session_subject=self
+                q2.save()
+           
+            self.Session_subject_questionnaire2.first().fillWithTestData()
+
 
     #re calculate all activity scores from period 1
     def reCalcAllActvity(self):

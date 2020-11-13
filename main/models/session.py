@@ -13,6 +13,9 @@ from main.globals import todaysDate
 
 from main.models import Parameters
 
+from django.http import HttpResponse
+import csv
+
 from datetime import datetime,timedelta
 
 from enum import Enum
@@ -70,6 +73,20 @@ class Session(models.Model):
             return True
         else:
             return False
+
+    #assign local id numbers to subjects
+    def assignSubjectIdNumbers(self):
+        logger = logging.getLogger(__name__)
+
+        c = 1
+
+        ss_list = self.session_subjects.all().order_by('id')
+
+        for ss in ss_list:
+            ss.id_number = c
+            ss.save()
+            
+            c+=1       
 
     #add new sessions days when experiment is started
     def addNewSessionDays(self):
@@ -201,6 +218,72 @@ class Session(models.Model):
             return True
         else:
             return False
+
+    #return CSV response for data download
+    def getCSVResponse(self):
+
+        csv_response = HttpResponse(content_type='text/csv')
+        csv_response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+
+        writer = csv.writer(csv_response)
+
+        writer.writerow(["Subject Data"])
+        writer.writerow(["Session","Period","Block","Date","Subject ID", "Subject Code","Heart Activity Minutes",
+                         "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
+                         "Check In Today", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today"])
+
+        sd_list = self.session_days.all().order_by('period_number')
+
+        for sd in sd_list:
+            sd.getCSVResponse(writer)
+
+        writer.writerow([])
+        writer.writerow(["Pre Questionnaire"])
+
+        writer.writerow(['Session','Subject ID','Subject Code','Sleep Hours','Sleep Likert','Sleep Explanation','Exercise Minutes',
+                         'Exercise Likert','Exercise Explanation','Health Importance Likert',
+                         'Health Importance Explanation','Health Importance Actions','Health Satisfaction Likert',
+                         'Sleep Variation Likert','Sleep Variation Explanation',
+                         'Exercise Variation Likert','Exercise Variation Explanation'])
+
+        ss_list = self.session_subjects.all().order_by('id_number')
+        
+        for ss in ss_list:
+            if ss.Session_subject_questionnaire1.all():
+                ss.Session_subject_questionnaire1.first().getCSVResponse(writer)
+
+        writer.writerow([])
+        writer.writerow(["Post Questionnaire"])
+
+        writer.writerow(['Session','Subject ID','Subject Code',
+                         'Sleep Change Post','Sleep Change Post Explanation',
+                         'Exercise Change Post','Exercise Changed Post Explanation',
+                         'Health Concern Post','Health Concern Post Explanation'])
+
+        ss_list = self.session_subjects.all().order_by('id_number')
+        
+        for ss in ss_list:
+            if ss.Session_subject_questionnaire2.all():
+                ss.Session_subject_questionnaire2.first().getCSVResponse(writer)
+
+        #parameters
+        writer.writerow([])
+        writer.writerow(["Parameters"])
+        writer.writerow(['Session',
+                          'Heart activity inital','Heart parameter 1','Heart parameter 2','Heart parameter 3',
+                          'Immune activity inital','Immune parameter 1','Immune parameter 2','Immune parameter 3',
+                          'Block 1 heart pay','Block 2 heart pay','Block 3 heart pay', 
+                          'Block 1 immune pay','Block 2 immune pay','Block 3 immune pay',
+                          'Block 1 day count','Block 2 day count','Block 3 day count', 
+                          'Fixed pay per day',
+                          'Treatment 3 heart bonus','Treatment 3 immune bonus','Treatment 3 bonus target count',  
+                          'Y min heart','Y max heart','Y ticks heart','X min heart','X max heart','X ticks heart',  
+                          'Y min immune','Y max immune','Y ticks immune','X min immune','X max immune','X ticks immune'])
+
+        self.parameterset.getCSVResponse(writer,self.title)
+
+        return csv_response
+
 
     #return json object of class
     def json(self):

@@ -185,6 +185,7 @@ def payMe(data,session_subject,session_day):
     if status == "success":
         try:
             session_day_subject_actvity.paypal_today=True
+            session_day_subject_actvity.storeTodaysTotalEarnings()
             session_day_subject_actvity.save()
         except Exception  as e: 
             logger.info(e)

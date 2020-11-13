@@ -3,6 +3,9 @@ import logging
 import traceback
 from django.contrib.auth.models import User
 
+import random
+from django.utils.crypto import get_random_string
+
 from main.models import Session_subject
 from main.globals.likertScales import Likert_importance,Likert_satisfaction,Likert_variation,Likert_variation2
 
@@ -42,6 +45,46 @@ class Session_subject_questionnaire1(models.Model):
         verbose_name = 'Pre Questionnaire'
         verbose_name_plural = 'Pre Questionnaires'
     
+    #fill questionnaire with test data
+    def fillWithTestData(self):
+        self.sleep_hours = random.randrange(4, 10)
+        self.sleep_importance = random.randrange(0, 7)
+        self.sleep_explanation = get_random_string(length=100)
+
+        self.exercise_minutes = random.randrange(0, 90)
+        self.exercise_importance = random.randrange(0, 7)
+        self.exercise_explanation = get_random_string(length=100)
+
+        self.health_importance = random.randrange(0, 7)
+        self.health_importance_explanation = get_random_string(length=100)
+        self.health_importance_actions = get_random_string(length=100)
+
+        self.health_satisfaction = random.randrange(0, 7)
+
+        self.sleep_variation = random.randrange(0, 7)
+        self.sleep_variation_explanation = get_random_string(length=100)
+
+        self.exercise_variation = random.randrange(0, 7)
+        self.exercise_variation_explanation = get_random_string(length=100)
+
+        self.save()
+
+    #write to data file
+    def getCSVResponse(self,writer):
+
+        # 'Session','Subject ID','Subject Code','Sleep Hours','Sleep Likert','Sleep Explanation','Exercise Minutes',
+        #                  'Exercise Likert','Exercise Explanation','Health Importance Likert',
+        #                  'Health Importance Explanation','Health Importance Actions','Health Satisfaction Likert',
+        #                  'Sleep Variation Likert','Sleep Variation Explanation',
+        #                  'Exercise Variation Likert','Exercise Variation Explanation'
+
+        writer.writerow([self.session_subject.session.title,self.session_subject.id_number,self.session_subject.login_key,
+                         self.sleep_hours,self.sleep_importance,self.sleep_explanation,
+                         self.exercise_minutes,self.exercise_importance,self.exercise_explanation,
+                         self.health_importance,self.health_importance_explanation,self.health_importance_actions,
+                         self.health_importance_actions,self.sleep_variation,self.sleep_variation_explanation,
+                         self.exercise_variation,self.exercise_variation_explanation])
+
     def json(self):
         return{
            

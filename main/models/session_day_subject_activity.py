@@ -11,17 +11,19 @@ from enum import Enum
 
 #one day from session 
 class Session_day_subject_actvity(models.Model):
-    session_day = models.ForeignKey(Session_day,on_delete=models.CASCADE)
+    session_day = models.ForeignKey(Session_day,on_delete=models.CASCADE,related_name="Session_day_subject_actvities_SD")
     session_subject = models.ForeignKey(Session_subject,on_delete=models.CASCADE,related_name="Session_day_subject_actvities")
 
-    heart_activity_minutes = models.DecimalField(decimal_places=10, default=0, max_digits=20)       #todays heart activity minutes
-    immune_activity_minutes = models.DecimalField(decimal_places=10, default=0, max_digits=20)      #todays immune activity minutes
+    heart_activity_minutes = models.IntegerField(default=0)       #todays heart activity minutes
+    immune_activity_minutes = models.IntegerField(default=0)      #todays immune activity minutes
 
-    heart_activity = models.DecimalField(decimal_places=10, default=0, max_digits=20)               #todays heart activity calculation
-    immune_activity = models.DecimalField(decimal_places=10, default=0, max_digits=20)              #todays immune activity calculation
+    heart_activity = models.DecimalField(decimal_places=5, default=0, max_digits=10)               #todays heart activity calculation
+    immune_activity = models.DecimalField(decimal_places=5, default=0, max_digits=10)              #todays immune activity calculation
     
     check_in_today = models.BooleanField(default=False)                                             #true if the user checked in today
     paypal_today = models.BooleanField(default=False)                                               #true if the user collected their payment today
+
+    payment_today =  models.DecimalField(decimal_places=2, default=0, max_digits=6)                 #amount of money paid to subject today
 
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
@@ -181,6 +183,11 @@ class Session_day_subject_actvity(models.Model):
     def getTodaysTotalEarnings(self):
         return self.session_day.session.parameterset.fixed_pay_per_day + self.getTodaysHeartEarnings() + self.getTodaysImmuneEarnings()
 
+    #save today's total earnings
+    def storeTodaysTotalEarnings(self):
+        self.payment_today = self.getTodaysTotalEarnings()
+        self.save()
+
     #get health improvment minutes
     def getTodaysHeartImprovmentMinutes(self):
         logger = logging.getLogger(__name__)
@@ -247,6 +254,17 @@ class Session_day_subject_actvity(models.Model):
         self.save()
 
         return fitbitError
+
+    #return CSV response for data download
+    def getCSVResponse(self,writer):
+        # ["Session","Period","Block","Date","Subject ID", "Subject Code","Heart Activity Minutes",
+        #                  "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
+        #                  "Check In Today", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today"]
+        writer.writerow([self.session_day.session.title,self.session_day.period_number,self.session_day.session.parameterset.getBlock(self.session_day.period_number),
+                         self.session_day.getDateStr(),self.session_subject.id_number,self.session_subject.login_key,self.heart_activity_minutes,
+                         self.immune_activity_minutes,self.heart_activity,self.immune_activity,self.check_in_today,
+                         self.paypal_today,self.session_day.session.parameterset.fixed_pay_per_day,self.getTodaysHeartEarnings(),
+                         self.getTodaysImmuneEarnings(),self.payment_today])
 
     #return json object of class
     def json(self):

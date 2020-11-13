@@ -123,9 +123,9 @@ class Parameterset(models.Model):
     #return the current maximum payment for heart activty
     def getHeartPay(self,period):
 
-        if period<=self.block_1_day_count:            
+        if period<=self.block_1_day_count+1:            
             return self.block_1_heart_pay
-        elif period<=self.block_2_day_count:
+        elif period<=self.block_2_day_count+self.block_1_day_count+1:
             return self.block_2_heart_pay
         else:
             return self.block_3_heart_pay        
@@ -133,12 +133,35 @@ class Parameterset(models.Model):
     #return the current maximum payment for heart activty
     def getImmunePay(self,period):
         
-        if period<=self.block_1_day_count:            
+        if period<=self.block_1_day_count+1:            
             return self.block_1_immune_pay
-        elif period<=self.block_2_day_count:
+        elif period<=self.block_2_day_count+self.block_1_day_count+1:
             return self.block_2_immune_pay
         else:
             return self.block_3_immune_pay
+
+    #get period's time block
+    def getBlock(self,period):
+        if period<=self.block_1_day_count+1:            
+            return 1
+        elif period<=self.block_2_day_count+self.block_1_day_count+1:
+            return 2
+        else:
+            return 3
+
+    #get csv reponse for data file
+    def getCSVResponse(self,writer,title):
+
+         writer.writerow([title,
+                          self.heart_activity_inital,self.heart_parameter_1,self.heart_parameter_2,self.heart_parameter_3,
+                          self.immune_activity_inital,self.immune_parameter_1,self.immune_parameter_2,self.immune_parameter_3,
+                          self.block_1_heart_pay,self.block_2_heart_pay,self.block_3_heart_pay, 
+                          self.block_1_immune_pay,self.block_2_immune_pay,self.block_3_immune_pay,
+                          self.block_1_day_count,self.block_2_day_count,self.block_3_day_count, 
+                          self.fixed_pay_per_day,
+                          self.treatment_3_heart_bonus,self.treatment_3_immune_bonus,self.treatment_3_bonus_target_count,  
+                          self.y_min_heart,self.y_max_heart,self.y_ticks_heart,self.x_min_heart,self.x_max_heart,self.x_ticks_heart,  
+                          self.y_min_immune,self.y_max_immune,self.y_ticks_immune,self.x_min_immune,self.x_max_immune,self.x_ticks_immune])
 
     #return json object of class
     def json(self):
