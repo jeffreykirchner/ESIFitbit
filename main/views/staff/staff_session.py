@@ -226,13 +226,16 @@ def startSession(data,id):
 
     s=Session.objects.get(id=id)
 
-    if s.started==False:
-        s.addNewSessionDays()
-        s.assignSubjectIdNumbers()
+    #check for subjects in session before starting
+    if s.session_subjects.all():
 
-    s.calcEndDate()
-    s.started=True
-    s.save()
+        if s.started==False:
+            s.addNewSessionDays()
+            s.assignSubjectIdNumbers()
+
+        s.calcEndDate()
+        s.started=True
+        s.save()
 
     return JsonResponse({"session" : getSessionJSON(id), 
                                 },safe=False)
