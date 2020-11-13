@@ -79,6 +79,10 @@ class Session_day_subject_actvity(models.Model):
         #v = float(activityMinus1) * (1 - (1 - float(activityMinus1)) * (float(p1) / float(p2)  - float(active_time) / (float(active_time) + float(p3))))
 
         v = float(p1) * float(activityMinus1) + 0.5 * (1 + float(activityMinus1)) * (1- float(p1) * float(activityMinus1)) * ((float(active_time)**float(p2)) / (float(p3) + float(active_time)**float(p2))) 
+
+        if v < 0:
+            v = 0
+
         return min(1,v)     
     
     #get number of minutes for heart maintenance
