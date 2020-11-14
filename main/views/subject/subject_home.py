@@ -58,6 +58,7 @@ def Subject_Home(request,id):
 
         return render(request,'subject/home.html',{"id":id,      
                                                    "before_start_date":session_subject.session.isBeforeStartDate(), 
+                                                   "session_canceled":session_subject.session.canceled,
                                                    "session_started":session_subject.session.started,                                                   
                                                    "start_date":session_subject.session.getDateString(),    
                                                    "session_complete":session_subject.session.complete(),  
@@ -168,7 +169,13 @@ def payMe(data,session_subject,session_day):
     if status == "success":
         if session_day.session.complete():
             status = "fail"    
-            logger.info("Session is already complete")      
+            logger.info("Session is already complete") 
+
+    #check that session is not complete
+    if status == "success":
+        if session_day.session.canceled:
+            status = "fail"    
+            logger.info("Session is canceled")      
 
     #check that subject has not already been paid
     if status == "success":
@@ -291,6 +298,7 @@ def getSessionDaySubject(data,session_subject,session_day):
                         "questionnaire2_required":session_subject.getQuestionnaire2Required(),
                         "consent_form_text":consent_form_text,
                         "session_complete":session_subject.sessionComplete(),
+                        "session_canceled":session_subject.session.canceled,
                         "session_last_day":session_last_day,
                         "session_day_subject_actvity" : session_day_subject_actvity.json(),
                         "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,

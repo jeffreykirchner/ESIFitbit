@@ -21,4 +21,5 @@ class Session_form(forms.ModelForm):
 
     class Meta:
         model=Session
-        exclude=['soft_delete','parameterset','started','end_date','invitations_sent','invitation_text','invitation_text_subject']
+        exclude=['soft_delete','parameterset','started','end_date','invitations_sent',
+                 'invitation_text','invitation_text_subject','canceled','cancelation_text','cancelation_text_subject']
