@@ -21,6 +21,8 @@
                          invitations_sent:false,
                          invitation_text:"",
                          invitation_text_subject:"",
+                         cancelation_text:"",
+                         cancelation_text_subject:"",
                          email_list:"",
                          parameterset:{id:"",
                                         number_of_days:"",
@@ -61,8 +63,10 @@
                 backFillButtonText:'Back Fill Data For Testing',
                 startSessionButtonText: 'Start Session <i class="far fa-play-circle"></i>',
                 invitationButtonText: 'Send Invitations <i class="far fa-envelope"></i>',
+                cancelationButtonText: 'Cancel Session <i class="fas fa-ban"></i>',
                 downloadDataButtonText:'Download Data <i class="fas fa-scroll fa-xs"></i>',
                 emailResult:'',
+                emailResultCancelation:'',
             },
 
             methods:{
@@ -221,13 +225,13 @@
 
                     if(app.$data.session.invitation_text_subject == "")
                     {
-                        confirm("Message has no subject.");
+                        alert("Message has no subject.");
                         return;
                     }
 
                     if(app.$data.session.invitation_text == "")
                     {
-                        confirm("Message is empty.");
+                        alert("Message is empty.");
                         return;
                     }
 
@@ -258,6 +262,53 @@
                                     console.log(error);
                                 }); 
                 },
+
+                //send cancelations
+                sendCancelations:function(){
+                    if(!confirm("Cancel Session?"))
+                    {                        
+                        return;
+                    }
+
+                    if(app.$data.session.cancelation_text_subject == "")
+                    {
+                        alert("Message has no subject.");
+                        return;
+                    }
+
+                    if(app.$data.session.cancelation_text == "")
+                    {
+                        alert("Message is empty.");
+                        return;
+                    }
+
+                    app.$data.cancelationButtonText = '<i class="fas fa-spinner fa-spin"></i>';
+                    axios.post('/session/{{id}}/', {
+                                    action :"sendCancelations" ,  
+                                    cancelation_text_subject:app.$data.session.cancelation_text_subject, 
+                                    cancelation_text:app.$data.session.cancelation_text,                                                                                                                                                            
+                                })
+                                .then(function (response) {     
+                                    app.updateSession(response);      
+                                    app.$data.cancelationButtonText = 'Cancel Session <i class="fas fa-ban"></i>';   
+
+                                    if( response.data.success)
+                                    {
+                                        if(response.data.result.errorMessage != "")
+                                            app.$data.emailResultCancelation = "Error: " + response.data.result.errorMessage;
+                                        else
+                                            app.$data.emailResultCancelation = response.data.result.mailCount + " email(s) were sent.";                                     
+                                    }
+                                    else
+                                    {
+                                        app.$data.emailResultCancelation = response.data.result;
+                                    }
+                                                        
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                }); 
+                    },
 
                 //show fitbit connection status for each subject
                 showFitbitStatus:function(){                    
@@ -417,6 +468,17 @@
                 hideSendInvitations:function(){
                     app.$data.emailResult="";
                 },
+
+                //show cancel session
+                showCancelSession:function(){
+                   
+                   $('#sendCancelationsModalCenter').modal('show');                   
+               },
+
+                //hide cancel session
+                hideCancelSession:function(){
+                   app.$data.emailResultCancelation="";
+               },
                             
                 //show edit parameters modal
                 showImportParameters:function(s_id,index){
@@ -478,7 +540,8 @@
                 $('#editSessionParametersModal').on("hidden.bs.modal", this.hideEditParameters);  
                 $('#editSessionModal').on("hidden.bs.modal", this.hideEditSession);   
                 $('#importParametersModal').on("hidden.bs.modal", this.hideImportParameters);
-                $('#sendMessageModalCenter').on("hidden.bs.modal", this.hideSendInvitations);         
+                $('#sendMessageModalCenter').on("hidden.bs.modal", this.hideSendInvitations); 
+                $('#sendCancelationsModalCenter').on("hidden.bs.modal", this.hideCancelSession);        
             },
         });
 
@@ -854,6 +917,21 @@
                                 </div>
                             </div>                        
                         </div>
+                        <div class="row mt-2">
+                            <div class="col" style="text-align: right;">
+                                <button class="btn btn-outline-danger" type="button" v-on:click = "showCancelSession()" v-bind:disabled = "session.started === false || session.canceled">
+                                    Cancel Session <i class="fas fa-ban"></i>
+                                </button>
+                            </div>    
+                            <div class="col">
+                                <div v-if="session.canceled">
+                                    Session Canceled
+                                </div>
+                                <div v-else>
+                                    
+                                </div>
+                            </div>                        
+                        </div>
                         <div class="row mt-2"> 
                             <div class="col" style="text-align: right;">
                                 {%if DEBUG%}
@@ -980,5 +1058,6 @@
 {%include "modals/editSubjectModal.html"%}
 {%include "modals/importParametersModal.html"%}
 {%include "modals/sendInvitationModal.html"%}
+{%include "modals/sendCancelationModal.html"%}
 
 {%endblock content%}

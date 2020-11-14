@@ -46,6 +46,8 @@ def Staff_Session(request,id):
             return sendInvitations(data,id)
         elif data["action"] == "downloadData":
             return downloadData(data,id)
+        elif data["action"] == "sendCancelations":
+            return sendCancelations(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -240,7 +242,7 @@ def startSession(data,id):
     return JsonResponse({"session" : getSessionJSON(id), 
                                 },safe=False)
 
-#activate session and fill in session days
+#send invitations to subjects
 def sendInvitations(data,id):
     logger = logging.getLogger(__name__) 
     logger.info("Send invitations")
@@ -264,6 +266,41 @@ def sendInvitations(data,id):
             s.invitations_sent=False
         else:
             s.invitations_sent=True
+        s.save()
+    except Exception  as e: 
+        logger.info(e)
+        result = e
+        success = False   
+
+    return JsonResponse({"success" : success,
+                         "result" : result,
+                         "session" : getSessionJSON(id), 
+                                },safe=False)
+
+#send invitations to subjects
+def sendCancelations(data,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Send cancelation")
+    logger.info(data)
+
+    success=True
+
+    s=Session.objects.get(id=id)
+
+    s.cancelation_text_subject = data["cancelation_text_subject"]
+    s.cancelation_text = data["cancelation_text"]
+
+    s.save()
+
+    result = ""
+
+    try:
+        result = s.sendCancelation()
+
+        if result['errorMessage'] != "":
+            s.canceled=False
+        else:
+            s.canceled=True
         s.save()
     except Exception  as e: 
         logger.info(e)

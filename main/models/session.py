@@ -36,7 +36,11 @@ class Session(models.Model):
     end_date = models.DateField(default=now)                                    #date of session end
 
     started =  models.BooleanField(default=False)                               #starts session and filll in session 
-    
+
+    canceled = models.BooleanField(default=False)                               #true if session needs to be canceled
+    cancelation_text =  models.CharField(max_length = 10000,default = "")       #text sent to subjects if experiment is canceled
+    cancelation_text_subject = models.CharField(max_length = 1000,default = "") #email subject text for experiment cancelation
+
     invitations_sent = models.BooleanField(default=False)                       #true once invititations have been sent to subjects
     invitation_text =  models.CharField(max_length = 10000,default = "")        #text sent to subjects in experiment invititation
     invitation_text_subject = models.CharField(max_length = 1000,default = "")  #email subject text for experiment invititation
@@ -212,6 +216,15 @@ class Session(models.Model):
 
         return main.globals.sendMassInvitations(self.session_subjects.all(),self.invitation_text_subject,text)
 
+    #send email canceling session
+    def sendCancelation(self):
+        p = Parameters.objects.first()
+        text = self.cancelation_text
+
+        text = text.replace("[contact email]", p.contactEmail)
+
+        return main.globals.sendMassInvitations(self.session_subjects.all(),self.cancelation_text_subject,text)
+
     #return true if today's date past end date
     def complete(self):
         if todaysDate().date()>self.end_date:
@@ -305,9 +318,12 @@ class Session(models.Model):
             "parameterset":self.parameterset.json(),
             "editable":self.editable(),
             "started":self.started,
+            "canceled":self.canceled,
             "invitations_sent":self.invitations_sent,
             "invitation_text":self.invitation_text,
             "invitation_text_subject":self.invitation_text_subject,
+            "cancelation_text":self.cancelation_text,
+            "cancelation_text_subject":self.cancelation_text_subject,
             "email_list":email_list,
         }
 

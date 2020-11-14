@@ -59,6 +59,8 @@ def createSession(data):
     s.parameterset = ps
     s.invitation_text=p.invitationText
     s.invitation_text_subject=p.invitationTextSubject
+    s.cancelation_text=p.cancelationText
+    s.cancelation_text_subject=p.cancelationTextSubject
     s.calcEndDate()
     s.save()    
 
