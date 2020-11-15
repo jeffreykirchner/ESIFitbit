@@ -153,41 +153,48 @@ def payMe(data,session_subject,session_day):
     session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
 
     status = "success"
+    message = ""
 
     #check for consent form
     if p.consentFormRequired and session_subject.consent_required:
-        status = "fail"    
-        logger.info("Consent required")
+        status = "fail"   
+        message = "Error: Consent required" 
+        logger.info(message)
 
     #check that session day activity exists
     if status == "success":
         if not session_day_subject_actvity:
-            status = "fail"    
-            logger.info("Could not find session_day_subject_actvity")
+            status = "fail" 
+            message = "Error: Could not find session_day_subject_actvity"   
+            logger.info(message)
 
     #check that session is not complete
     if status == "success":
         if session_day.session.complete():
-            status = "fail"    
-            logger.info("Session is already complete") 
+            status = "fail"  
+            message = "Error: Session is already complete"
+            logger.info(message) 
 
     #check that session is not complete
     if status == "success":
         if session_day.session.canceled:
-            status = "fail"    
-            logger.info("Session is canceled")      
+            status = "fail"   
+            message =  "Error: Session is canceled"
+            logger.info(message)      
 
     #check that subject has not already been paid
     if status == "success":
         if session_day_subject_actvity.paypal_today:
             status="fail"
-            logger.info("Error: Double payment attempt")
+            message = "Error: Double payment attempt"
+            logger.info(message)
     
     #check that questionnaire two is done before last payment
     if status == "success":
         if p.questionnaire2Required and session_subject.getQuestionnaire2Required() :
-            status = "fail"    
-            logger.info("Questionnaire 2 required")
+            status = "fail"  
+            message = "Error: Questionnaire 2 required"  
+            logger.info(message)
     
     if status == "success":
         try:
@@ -204,6 +211,7 @@ def payMe(data,session_subject,session_day):
         pass
 
     return JsonResponse({"status":status,
+                         "message":message,
                          "session_complete":session_subject.sessionComplete(),
                          "session_day_subject_actvity" : session_day_subject_actvity.json()},safe=False)
 
