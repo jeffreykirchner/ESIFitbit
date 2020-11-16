@@ -320,7 +320,12 @@ class Session_subject(models.Model):
     def getQuestionnaire2Required(self):
         p = Parameters.objects.first()
 
+        #check that questionnaire 2 is enabled
         if not p.questionnaire2Required:
+            return False
+
+        #check that today is the last day of sessoin
+        if todaysDate().date() != self.session.end_date:
             return False
         
         return self.questionnaire2_required

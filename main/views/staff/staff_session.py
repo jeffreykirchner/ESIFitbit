@@ -226,6 +226,8 @@ def startSession(data,id):
     logger.info("Start session")
     logger.info(data)
 
+    status = "success"
+
     s=Session.objects.get(id=id)
 
     #check for subjects in session before starting
@@ -238,8 +240,11 @@ def startSession(data,id):
         s.calcEndDate()
         s.started=True
         s.save()
+    else:
+        status = "fail"
 
     return JsonResponse({"session" : getSessionJSON(id), 
+                         "status":status,   
                                 },safe=False)
 
 #send invitations to subjects
@@ -304,7 +309,7 @@ def sendCancelations(data,id):
         s.save()
     except Exception  as e: 
         logger.info(e)
-        result = e
+        result = str(e)
         success = False   
 
     return JsonResponse({"success" : success,

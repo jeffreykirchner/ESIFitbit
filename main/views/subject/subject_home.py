@@ -7,6 +7,7 @@ import logging
 from main.models import Session_subject,Session_day_subject_actvity,Session_day
 from main.models import Parameters,Session_subject_questionnaire1,Session_subject_questionnaire2
 from main.forms import Session_subject_questionnaire1_form,Session_subject_questionnaire2_form
+from main.globals import todaysDate
 
 def Subject_Home(request,id):
     logger = logging.getLogger(__name__) 
@@ -145,7 +146,10 @@ def acceptConsentForm(data,session_subject):
 #pay subject for today
 def payMe(data,session_subject,session_day):
     logger = logging.getLogger(__name__) 
-    logger.info(f"Pay subject: subject {session_subject.id} session day {session_day.id} date {session_day.date}")
+    if session_day:
+        logger.info(f"Pay subject: subject {session_subject.id} session day {session_day.id} date {session_day.date}")
+    else:
+        logger.info(f"Pay subject: subject {session_subject.id} session_day none")
     logger.info(data)
 
     p = Parameters.objects.first()
@@ -155,11 +159,32 @@ def payMe(data,session_subject,session_day):
     status = "success"
     message = ""
 
+    #check that session is not complete    
+    if not session_day:
+        status = "fail"  
+        message = "Error: Session day not found"
+        logger.info(message) 
+
+    #check that session is not complete   
+    if status == "success": 
+        if not session_day.session.started:
+            status = "fail"  
+            message = "Error: Session not started"
+            logger.info(message) 
+
     #check for consent form
-    if p.consentFormRequired and session_subject.consent_required:
-        status = "fail"   
-        message = "Error: Consent required" 
-        logger.info(message)
+    if status == "success":
+        if p.consentFormRequired and session_subject.consent_required:
+            status = "fail"   
+            message = "Error: Consent required" 
+            logger.info(message)
+    
+    #check that questionnaire two is done before last payment
+    if status == "success":
+        if p.questionnaire1Required and session_subject.getQuestionnaire1Required() :
+            status = "fail"  
+            message = "Error: Questionnaire 1 required"  
+            logger.info(message)
 
     #check that session day activity exists
     if status == "success":
@@ -168,6 +193,13 @@ def payMe(data,session_subject,session_day):
             message = "Error: Could not find session_day_subject_actvity"   
             logger.info(message)
 
+    #check that it is the day of the specified session day
+    if status == "success":
+        if session_day_subject_actvity.session_day.date != todaysDate().date():
+            status = "fail"  
+            message = "Error: Session_day.date does not match today's date"  
+            logger.info(message)   
+
     #check that session is not complete
     if status == "success":
         if session_day.session.complete():
@@ -175,7 +207,7 @@ def payMe(data,session_subject,session_day):
             message = "Error: Session is already complete"
             logger.info(message) 
 
-    #check that session is not complete
+    #check that session is not canceled
     if status == "success":
         if session_day.session.canceled:
             status = "fail"   
@@ -213,7 +245,7 @@ def payMe(data,session_subject,session_day):
     return JsonResponse({"status":status,
                          "message":message,
                          "session_complete":session_subject.sessionComplete(),
-                         "session_day_subject_actvity" : session_day_subject_actvity.json()},safe=False)
+                         "session_day_subject_actvity" :session_day_subject_actvity.json() if session_day_subject_actvity else {}},safe=False)
 
 #get session subject day
 def getSessionDaySubject(data,session_subject,session_day):

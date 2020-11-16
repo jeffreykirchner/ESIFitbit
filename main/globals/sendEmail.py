@@ -37,7 +37,7 @@ def sendMassInvitations(subjectList,subject,message):
         if settings.DEBUG:
             message_list[block_count] += ((subject, new_message,from_email,["TestSubject" + str(random.randrange(1, 50)) + "@esirecruiter.net"]),)   #use for test emails
         else:
-            message_list[block_count] += ((subject, new_message,from_email,[s['email']]),)  
+            message_list[block_count] += ((subject, new_message,from_email,[s.contact_email]),)  
 
         c+=1
     
