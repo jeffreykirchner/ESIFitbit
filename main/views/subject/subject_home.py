@@ -41,6 +41,8 @@ def Subject_Home(request,id):
             logger.info("Session subject day, user not found: " + str(id))
             return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
+        p = Parameters.objects.first()
+
         #questionnaire 1 setup
         session_subject_questionnaire1_form = Session_subject_questionnaire1_form()
 
@@ -66,7 +68,10 @@ def Subject_Home(request,id):
                                                    "session_subject_questionnaire1_form_ids":session_subject_questionnaire1_form_ids,
                                                    "session_subject_questionnaire1_form":session_subject_questionnaire1_form,
                                                    "session_subject_questionnaire2_form_ids":session_subject_questionnaire2_form_ids,
-                                                   "session_subject_questionnaire2_form":session_subject_questionnaire2_form,                          
+                                                   "session_subject_questionnaire2_form":session_subject_questionnaire2_form,  
+                                                   "heart_help_text":p.heartHelpText,
+                                                   "immune_help_text":p.immuneHelpText,
+                                                   "payment_help_text":p.paymentHelpText,                       
                                                    "session_subject":session_subject}) 
 
 #take pre session questionnaire

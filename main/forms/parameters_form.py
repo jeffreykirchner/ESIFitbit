@@ -54,6 +54,15 @@ class Parameters_form(forms.ModelForm):
                                         choices=((True, 'Yes'), (False,'No' )),                 
                                         widget=forms.Select)
 
+    heartHelpText = forms.CharField(label='Heart Help Text',
+                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
+
+    immuneHelpText = forms.CharField(label='Immune Help Text',
+                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
+
+    paymentHelpText = forms.CharField(label='Payment Help Text',
+                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))                                                                 
+
     class Meta:
         model=Parameters
         fields = ('__all__')

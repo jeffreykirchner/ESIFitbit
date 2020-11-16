@@ -45,7 +45,12 @@
                 paymentError:false,
                 status:"success",
                 questionnaire1_ids : {{session_subject_questionnaire1_form_ids|safe|escape}},
-                questionnaire2_ids : {{session_subject_questionnaire2_form_ids|safe|escape}},                                
+                questionnaire2_ids : {{session_subject_questionnaire2_form_ids|safe|escape}},          
+                helpText:"",             
+                helpTitle:"Help",    
+                heart_help_text:`{{heart_help_text|safe}}`, 
+                immune_help_text:`{{immune_help_text|safe}}`, 
+                payment_help_text:`{{payment_help_text|safe}}`,   
             },
 
             methods:{
@@ -485,11 +490,38 @@
                     }
 
                 },
-                                        
+
+                //show help box
+                showHelpBox:function(){                
+
+                    if(app.$data.toggleState=='heart')
+                    {
+                        app.$data.helpTitle = "Heart Help"
+                        app.$data.helpText = app.$data.heart_help_text;
+                    }
+                    else if(app.$data.toggleState=='immune')
+                    {
+                        app.$data.helpTitle = "Immune Help"
+                        app.$data.helpText = app.$data.immune_help_text;
+                    }
+                    else if (app.$data.toggleState == 'payment')
+                    {
+                        app.$data.helpTitle = "Payment Help"
+                        app.$data.helpText = app.$data.payment_help_text;
+                    }
+
+                    $('#helpModal').modal('show');                   
+                },
+
+                //hide help box
+                hideHelpBox:function(){
+                    app.$data.helpText="";
+                },                        
             },
 
             mounted: function(){
-                this.getSessionDaySubject();                      
+                this.getSessionDaySubject();      
+                $('#hideHelpBox').on("hidden.bs.modal", this.hideHelpBox);                
             },
         });
 
@@ -539,7 +571,9 @@
                 {%else%}
                     <div v-if='status==="success"'>
                         <div class="row">
-                            <div class="col" style="text-align: center;">
+                            <div class="col-2">
+                            </div>
+                            <div class="col-8" style="text-align: center;">
                                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                     <label class="btn btn-secondary active">
                                         <input type="radio" name="options" id="option1" autocomplete="off" checked v-on:click="updateToogleState('heart')"> <i class="far fa-heart"></i>
@@ -551,6 +585,11 @@
                                         <input type="radio" name="options" id="option2" autocomplete="off" v-on:click="updateToogleState('payment')"> <i class="fas fa-dollar-sign"></i>
                                     </label>                    
                                 </div>
+                            </div>
+                            <div class="col-2" style="text-align: right;">
+                                <button type="button" class="btn btn-link" id="helpButton" style="text-align: right;" data-placement="bottom" v-on:click="showHelpBox()">
+                                    <i class="far fa-question-circle"></i> 
+                                </button>
                             </div>
                         </div>
                     
@@ -621,10 +660,10 @@
                                 <div class="col" style="text-align: center;">$[[session_day_subject_actvity.fixed_pay_per_day]]</div>
                             </div>
                             <div class="row">
-                                <div class="col" style="text-align: center;">+ $[[session_day_subject_actvity.current_heart_pay]] x ([[session_day_subject_actvity.heart_activity]])</div>
+                                <div class="col" style="text-align: center;">+ $[[session_day_subject_actvity.current_heart_pay]] x [[session_day_subject_actvity.heart_activity]]</div>
                             </div>
                             <div class="row">
-                                <div class="col" style="text-align: center;">+ $[[session_day_subject_actvity.current_heart_pay]] x ([[session_day_subject_actvity.immune_activity]])</div>
+                                <div class="col" style="text-align: center;">+ $[[session_day_subject_actvity.current_immune_pay]] x [[session_day_subject_actvity.immune_activity]]</div>
                             </div>
                             <div class="row mt-3">
                                 <div class="col" style="text-align: center;">$[[session_day_subject_actvity.fixed_pay_per_day]] + $[[session_day_subject_actvity.current_heart_earnings]] + $[[session_day_subject_actvity.current_immune_earnings]] = $[[session_day_subject_actvity.current_total_earnings]]</div>
@@ -675,6 +714,7 @@
 </div>    
 
 {%include "modals/consentModal.html"%}
+{%include "modals/helpModal.html"%}
 {%include "modals/questionnaire1Modal.html"%}
 {%include "modals/questionnaire2Modal.html"%}
 

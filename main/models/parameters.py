@@ -24,6 +24,10 @@ class Parameters(models.Model):
 
     trackerDataOnly = models.BooleanField(default=True)                                    #only use data collected from fitness tracker
 
+    heartHelpText = models.CharField(max_length = 5000,default = "")                       #heart help text shown to subjects
+    immuneHelpText = models.CharField(max_length = 5000,default = "")                       #heart help text shown to subjects
+    paymentHelpText = models.CharField(max_length = 5000,default = "")                       #heart help text shown to subjects
+
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
 
@@ -41,4 +45,7 @@ class Parameters(models.Model):
             "defaultShowUpFee":str(self.defaultShowUpFee),
             "invitationText":self.invitationText,
             "consentForm":self.consentForm,
+            "heartHelpText":self.heartHelpText,
+            "immuneHelpText":self.immuneHelpText,
+            "paymentHelpText":self.paymentHelpText,
         }
