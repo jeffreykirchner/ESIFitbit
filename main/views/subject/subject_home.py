@@ -105,6 +105,7 @@ def submitQuestionnaire1(data,session_subject):
         logger.info("Invalid questionnaire1 form")
         return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
 
+#take post session questionnaire
 def submitQuestionnaire2(data,session_subject):
     logger = logging.getLogger(__name__) 
     logger.info("submitQuestionnaire2")

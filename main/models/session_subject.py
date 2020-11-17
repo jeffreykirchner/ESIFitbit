@@ -330,7 +330,7 @@ class Session_subject(models.Model):
         return self.questionnaire2_required
 
     #return json object of class
-    def json(self,get_fitbit_status):
+    def json(self,get_fitbit_status,request_type):
         p = Parameters.objects.first()
 
         #link to setup fitbit
@@ -339,15 +339,15 @@ class Session_subject(models.Model):
         tempURL = tempURL.replace("/","%2F")
 
         tempClientID = settings.FITBIT_CLIENT_ID
-        tempState = str(self.id) + ";" + str(self.session.id)
-        fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight&expires_in=604800&prompt=login%20consent&state={tempState}"
+        tempState = str(self.id) + ";" + str(self.session.id) + ";" + request_type
+        fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20sleep&expires_in=604800&prompt=login%20consent&state={tempState}"
 
         #test if fitbit is already connected
         fitBit_Attached = False
         if get_fitbit_status and self.fitBitAccessToken != "":
-            fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1.2/user/-/body/log/weight/date/today.json')
+            fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1.2/user/-/sleep/date/today.json')
             
-            if 'weight' in fitbit_response:
+            if 'sleep' in fitbit_response:
                 fitBit_Attached = True
 
                 tz = pytz.timezone(p.experimentTimeZone)

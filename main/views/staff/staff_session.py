@@ -19,7 +19,6 @@ def Staff_Session(request,id):
 
     if request.method == 'POST':     
 
-
         data = json.loads(request.body.decode('utf-8'))
 
         if data["action"] == "getSession":
@@ -92,7 +91,7 @@ def getSubjectListJSON(id,get_fitbit_status):
     s=Session.objects.get(id=id)
     ss = s.session_subjects.filter(soft_delete = False).order_by(Lower('name'))
 
-    return  [i.json(get_fitbit_status) for i in ss]
+    return  [i.json(get_fitbit_status,"staff") for i in ss]
 
 #add new subject to the session
 def addSubject(data,id):

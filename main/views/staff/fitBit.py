@@ -14,7 +14,6 @@ import traceback
 from django.conf import settings
 
 #user account info
-@login_required
 def fitBit(request):
     logger = logging.getLogger(__name__)  
     logger.info("FitBit Connect")   
@@ -28,6 +27,7 @@ def fitBit(request):
     session = None
     subject_id = None
     session_id = None
+    request_type = None
 
     if not "code" in request.GET:
         status="fail"
@@ -40,6 +40,7 @@ def fitBit(request):
             state_info = request.GET["state"].split(";")
             subject_id = state_info[0]
             session_id = state_info[1]
+            request_type = state_info[2]
 
             session_subject = Session_subject.objects.get(id=subject_id)
 
@@ -77,11 +78,18 @@ def fitBit(request):
     if session_id :
         session = Session.objects.get(id = session_id)
 
-    return render(request,'staff/fitBit.html',{'status':status,
-                                               'fitBit_response':fitBit_response, 
-                                               'fitBit_error':fitBit_error,
-                                               'session_subject':session_subject,
-                                               'session': session,})
+    if request_type == "staff":
+        return render(request,'staff/fitBit.html',{'status':status,
+                                                'fitBit_response':fitBit_response, 
+                                                'fitBit_error':fitBit_error,
+                                                'session_subject':session_subject,
+                                                'session': session,})
+    else:
+        return render(request,'subject/fitBit.html',{'status':status,
+                                                'fitBit_response':fitBit_response, 
+                                                'fitBit_error':fitBit_error,
+                                                'session_subject':session_subject,
+                                                'session': session,})
 
     
 

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="row justify-content-md-center">
+  <div class="col col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        FitBit Setup        
+      </div>
+
+      <div class="card-body">
+        <center>
+          {%if status == 'fail'%}
+            The FitBit failed to connect.<br>
+            {{fitBit_response}}<br>
+            {{fitBit_error}}<br>
+          {%else%}
+            The FitBit has been connected for subject {{session_subject.name}}.<br>
+            <a href="{% url 'subject_home' id=session_subject.login_key %}">Return to the session.</a>
+          {%endif%}
+        </center>
+       
+      </div>      
+    </div>
+  </div>
+</div>
+
+{% endblock %}
