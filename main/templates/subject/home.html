@@ -686,9 +686,13 @@
                                         </div>
                                     </div>
                                     <div v-else-if="session_complete===false">
-                                        <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()">
+                                        
+                                        <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()" v-bind:disabled="fitbitError">
                                             <span v-html="payMeButtonText"></span>
                                         </button>
+                                        <div v-show="fitbitError">
+                                            <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect fitbit</a>
+                                        </div>
                                         <div v-show="paymentError">
                                             <span v-html="'***Payment Error***'" style="color: red;"></span>
                                         </div>
