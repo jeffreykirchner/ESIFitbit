@@ -25,8 +25,10 @@ class Parameters(models.Model):
     trackerDataOnly = models.BooleanField(default=True)                                    #only use data collected from fitness tracker
 
     heartHelpText = models.CharField(max_length = 5000,default = "")                       #heart help text shown to subjects
-    immuneHelpText = models.CharField(max_length = 5000,default = "")                       #heart help text shown to subjects
-    paymentHelpText = models.CharField(max_length = 5000,default = "")                       #heart help text shown to subjects
+    immuneHelpText = models.CharField(max_length = 5000,default = "")                      #immune help text shown to subjects
+    paymentHelpText = models.CharField(max_length = 5000,default = "")                     #payment help text shown to subjects
+
+    manualHelpText = models.CharField(max_length = 5000,default = "")                      # help text shown to staff
 
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)

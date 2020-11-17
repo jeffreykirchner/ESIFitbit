@@ -61,7 +61,10 @@ class Parameters_form(forms.ModelForm):
                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
 
     paymentHelpText = forms.CharField(label='Payment Help Text',
-                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))                                                                 
+                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"})) 
+
+    manualHelpText = forms.CharField(label='Manual Text',
+                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))                                                                
 
     class Meta:
         model=Parameters

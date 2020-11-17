@@ -8,7 +8,7 @@ from django.db.models.functions import Lower
 from datetime import datetime,timedelta
 
 from main.forms import Parameterset_form,Session_form,Subject_form,Import_parameters_form
-from main.models import Session,Parameterset,Session_subject,Session_day_subject_actvity
+from main.models import Session,Parameterset,Session_subject,Session_day_subject_actvity,Parameters
 
 @login_required
 def Staff_Session(request,id):
@@ -56,11 +56,13 @@ def Staff_Session(request,id):
         session_form = Session_form()
         subject_form = Subject_form()
         import_parameters_form = Import_parameters_form()
+        p = Parameters.objects.first()
         
         return render(request,'staff/session.html',{'id': id,
                                                     'parameterset_form':parameterset_form,
                                                     'session_form':session_form,
                                                     'subject_form':subject_form,
+                                                    'help_text': p.manualHelpText,
                                                     'import_parameters_form':import_parameters_form})     
 
 #get list of experiment sessions
