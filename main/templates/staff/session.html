@@ -450,7 +450,7 @@
                 hideEditSubject:function(){
                     if(app.$data.cancelModal)
                     {
-                        index = currentSubjectIndex;
+                        index = app.$data.currentSubjectIndex;
 
                         if(index != -1)
                         {
@@ -543,7 +543,8 @@
                 $('#editSessionModal').on("hidden.bs.modal", this.hideEditSession);   
                 $('#importParametersModal').on("hidden.bs.modal", this.hideImportParameters);
                 $('#sendMessageModalCenter').on("hidden.bs.modal", this.hideSendInvitations); 
-                $('#sendCancelationsModalCenter').on("hidden.bs.modal", this.hideCancelSession);        
+                $('#sendCancelationsModalCenter').on("hidden.bs.modal", this.hideCancelSession);  
+                $('#editSubjectModal').on("hidden.bs.modal", this.hideEditSubject);  
             },
         });
 

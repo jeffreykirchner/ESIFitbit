@@ -105,7 +105,6 @@ class Session_subject(models.Model):
            
             self.Session_subject_questionnaire2.first().fillWithTestData()
 
-
     #re calculate all activity scores from period 1
     def reCalcAllActvity(self):
         logger = logging.getLogger(__name__)    

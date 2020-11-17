@@ -23,4 +23,6 @@ class Subject_form(forms.ModelForm):
 
     class Meta:
         model=Session_subject
-        exclude=['login_key','session','fitBitAccessToken','fitBitRefreshToken','fitBitUserId','soft_delete','consent_required','questionnaire1_required','questionnaire2_required']
+        exclude=['login_key','session','fitBitAccessToken','fitBitRefreshToken','fitBitUserId',
+                 'soft_delete','consent_required','questionnaire1_required','questionnaire2_required',
+                 'consent_signature','id_number']
