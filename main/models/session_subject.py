@@ -329,8 +329,8 @@ class Session_subject(models.Model):
         
         return self.questionnaire2_required
 
-    #return json object of class
-    def json(self,get_fitbit_status,request_type):
+    #get the fitbit html connection link
+    def getFitBitLink(self,request_type):
         p = Parameters.objects.first()
 
         #link to setup fitbit
@@ -342,19 +342,28 @@ class Session_subject(models.Model):
         tempState = str(self.id) + ";" + str(self.session.id) + ";" + request_type
         fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20sleep&expires_in=604800&prompt=login%20consent&state={tempState}"
 
-        #test if fitbit is already connected
-        fitBit_Attached = False
-        if get_fitbit_status and self.fitBitAccessToken != "":
+        return fitBit_Link
+
+    #test if a fitbit connection is working for this subject
+    def getFitBitAttached(self):
+       
+        if self.fitBitAccessToken != "":
             fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1.2/user/-/sleep/date/today.json')
             
             if 'sleep' in fitbit_response:
-                fitBit_Attached = True
+                return True
+            else:
+                return False
 
-                tz = pytz.timezone(p.experimentTimeZone)
-                d = datetime.now(tz)
+    #return json object of class
+    def json(self,get_fitbit_status,request_type):
 
-                #fitbit_response_sleep = self.getFitbitSleep(d)
+        p = Parameters.objects.first()
 
+        fitBit_Attached = False
+        if get_fitbit_status:
+            fitBit_Attached = self.getFitBitAttached()
+              
         return{
             "id":self.id,
             "name":self.name,
@@ -363,7 +372,7 @@ class Session_subject(models.Model):
             "gmail_address":self.gmail_address,
             "gmail_password":self.gmail_password,
             "login_url": p.siteURL +'subjectHome/' + str(self.login_key),
-            "fitBit_Link" : fitBit_Link,
+            "fitBit_Link" : self.getFitBitLink(request_type),
             "fitBit_Attached" : fitBit_Attached,
             "get_fitbit_status" : get_fitbit_status,
             "consent_required": self.consent_required,

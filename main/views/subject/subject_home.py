@@ -286,11 +286,9 @@ def getSessionDaySubject(data,session_subject,session_day):
 
         if session_day_subject_actvity:
             session_day_subject_actvity_previous_day = session_day_subject_actvity.getPreviousActivityDay()
-    
 
         if session_day_subject_actvity_previous_day:
-            #create session day if needed
-
+           
             #mark subject checkin as true
             session_day_subject_actvity.check_in_today=True
             session_day_subject_actvity.save()
@@ -298,7 +296,7 @@ def getSessionDaySubject(data,session_subject,session_day):
             #pull data from fitbit
             fitbitError = session_day_subject_actvity_previous_day.pullFitbitActvities()
 
-            # #calc today's actvity
+            #calc today's actvity
             session_subject.calcTodaysActivity(session_day.period_number)
 
             #get object again after calculation
