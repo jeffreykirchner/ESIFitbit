@@ -51,6 +51,7 @@
                 heart_help_text:`{{heart_help_text|safe}}`, 
                 immune_help_text:`{{immune_help_text|safe}}`, 
                 payment_help_text:`{{payment_help_text|safe}}`,   
+                fitbit_link:"",
             },
 
             methods:{
@@ -80,6 +81,7 @@
                                     app.$data.consent_required = response.data.consent_required;
                                     app.$data.consent_form_text = response.data.consent_form_text;
                                     app.$data.questionnaire1_required = response.data.questionnaire1_required;
+                                    app.$data.fitbit_link = response.data.fitbit_link;
 
                                     app.toggleConsentForm();
                                     app.toggleQuesionnaire1();
@@ -491,7 +493,6 @@
 
                 },
 
-                //show help box
                 showHelpBox:function(){                
 
                     if(app.$data.toggleState=='heart')
@@ -513,7 +514,6 @@
                     $('#helpModal').modal('show');                   
                 },
 
-                //hide help box
                 hideHelpBox:function(){
                     app.$data.helpText="";
                 },                        
@@ -600,7 +600,7 @@
                             <div class="row">
                                 <div class="col" style="text-align: center;">                             
                                     <div v-if="fitbitError">
-                                        Yesterday's Active Minutes: <span style="font-weight: bold;color: red;" v-html = "'FitBit Error'"></span>
+                                        Yesterday's Active Minutes: <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect fitbit</a>
                                     </div>
                                     <div v-else>
                                         Yesterday's Active Minutes: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.heart_activity_minutes></span>
@@ -625,7 +625,7 @@
                             <div class="row">
                                 <div class="col" style="text-align: center;">                             
                                     <div v-if="fitbitError">
-                                        Yesterday's Hours Sleeping: <span style="font-weight: bold;color: red;" v-html = "'FitBit Error'"></span>
+                                        Yesterday's Hours Sleeping: <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect fitbit</a>
                                     </div>
                                     <div v-else>
                                         Yesterday's Hours Sleeping: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.immune_activity_hours></span>

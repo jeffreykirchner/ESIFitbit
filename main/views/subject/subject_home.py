@@ -336,6 +336,7 @@ def getSessionDaySubject(data,session_subject,session_day):
     else:
         return JsonResponse({"status":status,
                         "fitbitError":fitbitError,
+                        "fitbit_link":session_subject.getFitBitLink("subject"),
                         "session_date":session_date,
                         "consent_required":consent_required,
                         "questionnaire1_required":session_subject.getQuestionnaire1Required(),
