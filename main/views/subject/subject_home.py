@@ -4,7 +4,7 @@ import json
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 import logging
-from main.models import Session_subject,Session_day_subject_actvity,Session_day
+from main.models import Session_subject,Session_day_subject_actvity,Session_day,Parameters
 from main.models import Parameters,Session_subject_questionnaire1,Session_subject_questionnaire2
 from main.forms import Session_subject_questionnaire1_form,Session_subject_questionnaire2_form
 from main.globals import todaysDate
@@ -16,8 +16,10 @@ def Subject_Home(request,id):
     # logger.info("some info")
     #u=request.user  
 
-    session_subject = Session_subject.objects.get(login_key = id)
-    session_day = session_subject.session.getCurrentSessionDay()
+    session_subject = Session_subject.objects.filter(login_key = id).first()
+
+    if session_subject:
+        session_day = session_subject.session.getCurrentSessionDay()
 
     logger.info(session_subject)
 
@@ -43,36 +45,45 @@ def Subject_Home(request,id):
     else:      
         p = Parameters.objects.first()
 
-        #questionnaire 1 setup
-        session_subject_questionnaire1_form = Session_subject_questionnaire1_form()
+        if session_subject:           
 
-        session_subject_questionnaire1_form_ids=[]
+            #questionnaire 1 setup
+            session_subject_questionnaire1_form = Session_subject_questionnaire1_form()
 
-        for f in session_subject_questionnaire1_form:
-            session_subject_questionnaire1_form_ids.append(str(f.html_name))
+            session_subject_questionnaire1_form_ids=[]
 
-        #questionnaire 2 setup
-        session_subject_questionnaire2_form = Session_subject_questionnaire2_form()
+            for f in session_subject_questionnaire1_form:
+                session_subject_questionnaire1_form_ids.append(str(f.html_name))
 
-        session_subject_questionnaire2_form_ids=[]
+            #questionnaire 2 setup
+            session_subject_questionnaire2_form = Session_subject_questionnaire2_form()
 
-        for f in session_subject_questionnaire2_form:
-            session_subject_questionnaire2_form_ids.append(str(f.html_name))
+            session_subject_questionnaire2_form_ids=[]
 
-        return render(request,'subject/home.html',{"id":id,      
-                                                   "before_start_date":session_subject.session.isBeforeStartDate(), 
-                                                   "session_canceled":session_subject.session.canceled,
-                                                   "session_started":session_subject.session.started,                                                   
-                                                   "start_date":session_subject.session.getDateString(),    
-                                                   "session_complete":session_subject.session.complete(),  
-                                                   "session_subject_questionnaire1_form_ids":session_subject_questionnaire1_form_ids,
-                                                   "session_subject_questionnaire1_form":session_subject_questionnaire1_form,
-                                                   "session_subject_questionnaire2_form_ids":session_subject_questionnaire2_form_ids,
-                                                   "session_subject_questionnaire2_form":session_subject_questionnaire2_form,  
-                                                   "heart_help_text":p.heartHelpText,
-                                                   "immune_help_text":p.immuneHelpText,
-                                                   "payment_help_text":p.paymentHelpText,                       
-                                                   "session_subject":session_subject}) 
+            for f in session_subject_questionnaire2_form:
+                session_subject_questionnaire2_form_ids.append(str(f.html_name))
+
+
+            return render(request,'subject/home.html',{"id":id,  
+                                                    "status":"success",    
+                                                    "before_start_date":session_subject.session.isBeforeStartDate(), 
+                                                    "session_canceled":session_subject.session.canceled,
+                                                    "session_started":session_subject.session.started,                                                   
+                                                    "start_date":session_subject.session.getDateString(),    
+                                                    "session_complete":session_subject.session.complete(),  
+                                                    "session_subject_questionnaire1_form_ids":session_subject_questionnaire1_form_ids,
+                                                    "session_subject_questionnaire1_form":session_subject_questionnaire1_form,
+                                                    "session_subject_questionnaire2_form_ids":session_subject_questionnaire2_form_ids,
+                                                    "session_subject_questionnaire2_form":session_subject_questionnaire2_form,  
+                                                    "heart_help_text":p.heartHelpText,
+                                                    "immune_help_text":p.immuneHelpText,
+                                                    "payment_help_text":p.paymentHelpText,                       
+                                                    "session_subject":session_subject})
+        else:
+            return render(request,'subject/home.html',{"id":id,  
+                                                        "contact_email":p.contactEmail,
+                                                        "status":"fail",
+                                                            })
 
 #take pre session questionnaire
 def submitQuestionnaire1(data,session_subject):

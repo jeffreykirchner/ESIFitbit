@@ -520,8 +520,10 @@
             },
 
             mounted: function(){
-                this.getSessionDaySubject();      
-                $('#hideHelpBox').on("hidden.bs.modal", this.hideHelpBox);                
+                {%if status == "success" %}
+                    this.getSessionDaySubject();      
+                    $('#hideHelpBox').on("hidden.bs.modal", this.hideHelpBox);   
+                {%endif%}             
             },
         });
 
@@ -546,8 +548,15 @@
                     {%endif%}
                 </span>                                                                  
             </div>
-            <div class="card-body">    
-                {%if session_canceled%}
+            <div class="card-body">
+                {%if status == "fail" %}    
+                <div class="row">
+                    <div class="col" style="text-align: center;">
+                        Invalid login.<br>
+                        Please contact {{contact_email}} if you have lost your login link.
+                    </div>
+                </div>
+                {%elif session_canceled%}
                     <div class="row">
                         <div class="col" style="text-align: center;">
                             The experiment has been canceled.<br>
