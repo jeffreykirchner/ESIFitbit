@@ -10,6 +10,7 @@ from datetime import datetime,timedelta,timezone,date
 import pytz
 import random
 import main
+import math
 from main.globals import todaysDate
 
 #subject in session
@@ -385,11 +386,6 @@ class Session_subject(models.Model):
 
         sada = self.Session_day_subject_actvities.filter(session_day__date = todaysDate().date()).first()
 
-        if sada:
-            sada_yesterday = self.Session_day_subject_actvities.filter(session_day__period_number = sada.session_day.period_number - 1)
-        else:
-            sada_yesterday = None
-
         check_in = False
         pay_pal = False
         earnings = "---"
@@ -397,6 +393,21 @@ class Session_subject(models.Model):
         heart_time = "---"
         immune_score = "---"
         immune_time = "---"
+
+        if sada:
+            sada_yesterday = self.Session_day_subject_actvities.filter(session_day__period_number = sada.session_day.period_number - 1).first()
+
+            check_in = sada.check_in_today
+            pay_pal = sada.paypal_today
+            earnings = f'${sada.getTodaysTotalEarnings():0.2f}'
+            heart_score = f'{sada.heart_activity:0.2f}'
+            immune_score = f'{sada.immune_activity:0.2f}'
+        else:
+            sada_yesterday = None
+
+        if sada_yesterday:
+            heart_time =  f'{int(sada_yesterday.heart_activity_minutes)}mins'
+            immune_time =  f'{math.floor(sada_yesterday.immune_activity_minutes/60)}hrs {sada_yesterday.immune_activity_minutes%60}mins'
 
         return{
             "check_in":check_in,

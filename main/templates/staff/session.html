@@ -1033,19 +1033,28 @@
                                     Login Link                    
                                 </th>
                                 <th style="text-align: center;">
-                                    Check In                    
+                                    Consent                   
                                 </th>
                                 <th style="text-align: center;">
-                                    PayPal                    
+                                    Pre Questionnaire                    
                                 </th>
                                 <th style="text-align: center;">
-                                    Earnings                    
+                                    Post Questionnaire                    
                                 </th>
                                 <th style="text-align: center;">
-                                    Exercise                    
+                                    Check In Today               
                                 </th>
                                 <th style="text-align: center;">
-                                    Sleep                    
+                                    PayPal Today                   
+                                </th>
+                                <th style="text-align: center;">
+                                    Today's Earnings                    
+                                </th>
+                                <th style="text-align: center;">
+                                    Current Exercise                    
+                                </th>
+                                <th style="text-align: center;">
+                                    Current Sleep                    
                                 </th>
                                 <th style="text-align: center;">
                                     FitBit 
@@ -1070,19 +1079,53 @@
                                         <!-- <span v-html="s.login_url"></span>                            -->
                                     </td>
                                     <td style="text-align: center;">
-                                        <span v-html="s.todays_stats.check_in"></span>
+                                        <div v-if="s.consent_required === false" style="color:green">
+                                            <i class="far fa-check-circle"></i>
+                                        </div>
+                                        <div v-else style="color:red">
+                                            <i class="far fa-times-circle"></i>
+                                        </div>
                                     </td>
                                     <td style="text-align: center;">
-                                        <span v-html="s.todays_stats.pay_pal"></span> 
+                                        <div v-if="s.questionnaire1_required === false" style="color:green">
+                                            <i class="far fa-check-circle"></i>
+                                        </div>
+                                        <div v-else style="color:red">
+                                            <i class="far fa-times-circle"></i>
+                                        </div>
                                     </td>
                                     <td style="text-align: center;">
-                                        earnings 
+                                        <div v-if="s.questionnaire2_required === false" style="color:green">
+                                            <i class="far fa-check-circle"></i>
+                                        </div>
+                                        <div v-else style="color:red">
+                                            <i class="far fa-times-circle"></i>
+                                        </div>
                                     </td>
                                     <td style="text-align: center;">
-                                        Heart                    
+                                        <div v-if="s.todays_stats.check_in" style="color:green">
+                                            <i class="far fa-check-circle"></i>
+                                        </div>
+                                        <div v-else style="color:red">
+                                            <i class="far fa-times-circle"></i>
+                                        </div>
                                     </td>
                                     <td style="text-align: center;">
-                                        Immune                    
+                                        <div v-if="s.todays_stats.pay_pal" style="color:green">
+                                            <i class="far fa-check-circle"></i>
+                                        </div>
+                                        <div v-else style="color:red">
+                                            <i class="far fa-times-circle"></i>
+                                        </div>                                        
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span v-html="s.todays_stats.earnings"></span>  
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span v-html="s.todays_stats.heart_score"></span> | <span v-html="s.todays_stats.heart_time"></span>                  
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span v-html="s.todays_stats.immune_score"></span> | <span v-html="s.todays_stats.immune_time"></span>                    
                                     </td>
                                     <td style="text-align: center;">                                        
                                         <a :href="s.fitBit_Link"><span v-html="'Setup'"></span></a>
