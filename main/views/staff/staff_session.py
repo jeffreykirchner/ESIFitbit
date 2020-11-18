@@ -6,6 +6,7 @@ from django.http import JsonResponse
 import logging
 from django.db.models.functions import Lower
 from datetime import datetime,timedelta
+from main.globals.randomHexColor import getRandomHexColor
 
 from main.forms import Parameterset_form,Session_form,Subject_form,Import_parameters_form
 from main.models import Session,Parameterset,Session_subject,Session_day_subject_actvity,Parameters
@@ -47,6 +48,8 @@ def Staff_Session(request,id):
             return downloadData(data,id)
         elif data["action"] == "sendCancelations":
             return sendCancelations(data,id)
+        elif data["action"] == "refreshSubjectTable":
+            return refreshSubjectTable(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -70,8 +73,11 @@ def getSession(data,id):
     logger.info("Get Session")
     logger.info(data)
 
+    s=Session.objects.get(id=id)
+
     return JsonResponse({"session" : getSessionJSON(id),
                          "session_subjects": getSubjectListJSON(id,False), 
+                         "graph_parameters" : s.parameterset.json_graph(),
                                 },safe=False)  
 
 #get session json object
@@ -104,6 +110,7 @@ def addSubject(data,id):
     if not s.started:
         ss = Session_subject()
         ss.session=s
+        ss.display_color = getRandomHexColor()
         ss.save()
 
         sda = Session_day_subject_actvity()
@@ -118,6 +125,15 @@ def addSubject(data,id):
 
     return JsonResponse({"session_subjects": getSubjectListJSON(id,False),
                          "session" : getSessionJSON(id), 
+                                },safe=False) 
+
+#refresh subject table
+def refreshSubjectTable(data,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Refresh subject table")
+    logger.info(data)
+
+    return JsonResponse({"session_subjects": getSubjectListJSON(id,False),
                                 },safe=False) 
 
 #remove subject from session

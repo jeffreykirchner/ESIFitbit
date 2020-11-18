@@ -17,7 +17,7 @@ from main.globals import todaysDate
 class Session_subject(models.Model):
     session = models.ForeignKey(Session,on_delete=models.CASCADE,related_name="session_subjects")
 
-    id_number = models.IntegerField(null=True)                   #local id number in session
+    id_number = models.IntegerField(null=True,verbose_name = 'ID Number in Session')                   #local id number in session
 
     login_key = models.UUIDField(default=uuid.uuid4, editable=False,verbose_name = 'Login Key')                         #log in key used to ID subject for URL login
     name = models.CharField(max_length = 300,default = 'Subject Name', verbose_name = 'Subject Name')                   #subject name 
@@ -26,11 +26,13 @@ class Session_subject(models.Model):
     gmail_address = models.CharField(max_length = 300,default = 'Gmail Address',verbose_name = 'Gmail Address')         #gmail address asigned to subject for experiment 
     gmail_password = models.CharField(max_length = 300,default = 'Gmail Password',verbose_name = 'Gmail Password')      #password for above 
     
-    consent_required = models.BooleanField(default=True)          #true if subject has done consent form  
-    consent_signature = models.CharField(max_length = 300,default = '',verbose_name = 'Consent Signature')
+    consent_required = models.BooleanField(default=True,verbose_name = 'Consent Form Signed')          #true if subject has done consent form  
+    consent_signature = models.CharField(max_length = 300,default = '',verbose_name = 'Consent Form Signature')
 
-    questionnaire1_required = models.BooleanField(default=True)   #pre experiment questionnaire
-    questionnaire2_required = models.BooleanField(default=True)   #post experiment questionnaire                                                 
+    questionnaire1_required = models.BooleanField(default=True,verbose_name = 'Pre-questionnaire Complete')   #pre experiment questionnaire
+    questionnaire2_required = models.BooleanField(default=True,verbose_name = 'Post-questionnaire Complete')   #post experiment questionnaire          
+
+    display_color = models.CharField(max_length = 300,default = '#000000',verbose_name = 'Graph Color')                                       
 
     #fitbit    
     fitBitAccessToken = models.CharField(max_length=1000, default="",verbose_name = 'FitBit Access Token')
@@ -60,13 +62,30 @@ class Session_subject(models.Model):
         
         d_today = todaysDate()
 
+        heart_activity_minutes = random.randint(0,90)
+        immune_activity_minutes = random.randint(240,600)
+
         previous_i = None
         for i in sada_set:
             if i.session_day.date == d_today.date():
                 break
             
-            i.heart_activity_minutes = random.randint(0,30)
-            i.immune_activity_minutes = random.randint(240,500)
+            if random.randrange(1,100) == 1:
+                i.heart_activity_minutes = 0
+                i.immune_activity_minutes = 0
+            else:
+                i.heart_activity_minutes = heart_activity_minutes
+                i.immune_activity_minutes = immune_activity_minutes
+
+            heart_activity_minutes += random.randrange(-5,5)
+            immune_activity_minutes += random.randrange(-10,10)  
+
+            if heart_activity_minutes < 0:
+                heart_activity_minutes = 0
+
+            if immune_activity_minutes < 0:
+                immune_activity_minutes =0
+                  
             i.check_in_today = True
 
             i.save()
@@ -380,8 +399,13 @@ class Session_subject(models.Model):
             "questionnaire1_required":self.questionnaire1_required,
             "questionnaire2_required":self.questionnaire2_required,
             "todays_stats":self.jsonTodayServerStats(),
+            "heart_minutes":self.jsonHeartMinutesList(),
+            "immune_minutes":self.jsonImmuneMinutesList(),
+            "display_color":self.display_color,
+
         }
     
+    #get json object of current stats to show on server
     def jsonTodayServerStats(self):
 
         sada = self.Session_day_subject_actvities.filter(session_day__date = todaysDate().date()).first()
@@ -406,8 +430,10 @@ class Session_subject(models.Model):
             sada_yesterday = None
 
         if sada_yesterday:
-            heart_time =  f'{int(sada_yesterday.heart_activity_minutes)}mins'
-            immune_time =  f'{math.floor(sada_yesterday.immune_activity_minutes/60)}hrs {sada_yesterday.immune_activity_minutes%60}mins'
+            if sada_yesterday.heart_activity_minutes >= 0:
+                heart_time =  f'{int(sada_yesterday.heart_activity_minutes)}mins'
+            if sada_yesterday.immune_activity_minutes >= 0:
+                immune_time =  f'{math.floor(sada_yesterday.immune_activity_minutes/60)}hrs {sada_yesterday.immune_activity_minutes%60}mins'
 
         return{
             "check_in":check_in,
@@ -419,6 +445,17 @@ class Session_subject(models.Model):
             "immune_time":immune_time,
         }
 
+    #get json object of daily minutes exercising
+    def jsonHeartMinutesList(self):
+        sdsa_list = self.Session_day_subject_actvities.all().order_by('session_day__period_number')
+
+        return [sdsa.heart_activity_minutes for sdsa in sdsa_list]
+    
+    #get json object of daily hours exercising
+    def jsonImmuneMinutesList(self):
+        sdsa_list = self.Session_day_subject_actvities.all().order_by('session_day__period_number')
+
+        return [sdsa.immune_activity_minutes/60 for sdsa in sdsa_list]
     
     #take fitbit api url and return response
     def getFitbitInfo(self,url):
