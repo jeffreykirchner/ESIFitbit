@@ -6,6 +6,8 @@ from django.http import JsonResponse
 import logging
 from django.conf import settings
 
+from main.globals.todaysDate import todaysDate
+
 from main.models import Session,Parameterset,Session_day,Parameters
 
 @login_required
@@ -61,6 +63,7 @@ def createSession(data):
     s.invitation_text_subject=p.invitationTextSubject
     s.cancelation_text=p.cancelationText
     s.cancelation_text_subject=p.cancelationTextSubject
+    s.start_date = todaysDate().date()
     s.calcEndDate()
     s.save()    
 
