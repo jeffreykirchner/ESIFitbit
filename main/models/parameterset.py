@@ -98,7 +98,7 @@ class Parameterset(models.Model):
         self.block_2_day_count = ps.block_2_day_count
         self.block_3_day_count = ps.block_3_day_count
 
-        self.fixed_pay_per_day = p.fixed_pay_per_day
+        self.fixed_pay_per_day = ps.fixed_pay_per_day
 
         self.treatment_3_heart_bonus = ps.treatment_3_heart_bonus
         self.treatment_3_immune_bonus = ps.treatment_3_immune_bonus
