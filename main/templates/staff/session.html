@@ -327,6 +327,35 @@
                                 });                        
                 },
 
+                //copy subject link to clipboard
+                copySubjectLinkToClipboard:function(text){
+
+                     // Create a dummy input to copy the string array inside it
+                    var dummy = document.createElement("input");
+
+                    // Add it to the document
+                    document.body.appendChild(dummy);
+
+                    // Set its ID
+                    dummy.setAttribute("id", "dummy_id");
+
+                    // Output the array into it
+                    document.getElementById("dummy_id").value=text;
+
+                    // Select it
+                    dummy.select();
+                    dummy.setSelectionRange(0, 99999); /*For mobile devices*/
+
+                    // Copy its contents
+                    document.execCommand("copy");
+
+                    // Remove it as its not needed anymore
+                    document.body.removeChild(dummy);
+
+                    /* Copy the text inside the text field */
+                    document.execCommand("copy");
+                },
+
                 //update subject parameters
                 updateSubjectSettings:function(){                    
                     app.$data.cancelModal=false;
@@ -997,19 +1026,34 @@
                             <!-- <caption style="caption-side:top;text-align: center;">Subjects</caption> -->
 
                             <thead>
-                                <th width="20%">
+                                <th>
                                     Name
                                 </th> 
-                                <th width="40%" style="text-align: center;">
+                                <th style="text-align: center;">
                                     Login Link                    
                                 </th>
-                                <th width="25%" style="text-align: center;">
+                                <th style="text-align: center;">
+                                    Check In                    
+                                </th>
+                                <th style="text-align: center;">
+                                    PayPal                    
+                                </th>
+                                <th style="text-align: center;">
+                                    Earnings                    
+                                </th>
+                                <th style="text-align: center;">
+                                    Exercise                    
+                                </th>
+                                <th style="text-align: center;">
+                                    Sleep                    
+                                </th>
+                                <th style="text-align: center;">
                                     FitBit 
                                     <button class="btn btn-outline-primary btn-sm" type="button" v-on:click = "showFitbitStatus()">
                                         <span v-html = "showFitbitStatusButtonText"></span>
                                     </button>
                                 </th>                                                      
-                                <th width="15%" style="text-align: center;">
+                                <th  style="text-align: center;">
                                     Control
                                 </th>
                             </thead>
@@ -1020,7 +1064,25 @@
                                         <span v-html="s.name"></span>                                      
                                     </td>
                                     <td style="text-align: center;"> 
-                                        <span v-html="s.login_url"></span>                           
+                                        <button type="button" class="btn btn-outline-primary btn-sm" v-on:click = "copySubjectLinkToClipboard(s.login_url)">
+                                            Copy <i class="far fa-copy"></i>   
+                                        </button>
+                                        <!-- <span v-html="s.login_url"></span>                            -->
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span v-html="s.todays_stats.check_in"></span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span v-html="s.todays_stats.pay_pal"></span> 
+                                    </td>
+                                    <td style="text-align: center;">
+                                        earnings 
+                                    </td>
+                                    <td style="text-align: center;">
+                                        Heart                    
+                                    </td>
+                                    <td style="text-align: center;">
+                                        Immune                    
                                     </td>
                                     <td style="text-align: center;">                                        
                                         <a :href="s.fitBit_Link"><span v-html="'Setup'"></span></a>

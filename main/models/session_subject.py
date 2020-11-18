@@ -378,7 +378,36 @@ class Session_subject(models.Model):
             "consent_required": self.consent_required,
             "questionnaire1_required":self.questionnaire1_required,
             "questionnaire2_required":self.questionnaire2_required,
+            "todays_stats":self.jsonTodayServerStats(),
         }
+    
+    def jsonTodayServerStats(self):
+
+        sada = self.Session_day_subject_actvities.filter(session_day__date = todaysDate().date()).first()
+
+        if sada:
+            sada_yesterday = self.Session_day_subject_actvities.filter(session_day__period_number = sada.session_day.period_number - 1)
+        else:
+            sada_yesterday = None
+
+        check_in = False
+        pay_pal = False
+        earnings = "---"
+        heart_score = "---"
+        heart_time = "---"
+        immune_score = "---"
+        immune_time = "---"
+
+        return{
+            "check_in":check_in,
+            "pay_pal":pay_pal,
+            "earnings":earnings,
+            "heart_score":heart_score,
+            "heart_time":heart_time,
+            "immune_score":immune_score,
+            "immune_time":immune_time,
+        }
+
     
     #take fitbit api url and return response
     def getFitbitInfo(self,url):
