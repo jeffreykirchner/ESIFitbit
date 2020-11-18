@@ -19,6 +19,9 @@ class Subject_form(forms.ModelForm):
     
     gmail_password = forms.CharField(label='Gmail Password (FitBit)',
                             widget=forms.TextInput(attrs={"v-model":"currentSubject.gmail_password"}))
+
+    display_color = forms.CharField(label='Display Color',
+                            widget=forms.TextInput(attrs={"v-model":"currentSubject.display_color"}))
     
 
     class Meta:

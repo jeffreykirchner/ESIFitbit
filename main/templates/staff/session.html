@@ -102,7 +102,7 @@
                 //update the experiment list from server
                 updateSubjects:function(response){
                     app.$data.session_subjects = response.data.session_subjects;      
-                                    
+                    Vue.nextTick(app.updateCanvases());                     
                 },
 
                 //delete the selected experiment
