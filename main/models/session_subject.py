@@ -88,6 +88,11 @@ class Session_subject(models.Model):
                   
             i.check_in_today = True
 
+            if random.randrange(1,50) == 1:
+                i.paypal_today=False
+            else:
+                i.paypal_today=True
+
             i.save()
         
         self.reCalcAllActvity()

@@ -315,7 +315,10 @@ class Session(models.Model):
         logger.info(sdsa_list)
 
         for sdsa in sdsa_list:
-             writer.writerow([sdsa.session_subject.student_id,f'${sdsa.getTodaysTotalEarnings():0.2f}'])
+            if sdsa.paypal_today:
+                writer.writerow([sdsa.session_subject.student_id,f'${sdsa.getTodaysTotalEarnings():0.2f}'])
+            else:
+                writer.writerow([sdsa.session_subject.student_id,'$0.00'])
 
         return csv_response
 
