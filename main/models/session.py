@@ -234,7 +234,7 @@ class Session(models.Model):
 
     #return CSV response for data download
     def getCSVResponse(self):
-
+        
         csv_response = HttpResponse(content_type='text/csv')
         csv_response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
 
@@ -294,6 +294,28 @@ class Session(models.Model):
                           'Y min immune','Y max immune','Y ticks immune','X min immune','X max immune','X ticks immune'])
 
         self.parameterset.getCSVResponse(writer,self.title)
+
+        return csv_response
+
+    #get earnings in csv file for specified date
+    def getCSVEarnings(self,date):
+        logger = logging.getLogger(__name__)
+
+        csv_response = HttpResponse(content_type='text/csv')
+        csv_response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+
+        writer = csv.writer(csv_response)
+
+        date = datetime.strptime(date,"%Y-%m-%d").date()
+
+        logger.info(f'getCSVEarnings date {date}')
+
+        sdsa_list = main.models.Session_day_subject_actvity.objects.filter(session_day__session=self,session_day__date = date)
+
+        logger.info(sdsa_list)
+
+        for sdsa in sdsa_list:
+             writer.writerow([sdsa.session_subject.student_id,f'${sdsa.getTodaysTotalEarnings():0.2f}'])
 
         return csv_response
 

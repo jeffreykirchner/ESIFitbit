@@ -7,6 +7,7 @@ import logging
 from django.db.models.functions import Lower
 from datetime import datetime,timedelta
 from main.globals.randomHexColor import getRandomHexColor
+from main.globals.todaysDate import todaysDate
 
 from main.forms import Parameterset_form,Session_form,Subject_form,Import_parameters_form
 from main.models import Session,Parameterset,Session_subject,Session_day_subject_actvity,Parameters
@@ -50,6 +51,8 @@ def Staff_Session(request,id):
             return sendCancelations(data,id)
         elif data["action"] == "refreshSubjectTable":
             return refreshSubjectTable(data,id)
+        elif data["action"] == "downloadEarnings":
+            return downloadEarnings(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -59,13 +62,15 @@ def Staff_Session(request,id):
         subject_form = Subject_form()
         import_parameters_form = Import_parameters_form()
         p = Parameters.objects.first()
+        yesterdays_date = todaysDate() - timedelta(days=1)
         
         return render(request,'staff/session.html',{'id': id,
                                                     'parameterset_form':parameterset_form,
                                                     'session_form':session_form,
                                                     'subject_form':subject_form,
                                                     'help_text': p.manualHelpText,
-                                                    'import_parameters_form':import_parameters_form})     
+                                                    'import_parameters_form':import_parameters_form,
+                                                    'yesterdays_date' : yesterdays_date.date().strftime("%Y-%m-%d")})     
 
 #get list of experiment sessions
 def getSession(data,id):
@@ -393,7 +398,7 @@ def showFitbitStatus(data,id):
             
     return JsonResponse({"status":"success","session_subjects": getSubjectListJSON(id,True), },safe=False)                         
 
-#down session data
+#download session data
 def downloadData(data,id):
     logger = logging.getLogger(__name__) 
     logger.info("Download data")
@@ -402,5 +407,15 @@ def downloadData(data,id):
     s=Session.objects.get(id=id)
 
     return s.getCSVResponse()    
+
+#download session earnings
+def downloadEarnings(data,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Download data")
+    logger.info(data)
+
+    s=Session.objects.get(id=id) 
+
+    return s.getCSVEarnings(data["date"])
 
 

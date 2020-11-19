@@ -65,6 +65,7 @@
                 invitationButtonText: 'Send Invitations <i class="far fa-envelope"></i>',
                 cancelationButtonText: 'Cancel Session <i class="fas fa-ban"></i>',
                 downloadDataButtonText:'Download Data <i class="fas fa-scroll fa-xs"></i>',
+                downloadEarningsButtonText:'Download Earnings <i class="fas fa-cash-register"></i>',
                 refreshSubjectTableButtonText:'Refresh <i class="fas fa-sync fa-spin"></i>',
                 emailResult:'',
                 emailResultCancelation:'',
@@ -72,6 +73,7 @@
                 helpText:`{{help_text|safe}}`,
                 toggleState:"heart",
                 graph_parameters:{},
+                earningsDownloadDate:"{{yesterdays_date}}",
             },
 
             methods:{
@@ -408,7 +410,7 @@
                                 });                        
                 },
 
-                //down load data
+                //download data
                 downloadData:function(){                    
                     app.$data.downloadDataButtonText = '<i class="fas fa-spinner fa-spin"></i>';
                     axios.post('/session/{{id}}/', {
@@ -435,6 +437,35 @@
                                 .catch(function (error) {
                                     console.log(error);
                                 });                        
+                },
+
+                //download earnings
+                downloadEarnings:function(){
+                    app.$data.downloadEarningsButtonText = '<i class="fas fa-spinner fa-spin"></i>';
+                    axios.post('/session/{{id}}/', {
+                                    action :"downloadEarnings",
+                                    date : app.$data.earningsDownloadDate,                                                                                                                                                                                              
+                                })
+                                .then(function (response) {    
+                                                             
+                                    console.log(response.data);
+
+                                    var downloadLink = document.createElement("a");
+                                    var blob = new Blob(["\ufeff", response.data]);
+                                    var url = URL.createObjectURL(blob);
+                                    downloadLink.href = url;
+                                    downloadLink.download = "FitBit_Session_" + app.$data.session.id +"_Earnings_" + app.$data.earningsDownloadDate + ".csv";
+
+                                    document.body.appendChild(downloadLink);
+                                    downloadLink.click();
+                                    document.body.removeChild(downloadLink);
+
+                                    app.$data.downloadEarningsButtonText ='Download Earnings <i class="fas fa-cash-register"></i>';
+                                                                    
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });
                 },
 
                 //import parameters
@@ -1231,17 +1262,19 @@
                                 </div>
                             </div>                        
                         </div>
+                        {%if DEBUG%}
                         <div class="row mt-2"> 
                             <div class="col" style="text-align: right;">
-                                {%if DEBUG%}
+                               
                                 <button class="btn btn-outline-danger" type="button" v-on:click = "backFillSessionsDays()" v-bind:disabled = "session.started === false">
                                     <span v-html="backFillButtonText"></span>
                                 </button>
-                                {%endif%}
+                                
                             </div>
                             <div class="col">
                             </div> 
                         </div>
+                        {%endif%}
                         <div class="row mt-2"> 
                             <div class="col" style="text-align: right;">                                
                                 <button class="btn btn-outline-primary" type="button" v-on:click = "showSendInvitations()" v-bind:disabled = "session.started === false">
@@ -1265,6 +1298,16 @@
                             </div>
                             <div class="col">
                                 
+                            </div> 
+                        </div> 
+                        <div class="row mt-2"> 
+                            <div class="col" style="text-align: right;">                                
+                                <button class="btn btn-outline-primary" type="button" v-on:click = "downloadEarnings()" v-bind:disabled = "session.started === false">
+                                   <span v-html="downloadEarningsButtonText"></span>
+                                </button>                                
+                            </div>
+                            <div class="col">
+                                <input class="form-control" type="date" id="earningsDownloadDate_id" v-model="earningsDownloadDate">
                             </div> 
                         </div>                                         
                     </div>
