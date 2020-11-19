@@ -30,6 +30,8 @@ class Parameters(models.Model):
 
     manualHelpText = models.CharField(max_length = 5000,default = "")                      # help text shown to staff
 
+    blockChangeText = models.CharField(max_length = 5000,default = "")                     # help text shown when time block changes
+
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
 

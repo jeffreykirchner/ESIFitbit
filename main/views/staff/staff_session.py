@@ -357,7 +357,8 @@ def importParameters(data,id):
     if form.is_valid():
         logger.info(form.cleaned_data['session'])
         ps = form.cleaned_data['session'].parameterset
-        s.parameterset.setup(ps)               
+        s.parameterset.setup(ps)              
+        s.calcEndDate() 
         return JsonResponse({"status":"success","session" : getSessionJSON(id),},safe=False)                         
                                 
     else:

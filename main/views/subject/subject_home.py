@@ -63,7 +63,6 @@ def Subject_Home(request,id):
             for f in session_subject_questionnaire2_form:
                 session_subject_questionnaire2_form_ids.append(str(f.html_name))
 
-
             return render(request,'subject/home.html',{"id":id,  
                                                     "status":"success",    
                                                     "before_start_date":session_subject.session.isBeforeStartDate(), 
@@ -345,10 +344,26 @@ def getSessionDaySubject(data,session_subject,session_day):
                              "consent_form_text":consent_form_text,
                              },safe=False)
     else:
+        notification_title =""
+        notification_text = ""
+
+        ps = session_day.session.parameterset
+        p_number = session_day.period_number
+
+        #check today is first day of new time block
+        if ps.getBlockChangeToday(p_number):
+            notification_title = "Your activity payments have changed."
+            notification_text = p.blockChangeText
+            notification_text = notification_text.replace("[heart pay]",f'{ps.getHeartPay(p_number)/100:0.2f}')
+            notification_text = notification_text.replace("[immune pay]",f'{ps.getImmunePay(p_number)/100:0.2f}')
+            notification_text = notification_text.replace("[fixed pay]",f'{ps.fixed_pay_per_day:0.2f}')
+
         return JsonResponse({"status":status,
                         "fitbitError":fitbitError,
                         "fitbit_link":session_subject.getFitBitLink("subject"),
                         "session_date":session_date,
+                        "notification_title":notification_title,
+                        "notification_text":notification_text,
                         "consent_required":consent_required,
                         "questionnaire1_required":session_subject.getQuestionnaire1Required(),
                         "questionnaire2_required":session_subject.getQuestionnaire2Required(),

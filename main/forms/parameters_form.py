@@ -64,7 +64,10 @@ class Parameters_form(forms.ModelForm):
                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"})) 
 
     manualHelpText = forms.CharField(label='Manual Text',
-                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))                                                                
+                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))  
+
+    blockChangeText = forms.CharField(label='Time Block Change Text',
+                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))                                                              
 
     class Meta:
         model=Parameters

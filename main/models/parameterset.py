@@ -148,6 +148,18 @@ class Parameterset(models.Model):
             return 2
         else:
             return 3
+    
+    #return trus if block 2 or 3 starts today
+    def getBlockChangeToday(self,period):
+
+        #start of block 2
+        if period == self.block_1_day_count+1+1:
+            return True
+        
+        #start of block 3
+        if period == self.block_2_day_count+self.block_1_day_count+1+1:
+            return True
+
 
     #get csv reponse for data file
     def getCSVResponse(self,writer,title):
