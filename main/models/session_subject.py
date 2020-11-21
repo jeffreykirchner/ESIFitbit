@@ -214,32 +214,48 @@ class Session_subject(models.Model):
     #return total sleep from date specified
     def getFibitHeartMinutes(self,search_date):
         logger = logging.getLogger(__name__)
-        logger.info("getFibitHeartMinutes")
-        logger.info(search_date)
-
+        logger.info(f"getFibitHeartMinutes ID {self.id} Name {self.name} date {search_date}")
+        
         p = Parameters.objects.first()
 
         try:
-            r = self.getFitbitActivies(search_date)
-            v =  0
-
             keyStr = ""
-            
+            v = 0
+            response_key=""
+
+            #very active minutes
             if p.trackerDataOnly:
-                keyStr = "activities-tracker-minutesVeryActive"
+                response_key = "activities-tracker-minutesVeryActive"
             else:
-                keyStr = "activities-minutesVeryActive"
+                response_key = "activities-minutesVeryActive"
+           
+            v += self.getFibitHeartMinutes2(search_date,response_key,"minutesVeryActive")
 
-            for a in r[keyStr]:
-                logger.info(a)
-                v += int(a['value'])
-
+            #fairly active minutes
+            if p.trackerDataOnly:
+                response_key = "activities-tracker-minutesFairlyActive"
+            else:
+                response_key = "activities-minutesFairlyActive"
+           
+            v += self.getFibitHeartMinutes2(search_date,response_key,"minutesFairlyActive")
 
             logger.info(f'getFibitHeartMinutes minutes {v}')
             return v
         except Exception  as e: 
             logger.info(e)
             return -1
+    
+    #search for each activity componet
+    def getFibitHeartMinutes2(self,search_date,response_key,activity_key):
+        logger = logging.getLogger(__name__)
+        r = self.getFitbitActivies(search_date,activity_key)
+        v =  0
+
+        for a in r[response_key]:
+            logger.info(a)
+            v += int(a['value'])
+        
+        return v
         
     #get fitbit sleep object
     def getFitbitSleep(self,sleep_date):
@@ -256,7 +272,7 @@ class Session_subject(models.Model):
         return fitbit_response
     
     #get fitbit sleep object
-    def getFitbitActivies(self,activity_date):
+    def getFitbitActivies(self,activity_date,activity_key):
         logger = logging.getLogger(__name__)
         logger.info("Fitbit activity")
         logger.info(activity_date) 
@@ -268,9 +284,9 @@ class Session_subject(models.Model):
         #temp_s="2020-10-22"
 
         if p.trackerDataOnly:
-            fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/tracker/minutesVeryActive/date/{temp_s}/1d.json')
+            fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/tracker/{activity_key}/date/{temp_s}/1d.json')
         else:
-            fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/minutesVeryActive/date/{temp_s}/1d/15min.json')
+            fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/{activity_key}/date/{temp_s}/1d/15min.json')
 
         return fitbit_response
 
