@@ -76,8 +76,9 @@ def Subject_Home(request,id):
                                                     "session_subject_questionnaire2_form":session_subject_questionnaire2_form,  
                                                     "heart_help_text":p.heartHelpText,
                                                     "immune_help_text":p.immuneHelpText,
-                                                    "payment_help_text":p.paymentHelpText,                       
-                                                    "session_subject":session_subject})
+                                                    "payment_help_text":p.paymentHelpText if session_subject.session.treatment != "B" else p.paymentHelpTextBaseline,                       
+                                                    "session_subject":session_subject,
+                                                    "session_treatment":session_subject.session.treatment})
         else:
             return render(request,'subject/home.html',{"id":id,  
                                                         "contact_email":p.contactEmail,

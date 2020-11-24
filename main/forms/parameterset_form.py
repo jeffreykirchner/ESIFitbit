@@ -44,27 +44,33 @@ class Parameterset_form(forms.ModelForm):
     
     block_1_heart_pay = forms.DecimalField(label='Block 1 Heart Pay ($)',
                             min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_1_heart_pay"}))
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_1_heart_pay",
+                                                            "v-bind:disabled" :"session.treatment === 'B'"}))
     
     block_2_heart_pay = forms.DecimalField(label='Block 2 Heart Pay ($)',
                             min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_2_heart_pay"}))
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_2_heart_pay",
+                                                            "v-bind:disabled" :"session.treatment === 'B'"}))
 
     block_3_heart_pay = forms.DecimalField(label='Block 3 Heart Pay ($)',
                             min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_3_heart_pay"}))
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_3_heart_pay",
+                                                            "v-bind:disabled" :"session.treatment === 'B'"}))
     
     block_1_immune_pay = forms.DecimalField(label='Block 1 Immune Pay ($)',
                             min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_1_immune_pay"}))
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_1_immune_pay",
+                                                            "v-bind:disabled" :"session.treatment === 'B'"}))
     
     block_2_immune_pay = forms.DecimalField(label='Block 2 Immune Pay ($)',
                             min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_2_immune_pay"}))
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_2_immune_pay",
+                                                            "v-bind:disabled" :"session.treatment === 'B'"}))
 
     block_3_immune_pay = forms.DecimalField(label='Block 3 Immune Pay ($)',
                             min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_3_immune_pay"}))
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_3_immune_pay",
+                                                            "v-bind:disabled" :"session.treatment === 'B'"}))
 
     block_1_day_count = forms.DecimalField(label='Block 1 Days',
                             min_value=0,

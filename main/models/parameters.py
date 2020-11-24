@@ -26,7 +26,8 @@ class Parameters(models.Model):
 
     heartHelpText = models.CharField(max_length = 5000,default = "")                       #heart help text shown to subjects
     immuneHelpText = models.CharField(max_length = 5000,default = "")                      #immune help text shown to subjects
-    paymentHelpText = models.CharField(max_length = 5000,default = "")                     #payment help text shown to subjects
+    paymentHelpText = models.CharField(max_length = 5000,default = "")                     #payment help text shown to subjects for none baseline
+    paymentHelpTextBaseline = models.CharField(max_length = 5000,default = "")             #payment help text shown to subjects for basline treatments
 
     manualHelpText = models.CharField(max_length = 5000,default = "")                      # help text shown to staff
 

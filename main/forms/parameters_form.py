@@ -60,7 +60,10 @@ class Parameters_form(forms.ModelForm):
     immuneHelpText = forms.CharField(label='Immune Help Text',
                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
 
-    paymentHelpText = forms.CharField(label='Payment Help Text',
+    paymentHelpText = forms.CharField(label='Non-Basline Payment Help Text',
+                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
+
+    paymentHelpTextBaseline = forms.CharField(label='Basline Payment Help Text',
                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"})) 
 
     manualHelpText = forms.CharField(label='Manual Text',

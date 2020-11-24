@@ -25,9 +25,10 @@ from django.utils.translation import gettext_lazy as _
 class Session(models.Model):
 
     class Treatment(models.TextChoices):
+        FOUR = "B", _('Baseline')
         ONE = 'I', _('Individual')
         TWO = "IwC", _('Individual with chat')
-        THREE = "IwCpB", _('Individual with chat and bonus')
+        THREE = "IwCpB", _('Individual with chat and bonus')        
 
     parameterset = models.ForeignKey(Parameterset,on_delete=models.CASCADE)
 
