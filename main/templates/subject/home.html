@@ -55,6 +55,8 @@
                 notification_title:"",
                 notification_text:"",
                 session_treatment:"",
+                viewed_heart:false,
+                viewed_immune:false,
             },
 
             methods:{
@@ -89,6 +91,25 @@
                                     app.toggleConsentForm();
                                     app.toggleQuesionnaire1();
                                     app.toggleQuesionnaire2();
+                                                                      
+
+                                    if(app.$data.toggleState == 'heart')
+                                    {
+                                        app.$data.viewed_heart = true;
+                                    }
+                                    else
+                                    {
+                                        app.$data.viewed_heart = false;
+                                    }
+
+                                    if(app.$data.toggleState == 'immune')
+                                    {
+                                        app.$data.viewed_immune = true;
+                                    }
+                                    else
+                                    {
+                                        app.$data.viewed_immune = false;
+                                    }
                                                                            
                                 })
                                 .catch(function (error) {
@@ -248,6 +269,19 @@
                 },
 
                 payMe:function(reponse){
+
+                    if(!app.$data.viewed_heart)
+                    {
+                        alert("Please confirm your Heart Health before payment.")
+                        return;
+                    }
+
+                    if(!app.$data.viewed_immune)
+                    {
+                        alert("Please confirm your Immune Health before payment.")
+                        return;
+                    }
+
                     app.$data.payMeButtonText = '<i class="fas fa-spinner fa-spin"></i>';
 
                     axios.post('/subjectHome/{{id}}/', {
@@ -454,7 +488,18 @@
 
                 updateToogleState:function(toggleState){
                    app.$data.toggleState = toggleState;
-                   Vue.nextTick(app.updateCanvases());    
+
+                   if(app.$data.toggleState == 'heart')
+                    {
+                        app.$data.viewed_heart = true;
+                    }                    
+
+                    if(app.$data.toggleState == 'immune')
+                    {
+                        app.$data.viewed_immune = true;
+                    }                    
+
+                    Vue.nextTick(app.updateCanvases());    
                 },
 
                 displayErrors:function(errors){
