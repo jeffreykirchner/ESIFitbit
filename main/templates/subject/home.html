@@ -57,6 +57,8 @@
                 session_treatment:"",
                 viewed_heart:false,
                 viewed_immune:false,
+                payment_toggle_background : "lightgrey",
+                payment_available : true
             },
 
             methods:{
@@ -651,7 +653,7 @@
                                     <label class="btn btn-secondary">
                                         <input type="radio" name="options" id="option2" autocomplete="off" v-on:click="updateToogleState('immune')"> <i class="fas fa-bed"></i>
                                     </label>
-                                    <label class="btn btn-secondary">
+                                    <label class="btn btn-secondary" v-bind:style="[viewed_heart === false || viewed_immune === false ? {'background-color': 'lightgrey' }:{}]">
                                         <input type="radio" name="options" id="option2" autocomplete="off" v-on:click="updateToogleState('payment')"> <i class="fas fa-dollar-sign"></i>
                                     </label>                    
                                 </div>
