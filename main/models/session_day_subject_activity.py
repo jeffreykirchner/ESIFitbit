@@ -25,6 +25,18 @@ class Session_day_subject_actvity(models.Model):
 
     payment_today =  models.DecimalField(decimal_places=2, default=0, max_digits=6)                 #amount of money paid to subject today
 
+    #fitbit metrics
+    fitbit_minutes_sedentary = models.IntegerField(default=0)         #todays tracker sedentary minutes
+    fitbit_minutes_lightly_active = models.IntegerField(default=0)    #todays tracker lightly active minutes
+    fitbit_minutes_fairly_active = models.IntegerField(default=0)     #todays tracker fairly active minutes
+    fitbit_minutes_very_active = models.IntegerField(default=0)       #todays tracker very active minutes
+    fitbit_steps = models.IntegerField(default=0)                     #todays tracker steps
+    fitbit_minutes_heart_out_of_range = models.IntegerField(default=0)         #todays heart rate out of range
+    fitbit_minutes_heart_fat_burn = models.IntegerField(default=0)             #todays heart rate lightly fat burn
+    fitbit_minutes_heart_cardio = models.IntegerField(default=0)               #todays heart rate cardio
+    fitbit_minutes_heart_peak = models.IntegerField(default=0)                 #todays heart rate peak
+    fitbit_heart_time_series =  models.CharField(max_length = 100000, default = '')  #today's heart rate time series
+
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
 
@@ -241,7 +253,27 @@ class Session_day_subject_actvity(models.Model):
         fitbitError = False
 
         immune_activity_minutes = self.session_subject.getFibitImmuneMinutes(self.session_day.date)
-        heart_activity_minutes = self.session_subject.getFibitHeartMinutes(self.session_day.date)
+
+        #activites
+        self.fitbit_minutes_sedentary = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesSedentary")
+        self.fitbit_minutes_lightly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesLightlyActive")
+        self.fitbit_minutes_fairly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesFairlyActive")
+        self.fitbit_minutes_very_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesVeryActive")
+        self.fitbit_steps = self.session_subject.getFibitActivityMinutes(self.session_day.date,"steps")
+
+        #heart rate
+        heart_full = self.session_subject.getFitbitHeartRate(self.session_day.date) 
+        #logger.info(f'pullFitbitActvities {temp_h}')    
+        heart_summary = heart_full['activities-heart'][0]['value']['heartRateZones']
+        self.fitbit_minutes_heart_out_of_range = heart_summary[0].get("minutes",0)   
+        self.fitbit_minutes_heart_fat_burn = heart_summary[1].get("minutes",0)
+        self.fitbit_minutes_heart_cardio = heart_summary[2].get("minutes",0)
+        self.fitbit_minutes_heart_peak = heart_summary[3].get("minutes",0)
+        self.fitbit_heart_time_series = heart_full
+
+        self.save()
+
+        heart_activity_minutes =  self.fitbit_minutes_fairly_active +  self.fitbit_minutes_very_active
 
         if immune_activity_minutes >= 0:
             self.immune_activity_minutes = immune_activity_minutes
@@ -264,11 +296,14 @@ class Session_day_subject_actvity(models.Model):
         # ["Session","Period","Block","Date","Subject ID", "Subject Code","Heart Activity Minutes",
         #                  "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
         #                  "Check In Today", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today"]
-        writer.writerow([self.session_day.session.title,self.session_day.period_number,self.session_day.session.parameterset.getBlock(self.session_day.period_number),
+        writer.writerow([f'{self.session_day.session.title}',self.session_day.period_number,self.session_day.session.parameterset.getBlock(self.session_day.period_number),
                          self.session_day.getDateStr(),self.session_subject.id_number,self.session_subject.login_key,self.heart_activity_minutes,
                          self.immune_activity_minutes,self.heart_activity,self.immune_activity,self.check_in_today,
                          self.paypal_today,self.session_day.session.parameterset.fixed_pay_per_day,self.getTodaysHeartEarnings(),
-                         self.getTodaysImmuneEarnings(),self.payment_today])
+                         self.getTodaysImmuneEarnings(),self.payment_today,self.fitbit_minutes_sedentary,self.fitbit_minutes_lightly_active,
+                         self.fitbit_minutes_fairly_active,self.fitbit_minutes_very_active,self.fitbit_steps,
+                         self.fitbit_minutes_heart_out_of_range,self.fitbit_minutes_heart_fat_burn,self.fitbit_minutes_heart_cardio,
+                         self.fitbit_minutes_heart_peak])
 
     #return json object of class
     def json(self):

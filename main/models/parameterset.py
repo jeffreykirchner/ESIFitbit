@@ -162,9 +162,9 @@ class Parameterset(models.Model):
 
 
     #get csv reponse for data file
-    def getCSVResponse(self,writer,title):
+    def getCSVResponse(self,writer,title,treatment):
 
-         writer.writerow([title,
+         writer.writerow([title,treatment,
                           self.heart_activity_inital,self.heart_parameter_1,self.heart_parameter_2,self.heart_parameter_3,
                           self.immune_activity_inital,self.immune_parameter_1,self.immune_parameter_2,self.immune_parameter_3,
                           self.block_1_heart_pay,self.block_2_heart_pay,self.block_3_heart_pay, 

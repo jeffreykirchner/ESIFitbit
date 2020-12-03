@@ -244,7 +244,10 @@ class Session(models.Model):
         writer.writerow(["Subject Data"])
         writer.writerow(["Session","Period","Block","Date","Subject ID", "Subject Code","Heart Activity Minutes",
                          "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
-                         "Check In Today", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today"])
+                         "Check In Today", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today",
+                         "Minutes Sedentary","Minutes Lightly Active","Minutes Fairly Active","Minutes Very Active","Steps",
+                         "Heart Rate Minutes Out of Range","Heart Rate Minutes Fat Burn","Heart Rate Minutes Cardio",
+                         "Heart Rate Minutes Peak"])
 
         sd_list = self.session_days.all().order_by('period_number')
 
@@ -283,7 +286,7 @@ class Session(models.Model):
         #parameters
         writer.writerow([])
         writer.writerow(["Parameters"])
-        writer.writerow(['Session',
+        writer.writerow(['Session','Treatment',
                           'Heart activity inital','Heart parameter 1','Heart parameter 2','Heart parameter 3',
                           'Immune activity inital','Immune parameter 1','Immune parameter 2','Immune parameter 3',
                           'Block 1 heart pay','Block 2 heart pay','Block 3 heart pay', 
@@ -294,7 +297,7 @@ class Session(models.Model):
                           'Y min heart','Y max heart','Y ticks heart','X min heart','X max heart','X ticks heart',  
                           'Y min immune','Y max immune','Y ticks immune','X min immune','X max immune','X ticks immune'])
 
-        self.parameterset.getCSVResponse(writer,self.title)
+        self.parameterset.getCSVResponse(writer,self.title,self.Treatment(self.treatment).label)
 
         return csv_response
 

@@ -212,9 +212,9 @@ class Session_subject(models.Model):
             return -1
     
     #return total sleep from date specified
-    def getFibitHeartMinutes(self,search_date):
+    def getFibitActivityMinutes(self,search_date,search_parameter):
         logger = logging.getLogger(__name__)
-        logger.info(f"getFibitHeartMinutes ID {self.id} Name {self.name} date {search_date}")
+        logger.info(f"getFibitActivityMinutes ID {self.id} Name {self.name} date {search_date} parameter {search_parameter}")
         
         p = Parameters.objects.first()
 
@@ -225,37 +225,32 @@ class Session_subject(models.Model):
 
             #very active minutes
             if p.trackerDataOnly:
-                response_key = "activities-tracker-minutesVeryActive"
+                response_key = f"activities-tracker-{search_parameter}"
             else:
-                response_key = "activities-minutesVeryActive"
-           
-            v += self.getFibitHeartMinutes2(search_date,response_key,"minutesVeryActive")
+                response_key = f"activities-{search_parameter}"
+        
+            r = self.getFitbitActivies(search_date,search_parameter)
+            v =  0
 
-            #fairly active minutes
-            if p.trackerDataOnly:
-                response_key = "activities-tracker-minutesFairlyActive"
-            else:
-                response_key = "activities-minutesFairlyActive"
+            for a in r[response_key]:
+                logger.info(a)
+                v += int(a['value'])
            
-            v += self.getFibitHeartMinutes2(search_date,response_key,"minutesFairlyActive")
+            # v += self.getFibitHeartMinutes2(search_date,response_key,search_parameter)
 
-            logger.info(f'getFibitHeartMinutes minutes {v}')
+            # #fairly active minutes
+            # if p.trackerDataOnly:
+            #     response_key = "activities-tracker-minutesFairlyActive"
+            # else:
+            #     response_key = "activities-minutesFairlyActive"
+           
+            # v += self.getFibitHeartMinutes2(search_date,response_key,"minutesFairlyActive")
+
+            logger.info(f'getFibitActivityMinutes minutes {v}')
             return v
         except Exception  as e: 
             logger.info(e)
             return -1
-    
-    #search for each activity componet
-    def getFibitHeartMinutes2(self,search_date,response_key,activity_key):
-        logger = logging.getLogger(__name__)
-        r = self.getFitbitActivies(search_date,activity_key)
-        v =  0
-
-        for a in r[response_key]:
-            logger.info(a)
-            v += int(a['value'])
-        
-        return v
         
     #get fitbit sleep object
     def getFitbitSleep(self,sleep_date):
@@ -270,8 +265,8 @@ class Session_subject(models.Model):
         fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1.2/user/-/sleep/date/{temp_s}.json')
 
         return fitbit_response
-    
-    #get fitbit sleep object
+
+    #get fitbit activity object
     def getFitbitActivies(self,activity_date,activity_key):
         logger = logging.getLogger(__name__)
         logger.info("Fitbit activity")
@@ -281,12 +276,26 @@ class Session_subject(models.Model):
 
         temp_s = activity_date.strftime("%Y-%m-%d")
         #temp_s = "today"
-        #temp_s="2020-10-22"
+        #temp_s="2020-11-20"
 
         if p.trackerDataOnly:
             fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/tracker/{activity_key}/date/{temp_s}/1d.json')
         else:
             fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/{activity_key}/date/{temp_s}/1d/15min.json')
+
+        return fitbit_response
+
+    #get fitbit heart rate object
+    def getFitbitHeartRate(self,heart_date):
+        logger = logging.getLogger(__name__)
+        logger.info("Fitbit heart rate")
+        logger.info(heart_date) 
+
+        temp_s = heart_date.strftime("%Y-%m-%d")
+        #temp_s = "today"
+        temp_s="2020-11-20"
+
+        fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/heart/date/{temp_s}/1d.json')
 
         return fitbit_response
 
