@@ -293,7 +293,7 @@ class Session_subject(models.Model):
 
         temp_s = heart_date.strftime("%Y-%m-%d")
         #temp_s = "today"
-        temp_s="2020-11-20"
+        #temp_s="2020-11-20"
 
         fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/heart/date/{temp_s}/1d.json')
 
