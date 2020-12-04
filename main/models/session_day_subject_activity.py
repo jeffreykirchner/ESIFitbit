@@ -254,22 +254,25 @@ class Session_day_subject_actvity(models.Model):
 
         immune_activity_minutes = self.session_subject.getFibitImmuneMinutes(self.session_day.date)
 
-        #activites
-        self.fitbit_minutes_sedentary = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesSedentary")
-        self.fitbit_minutes_lightly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesLightlyActive")
-        self.fitbit_minutes_fairly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesFairlyActive")
-        self.fitbit_minutes_very_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesVeryActive")
-        self.fitbit_steps = self.session_subject.getFibitActivityMinutes(self.session_day.date,"steps")
+        if immune_activity_minutes !=-1:
+            #activites
+            self.fitbit_minutes_sedentary = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesSedentary")
+            self.fitbit_minutes_lightly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesLightlyActive")
+            self.fitbit_minutes_fairly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesFairlyActive")
+            self.fitbit_minutes_very_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesVeryActive")
+            self.fitbit_steps = self.session_subject.getFibitActivityMinutes(self.session_day.date,"steps")
 
-        #heart rate
-        heart_full = self.session_subject.getFitbitHeartRate(self.session_day.date) 
-        #logger.info(f'pullFitbitActvities {temp_h}')    
-        heart_summary = heart_full['activities-heart'][0]['value']['heartRateZones']
-        self.fitbit_minutes_heart_out_of_range = heart_summary[0].get("minutes",0)   
-        self.fitbit_minutes_heart_fat_burn = heart_summary[1].get("minutes",0)
-        self.fitbit_minutes_heart_cardio = heart_summary[2].get("minutes",0)
-        self.fitbit_minutes_heart_peak = heart_summary[3].get("minutes",0)
-        self.fitbit_heart_time_series = heart_full
+            #heart rate
+            heart_full = self.session_subject.getFitbitHeartRate(self.session_day.date) 
+            #logger.info(f'pullFitbitActvities {temp_h}')    ]
+        
+            heart_summary = heart_full['activities-heart'][0]['value']['heartRateZones']
+            self.fitbit_minutes_heart_out_of_range = heart_summary[0].get("minutes",0)   
+            self.fitbit_minutes_heart_fat_burn = heart_summary[1].get("minutes",0)
+            self.fitbit_minutes_heart_cardio = heart_summary[2].get("minutes",0)
+            self.fitbit_minutes_heart_peak = heart_summary[3].get("minutes",0)
+            self.fitbit_heart_time_series = heart_full
+        
 
         self.save()
 

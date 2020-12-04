@@ -166,7 +166,7 @@ class Session_subject(models.Model):
 
         logger.info(f'fitBitCatchUp date {d_today.date()} subject activities {sa_list}')
 
-        #pull in actvity dor days not checked in
+        #pull in actvity for days not checked in
         for s in sa_list:
             #if s.session_day.date < d_today.date():
 
