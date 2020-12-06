@@ -61,7 +61,7 @@ class Session(models.Model):
         verbose_name_plural = 'Experiment Sessions'
 
     #get the current session day
-    def getCurrentSessionDay(self):
+    def getCurrentSessionDay(self) :
         logger = logging.getLogger(__name__)
 
         d_today = todaysDate()
@@ -337,6 +337,8 @@ class Session(models.Model):
 
             email_list += s.contact_email
 
+        current_session_day = self.getCurrentSessionDay()
+
         return{
             "id":self.id,
             "title":self.title,
@@ -354,6 +356,7 @@ class Session(models.Model):
             "cancelation_text":self.cancelation_text,
             "cancelation_text_subject":self.cancelation_text_subject,
             "email_list":email_list,
+            "current_period" : current_session_day.period_number if current_session_day else "---",
         }
 
 #delete associated user model when profile is deleted

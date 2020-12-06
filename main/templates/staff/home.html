@@ -141,20 +141,23 @@
                     <caption style="caption-side:top;text-align: center;">Sessions</caption>
 
                     <thead>
-                        <th width="30%">
+                        <th>
                             <button type="button" class="btn btn-outline-link btn-sm" v-on:click = "sortByTitle()">
                                 <span v-html="titleSortButtonText" class="table_header"></span>
                             </button>
                         </th> 
-                        <th width="20%" style="text-align: center;">
+                        <th style="text-align: center;">
                             <button type="button" class="btn btn-outline-link btn-sm" v-on:click = "sortByDate()">
                                 <span v-html="dateSortButtonText" class="table_header"></span>
                             </button>                             
                         </th>
-                        <th width="35%" style="text-align: center;">
+                        <th style="text-align: center;">
                             Current Period
+                        </th>
+                        <th style="text-align: center;">
+                            Treatment
                         </th>                                                      
-                        <th width="15%" style="text-align: center;">
+                        <th style="text-align: center;">
                             Control
                         </th>
                     </thead>
@@ -165,10 +168,13 @@
                                 <a :href="'/session/' + s.id + '/' "><span v-html="s.title"></span></a>                                        
                             </td>
                             <td style="text-align: center;"> 
-                                <span v-html="s.start_date"></span>                                   
+                                <span v-html="s.start_date"></span> to <span v-html="s.end_date"></span>                                   
                             </td>
                             <td style="text-align: center;">                                        
                                 <span v-html="s.current_period"></span>                                       
+                            </td>
+                            <td style="text-align: center;">                                        
+                                <span v-html="s.treatment_label"></span>                                       
                             </td>                               
                             <td style="text-align: center;">
                                 <button v-bind:id="'deleteSession' + s.id" type="button" class="btn btn-outline-danger btn-sm" v-on:click = "deleteSession(s.id)">
