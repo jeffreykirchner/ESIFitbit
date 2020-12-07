@@ -30,6 +30,7 @@ class Parameters(models.Model):
     paymentHelpTextBaseline = models.CharField(max_length = 5000,default = "")             #payment help text shown to subjects for basline treatments
 
     manualHelpText = models.CharField(max_length = 5000,default = "")                      # help text shown to staff
+    staffHomeHelpText = models.CharField(max_length = 5000,default = "")                   # help text shown to staff home page
 
     blockChangeText = models.CharField(max_length = 5000,default = "")                     # help text shown when time block changes
 

@@ -31,9 +31,9 @@ def Staff_Home(request):
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
-        
-        return render(request,'staff/home.html',{"a":"a",
-                                                   "b":"b"})     
+        p = Parameters.objects.first()
+
+        return render(request,'staff/home.html',{'help_text': p.staffHomeHelpText})     
 
 #get list of experiment sessions
 def getSessions(data):

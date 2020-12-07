@@ -66,7 +66,10 @@ class Parameters_form(forms.ModelForm):
     paymentHelpTextBaseline = forms.CharField(label='Basline Payment Help Text',
                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"})) 
 
-    manualHelpText = forms.CharField(label='Manual Text',
+    manualHelpText = forms.CharField(label='Session Help Text',
+                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
+
+    staffHomeHelpText = forms.CharField(label='Session List Help Text',
                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))  
 
     blockChangeText = forms.CharField(label='Time Block Change Text',
