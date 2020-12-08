@@ -71,6 +71,7 @@ def createSession(data):
     sd = Session_day()
     sd.session=s
     sd.period_number = 1
+    sd.date=todaysDate().date()
     sd.save()
 
     return getSessions(data) 
