@@ -342,7 +342,7 @@ def getSessionDaySubject(data,session_subject,session_day):
     if status == "fail":
         return JsonResponse({"status":status,
                              "fitbitError":fitbitError,
-                             "fitBitLastSynced":"---",
+                             "fitBitLastSynced":"---" if fitbitError else session_subject.getFitbitLastSyncStr(),
                              "fitbit_link":session_subject.getFitBitLink("subject"),
                              "questionnaire1_required":session_subject.getQuestionnaire1Required(),
                              "consent_required":consent_required,

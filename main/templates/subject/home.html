@@ -662,7 +662,7 @@
                                     <label class="btn btn-secondary">
                                         <input type="radio" name="options" id="option2" autocomplete="off" v-on:click="updateToogleState('immune')"> <i class="fas fa-bed"></i>
                                     </label>
-                                    <label class="btn btn-secondary" v-bind:style="[viewed_heart === false || viewed_immune === false ? {'background-color': 'lightgrey' }:{}]">
+                                    <label class="btn btn-secondary" v-bind:style="[(viewed_heart === false || viewed_immune === false) && session_day_subject_actvity.paypal_today ===false ? {'background-color': 'lightgrey' }:{}]">
                                         <input type="radio" name="options" id="option2" autocomplete="off" v-on:click="updateToogleState('payment')"> <i class="fas fa-dollar-sign"></i>
                                     </label>                    
                                 </div>
