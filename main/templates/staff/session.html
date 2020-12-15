@@ -1452,8 +1452,9 @@
                                         <span v-if = "s.get_fitbit_status === false">
                                             
                                         </span>
-                                        <span v-else-if = "s.fitBit_Attached" style="color: green;">
-                                            <i class="far fa-check-circle"></i>    
+                                        <span v-else-if = "s.fitBit_Attached">
+                                            <span style="color: green;"><i class="far fa-check-circle"></i></span><br>
+                                            <span v-html = "s.fitBit_last_synced"></span>
                                         </span>
                                         <span v-else style="color: red;">
                                             <i class="far fa-times-circle"></i>

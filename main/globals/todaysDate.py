@@ -9,7 +9,7 @@ def todaysDate():
         Get today's server time zone adjusted date time object with zeroed time
     '''
     logger = logging.getLogger(__name__)
-    logger.info("Get todays date object")
+    #logger.info("Get todays date object")
 
     p = Parameters.objects.first()
     tz = pytz.timezone(p.experimentTimeZone)
