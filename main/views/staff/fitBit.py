@@ -63,6 +63,8 @@ def fitBit(request):
                 session_subject.fitBitRefreshToken = fitBit_response['refresh_token']
                 session_subject.fitBitUserId = fitBit_response['user_id']
 
+                session_subject.getFitbitTimeZone()
+
                 session_subject.save()
             else:
                 status="fail"        

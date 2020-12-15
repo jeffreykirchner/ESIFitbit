@@ -12,6 +12,7 @@ import random
 import main
 import math
 from main.globals import todaysDate
+from django.utils.timezone import now
 
 #subject in session
 class Session_subject(models.Model):
@@ -38,6 +39,8 @@ class Session_subject(models.Model):
     fitBitAccessToken = models.CharField(max_length=1000, default="",verbose_name = 'FitBit Access Token')
     fitBitRefreshToken = models.CharField(max_length=1000, default="",verbose_name = 'FitBit Refresh Token')
     fitBitUserId = models.CharField(max_length=100, default="",verbose_name = 'FitBit User ID')  
+    fitBitLastSynced =  models.DateTimeField(default=None,null=True,verbose_name = 'FitBit Last Synced')
+    fitBitTimeZone = models.CharField(max_length=1000, default="",verbose_name = 'FitBit Access Token')
 
     soft_delete =  models.BooleanField(default=False)                                                 #hide subject if true
 
@@ -390,20 +393,77 @@ class Session_subject(models.Model):
 
         tempClientID = settings.FITBIT_CLIENT_ID
         tempState = str(self.id) + ";" + str(self.session.id) + ";" + request_type
-        fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20sleep&expires_in=604800&prompt=login%20consent&state={tempState}"
+        fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20sleep%20settings%20profile&expires_in=604800&prompt=login%20consent&state={tempState}"
 
         return fitBit_Link
 
     #test if a fitbit connection is working for this subject
     def getFitBitAttached(self):
-       
+        logger = logging.getLogger(__name__) 
+
         if self.fitBitAccessToken != "":
-            fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1.2/user/-/sleep/date/today.json')
+            #fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1.2/user/-/sleep/date/today.json')
+            fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1/user/-/devices.json')
             
-            if 'sleep' in fitbit_response:
-                return True
+            if len(fitbit_response) >= 1:
+
+                v = fitbit_response[0].get("lastSyncTime",-1)
+
+                logger.info(f'getFitBitAttached {v} {self.id}')
+
+                if v == -1:                   
+                    return False
+                else:
+                    a=[]
+                    
+                    for i in fitbit_response:
+                        a.append(datetime.strptime(i.get("lastSyncTime"),'%Y-%m-%dT%H:%M:%S.%f'))
+                    
+                    a.sort(reverse=True)
+
+                    self.fitBitLastSynced = a[0] #datetime.strptime(v,'%Y-%m-%dT%H:%M:%S.%f')
+                    self.save()
+                    return True
             else:
                 return False
+
+    #get subject's local timzone
+    def getFitbitTimeZone(self):
+        logger = logging.getLogger(__name__) 
+
+        if self.fitBitAccessToken != "":
+            #fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1.2/user/-/sleep/date/today.json')
+            fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1/user/-/profile.json')
+            
+            u = fitbit_response.get("user",-1)
+
+            if u != -1:
+                v = u.get("timezone",-1)
+
+                logger.info(f'getFitTimeZone {v} {self.id}')
+
+                if v == -1:                   
+                    return False
+                else:
+                    self.fitBitTimeZone = v
+                    self.save()
+                    return True
+            else:
+                return False
+
+    #get the formatted date string
+    def getFitbitLastSyncStr(self):
+
+        if not self.fitBitLastSynced:
+            return "---"
+
+        if self.fitBitTimeZone == "":
+            return "---"
+
+        p = Parameters.objects.first()
+        tz = pytz.timezone(self.fitBitTimeZone)
+
+        return  self.fitBitLastSynced.strftime("%#m/%#d/%Y %#I:%M %p") + " " + tz.zone
 
     #return json object of class
     def json(self,get_fitbit_status,request_type):
@@ -413,6 +473,8 @@ class Session_subject(models.Model):
         fitBit_Attached = False
         if get_fitbit_status:
             fitBit_Attached = self.getFitBitAttached()
+
+        q1 = self.Session_subject_questionnaire1.first()
               
         return{
             "id":self.id,
@@ -424,6 +486,7 @@ class Session_subject(models.Model):
             "login_url": p.siteURL +'subjectHome/' + str(self.login_key),
             "fitBit_Link" : self.getFitBitLink(request_type),
             "fitBit_Attached" : fitBit_Attached,
+            "fitBit_last_synced":self.getFitbitLastSyncStr(),
             "get_fitbit_status" : get_fitbit_status,
             "consent_required": self.consent_required,
             "questionnaire1_required":self.questionnaire1_required,
@@ -432,6 +495,12 @@ class Session_subject(models.Model):
             "heart_minutes":self.jsonHeartMinutesList(),
             "immune_minutes":self.jsonImmuneMinutesList(),
             "display_color":self.display_color,
+            "address_full_name":q1.address_full_name if q1 else "---",
+            "address_line_1":q1.address_line_1 if q1 else "---",
+            "address_line_2":q1.address_line_2 if q1 else "---",
+            "address_city":q1.address_city if q1 else "---",
+            "address_state":q1.address_state if q1 else "---",
+            "address_zip_code":q1.address_zip_code if q1 else "---",
 
         }
     

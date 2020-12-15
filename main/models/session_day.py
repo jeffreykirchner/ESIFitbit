@@ -78,6 +78,7 @@ class Session_day(models.Model):
     def getDateStr(self):
         return self.date.strftime("%m/%d/%Y")
 
+
     #true if this session day is the last day in a session
     def lastDay(self):
         if self.date==self.session.end_date:

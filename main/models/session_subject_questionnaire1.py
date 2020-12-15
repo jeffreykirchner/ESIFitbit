@@ -37,6 +37,14 @@ class Session_subject_questionnaire1(models.Model):
     exercise_variation  = models.CharField(max_length=100, choices=Likert_variation2.choices,verbose_name = 'Exercise Variation Likert') 
     exercise_variation_explanation =  models.CharField(max_length = 10000, default = '',verbose_name = 'Exercise Variation Explanation')
 
+    #address
+    address_full_name = models.CharField(max_length = 1000, default = '',verbose_name = 'Full Name Address') 
+    address_line_1 = models.CharField(max_length = 1000, default = '',verbose_name = 'Address Line 1')
+    address_line_2 = models.CharField(max_length = 1000, default = '',verbose_name = 'Address Line 2') 
+    address_city = models.CharField(max_length = 1000, default = '',verbose_name = 'Address City')
+    address_state = models.CharField(max_length = 1000, default = '',verbose_name = 'Address State')
+    address_zip_code = models.CharField(max_length = 1000, default = '',verbose_name = 'Address Zip Code')
+
 
     def __str__(self):
         return "Pre Questionnaire"
@@ -83,7 +91,8 @@ class Session_subject_questionnaire1(models.Model):
                          self.exercise_minutes,self.exercise_importance,self.exercise_explanation,
                          self.health_importance,self.health_importance_explanation,self.health_importance_actions,
                          self.health_importance_actions,self.sleep_variation,self.sleep_variation_explanation,
-                         self.exercise_variation,self.exercise_variation_explanation])
+                         self.exercise_variation,self.exercise_variation_explanation,self.address_full_name,
+                         self.address_line_1,self.address_line_2,self.address_city,self.address_state,self.address_zip_code])
 
     def json(self):
         return{
