@@ -245,7 +245,7 @@ class Session(models.Model):
         writer.writerow(["Session","Period","Block","Date","Subject ID", "Subject Code","Heart Activity Minutes",
                          "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
                          "Check In Today", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today",
-                         "Minutes Sedentary","Minutes Lightly Active","Minutes Fairly Active","Minutes Very Active","Steps",
+                         "Minutes Sedentary","Minutes Lightly Active","Minutes Fairly Active","Minutes Very Active","Steps","Calories",
                          "Heart Rate Minutes Out of Range","Heart Rate Minutes Fat Burn","Heart Rate Minutes Cardio",
                          "Heart Rate Minutes Peak"])
 

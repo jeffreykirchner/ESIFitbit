@@ -31,6 +31,7 @@ class Session_day_subject_actvity(models.Model):
     fitbit_minutes_fairly_active = models.IntegerField(default=0)     #todays tracker fairly active minutes
     fitbit_minutes_very_active = models.IntegerField(default=0)       #todays tracker very active minutes
     fitbit_steps = models.IntegerField(default=0)                     #todays tracker steps
+    fitbit_calories = models.IntegerField(default=0)                  #todays tracker calories
     fitbit_minutes_heart_out_of_range = models.IntegerField(default=0)         #todays heart rate out of range
     fitbit_minutes_heart_fat_burn = models.IntegerField(default=0)             #todays heart rate lightly fat burn
     fitbit_minutes_heart_cardio = models.IntegerField(default=0)               #todays heart rate cardio
@@ -261,6 +262,7 @@ class Session_day_subject_actvity(models.Model):
             self.fitbit_minutes_fairly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesFairlyActive")
             self.fitbit_minutes_very_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesVeryActive")
             self.fitbit_steps = self.session_subject.getFibitActivityMinutes(self.session_day.date,"steps")
+            self.fitbit_calories = self.session_subject.getFibitActivityMinutes(self.session_day.date,"calories")
 
             #heart rate
             heart_full = self.session_subject.getFitbitHeartRate(self.session_day.date) 
@@ -304,7 +306,7 @@ class Session_day_subject_actvity(models.Model):
                          self.immune_activity_minutes,self.heart_activity,self.immune_activity,self.check_in_today,
                          self.paypal_today,self.session_day.session.parameterset.fixed_pay_per_day,self.getTodaysHeartEarnings(),
                          self.getTodaysImmuneEarnings(),self.payment_today,self.fitbit_minutes_sedentary,self.fitbit_minutes_lightly_active,
-                         self.fitbit_minutes_fairly_active,self.fitbit_minutes_very_active,self.fitbit_steps,
+                         self.fitbit_minutes_fairly_active,self.fitbit_minutes_very_active,self.fitbit_steps,self.fitbit_calories,
                          self.fitbit_minutes_heart_out_of_range,self.fitbit_minutes_heart_fat_burn,self.fitbit_minutes_heart_cardio,
                          self.fitbit_minutes_heart_peak])
 
