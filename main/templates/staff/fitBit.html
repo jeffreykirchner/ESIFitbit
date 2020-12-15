@@ -16,7 +16,7 @@
             {{fitBit_response}}<br>
             {{fitBit_error}}<br>
           {%else%}
-            The FitBit has been connected for subject {{session_subject.name}}.<br>
+            A fitbit has been connected for subject {{session_subject.name}}.<br>
             <a href="{% url 'staff_session' id=session.id %}">Return to the session.</a>
           {%endif%}
         </center>

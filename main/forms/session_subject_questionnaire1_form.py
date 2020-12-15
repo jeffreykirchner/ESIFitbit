@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.forms import ModelChoiceField
 import pytz
 from main.globals.likertScales import Likert_importance,Likert_satisfaction,Likert_variation,Likert_variation2
+from django.utils.safestring import mark_safe
 
 class Session_subject_questionnaire1_form(forms.ModelForm):
 
@@ -68,6 +69,26 @@ class Session_subject_questionnaire1_form(forms.ModelForm):
 
     exercise_variation_explanation = forms.CharField(label='For you personally, what are the typical reasons that you might not exercise daily?',
                                         widget=forms.Textarea(attrs={"rows":"5", "cols":"75"}))
+
+    #address
+    address_full_name = forms.CharField(label=mark_safe('Mailing Address<br>Full Name'),
+                                         widget=forms.TextInput(attrs={}))
+
+    address_line_1 = forms.CharField(label=mark_safe('Address Line 1'),
+                                         widget=forms.TextInput(attrs={"placeholder":"Street Address",}))
+
+    address_line_2 = forms.CharField(label=mark_safe('Address Line 2'),
+                                         required=False,
+                                         widget=forms.TextInput(attrs={"placeholder":"Apartment, suite, unit, building, floor, etc.",}))
+
+    address_city = forms.CharField(label=mark_safe('City'),
+                                         widget=forms.TextInput(attrs={}))
+
+    address_state = forms.CharField(label=mark_safe('State'),
+                                         widget=forms.TextInput(attrs={}))
+
+    address_zip_code = forms.CharField(label=mark_safe('Zip Code'),
+                                         widget=forms.TextInput(attrs={}))
 
     class Meta:
         model=Session_subject_questionnaire1

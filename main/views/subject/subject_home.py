@@ -277,17 +277,25 @@ def getSessionDaySubject(data,session_subject,session_day):
     session_day_subject_actvity=None
     session_day_subject_actvity_previous_day=None
 
+    #check that today is a session day
     if not session_day:
         status = "fail"
         logger.info("Session day not found.")
 
+    #check that a session subject exists for user
     if not session_subject:
         status = "fail"
         logger.info("Session subject not found.")
     
+    #chec if session is already complete
     if session_subject.session.complete():
         status = "fail"
         logger.info("The session is complete.")
+
+    #check fitbit is attached and store last sync date
+    if not session_subject.getFitBitAttached():
+        fitbitError=True
+        status == "fail"
 
     if status == "success":
         #check if subject missed past days
@@ -314,13 +322,6 @@ def getSessionDaySubject(data,session_subject,session_day):
             session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
             session_day_subject_actvity_previous = session_day_subject_actvity.getPreviousActivityDay()
 
-        else:
-            #first day check for fitbit connection
-            if status == "success":
-                immune_activity_minutes = session_subject.getFibitImmuneMinutes(session_day.date)
-                if immune_activity_minutes == -1:
-                    fitbitError=True
-
     
     session_date = "--/--/----"
     session_last_day = False
@@ -340,6 +341,9 @@ def getSessionDaySubject(data,session_subject,session_day):
 
     if status == "fail":
         return JsonResponse({"status":status,
+                             "fitbitError":fitbitError,
+                             "fitBitLastSynced":"---",
+                             "fitbit_link":session_subject.getFitBitLink("subject"),
                              "questionnaire1_required":session_subject.getQuestionnaire1Required(),
                              "consent_required":consent_required,
                              "consent_form_text":consent_form_text,
@@ -361,6 +365,7 @@ def getSessionDaySubject(data,session_subject,session_day):
 
         return JsonResponse({"status":status,
                         "fitbitError":fitbitError,
+                        "fitBitLastSynced":session_subject.getFitbitLastSyncStr(),
                         "fitbit_link":session_subject.getFitBitLink("subject"),
                         "session_date":session_date,
                         "notification_title":notification_title,

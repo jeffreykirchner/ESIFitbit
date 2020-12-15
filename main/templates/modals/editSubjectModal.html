@@ -18,7 +18,55 @@
                         </div>            
                     </div> 
                     {% endfor %}
-                </form>                                                                
+                </form>
+                <div class="row mt-4">
+                    <div class="col" style="text-align: right;">
+                        Full Name
+                    </div>
+                    <div class="col">
+                        <span v-html="currentSubject.address_full_name"></span>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col" style="text-align: right;">
+                        Address Line 1
+                    </div>
+                    <div class="col">
+                        <span v-html="currentSubject.address_line_1"></span>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col" style="text-align: right;">
+                        Address Line 2
+                    </div>
+                    <div class="col">
+                        <span v-html="currentSubject.address_line_2"></span>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col" style="text-align: right;">
+                        City
+                    </div>
+                    <div class="col">
+                        <span v-html="currentSubject.address_city"></span>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col" style="text-align: right;">
+                        State
+                    </div>
+                    <div class="col">
+                        <span v-html="currentSubject.address_state"></span>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col" style="text-align: right;">
+                        Zip Code
+                    </div>
+                    <div class="col">
+                        <span v-html="currentSubject.address_zip_code"></span>
+                    </div>
+                </div>                                                                
             </div>    
             <div class="modal-footer">             
                 <button type="button" class="btn btn-outline-primary" v-on:click = "updateSubjectSettings()">
