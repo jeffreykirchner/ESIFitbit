@@ -405,30 +405,29 @@ class Session_subject(models.Model):
             #fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1.2/user/-/sleep/date/today.json')
             fitbit_response = self.getFitbitInfo('https://api.fitbit.com/1/user/-/devices.json')
             
-            if len(fitbit_response) >= 1:
+            logger.info(f'getFitBitAttached {fitbit_response} {self.id}')
 
-                if fitbit_response.get("errors",-1) != -1:
-                    return False
-                
-                logger.info(f'getFitBitAttached {fitbit_response} {self.id}')
-
+            v = -1
+            
+            try:
                 v = fitbit_response[0].get("lastSyncTime",-1)                
-
-                if v == -1:                   
-                    return False
-                else:
-                    a=[]
-                    
-                    for i in fitbit_response:
-                        a.append(datetime.strptime(i.get("lastSyncTime"),'%Y-%m-%dT%H:%M:%S.%f'))
-                    
-                    a.sort(reverse=True)
-
-                    self.fitBitLastSynced = a[0] #datetime.strptime(v,'%Y-%m-%dT%H:%M:%S.%f')
-                    self.save()
-                    return True
-            else:
+            except Exception  as e: 
+                logger.info(e)
                 return False
+
+            if v == -1:                   
+                return False
+            else:
+                a=[]
+                
+                for i in fitbit_response:
+                    a.append(datetime.strptime(i.get("lastSyncTime"),'%Y-%m-%dT%H:%M:%S.%f'))
+                
+                a.sort(reverse=True)
+
+                self.fitBitLastSynced = a[0] #datetime.strptime(v,'%Y-%m-%dT%H:%M:%S.%f')
+                self.save()
+                return True
 
     #get subject's local timzone
     def getFitbitTimeZone(self):
