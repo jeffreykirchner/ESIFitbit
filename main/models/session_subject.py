@@ -407,9 +407,12 @@ class Session_subject(models.Model):
             
             if len(fitbit_response) >= 1:
 
-                v = fitbit_response[0].get("lastSyncTime",-1)
+                if fitbit_response.get("errors",-1) != -1:
+                    return False
+                
+                logger.info(f'getFitBitAttached {fitbit_response} {self.id}')
 
-                logger.info(f'getFitBitAttached {v} {self.id}')
+                v = fitbit_response[0].get("lastSyncTime",-1)                
 
                 if v == -1:                   
                     return False
