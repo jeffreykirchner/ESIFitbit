@@ -321,7 +321,7 @@ class Session(models.Model):
 
         for sdsa in sdsa_list:
             if sdsa.paypal_today:
-                writer.writerow([sdsa.session_subject.student_id,f'${sdsa.getTodaysTotalEarnings():0.2f}'])
+                writer.writerow([sdsa.session_subject.student_id,f'${sdsa.payment_today:0.2f}'])
             else:
                 writer.writerow([sdsa.session_subject.student_id,'$0.00'])
 
