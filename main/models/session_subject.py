@@ -181,7 +181,9 @@ class Session_subject(models.Model):
             previous_sa = s.getPreviousActivityDay()
 
             if previous_sa:
-                v = previous_sa.pullFitbitActvities()                  
+                fitbiterror = previous_sa.pullFitbitActvities()
+                if not fitbiterror:
+                    previous_sa.pullFibitBitHeartRate()                  
         
         #recalc activtivity scores
         if sa_list:
@@ -462,10 +464,14 @@ class Session_subject(models.Model):
         if self.fitBitTimeZone == "":
             return "---"
 
+        t = self.fitBitLastSynced.strftime("%#m/%#d/%Y %#I:%M %p")
+
         p = Parameters.objects.first()
         tz = pytz.timezone(self.fitBitTimeZone)
 
-        return  self.fitBitLastSynced.strftime("%#m/%#d/%Y %#I:%M %p") + " " + tz.zone
+        tz = tz.localize(datetime.now(), is_dst=None)
+
+        return  t + " " + tz.tzname()
 
     #return json object of class
     def json(self,get_fitbit_status,request_type):

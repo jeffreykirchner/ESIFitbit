@@ -247,6 +247,31 @@ class Session_day_subject_actvity(models.Model):
 
         return {"target_activity": f'{target_activity*100:0.2f}',"target_hours":f'{math.floor(target_minutes/60)}hrs {target_minutes%60}mins'}
 
+    #pull heart rate data
+    def pullFibitBitHeartRate(self):
+        logger = logging.getLogger(__name__)
+        fitbitError = False
+
+        #heart rate
+        try:
+            heart_full = self.session_subject.getFitbitHeartRate(self.session_day.date) 
+            #logger.info(f'pullFitbitActvities {temp_h}')    ]
+        
+            heart_summary = heart_full['activities-heart'][0]['value']['heartRateZones']
+            self.fitbit_minutes_heart_out_of_range = heart_summary[0].get("minutes",0)   
+            self.fitbit_minutes_heart_fat_burn = heart_summary[1].get("minutes",0)
+            self.fitbit_minutes_heart_cardio = heart_summary[2].get("minutes",0)
+            self.fitbit_minutes_heart_peak = heart_summary[3].get("minutes",0)
+            self.fitbit_heart_time_series = heart_full
+
+            self.save()
+        
+        except Exception  as e:
+            logger.info(e)
+            fitbitError = True
+
+        return fitbitError
+
     #pull actvities from fitbit and store
     def pullFitbitActvities(self):
         logger = logging.getLogger(__name__)
@@ -263,18 +288,6 @@ class Session_day_subject_actvity(models.Model):
             self.fitbit_minutes_very_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesVeryActive")
             self.fitbit_steps = self.session_subject.getFibitActivityMinutes(self.session_day.date,"steps")
             self.fitbit_calories = self.session_subject.getFibitActivityMinutes(self.session_day.date,"calories")
-
-            #heart rate
-            heart_full = self.session_subject.getFitbitHeartRate(self.session_day.date) 
-            #logger.info(f'pullFitbitActvities {temp_h}')    ]
-        
-            heart_summary = heart_full['activities-heart'][0]['value']['heartRateZones']
-            self.fitbit_minutes_heart_out_of_range = heart_summary[0].get("minutes",0)   
-            self.fitbit_minutes_heart_fat_burn = heart_summary[1].get("minutes",0)
-            self.fitbit_minutes_heart_cardio = heart_summary[2].get("minutes",0)
-            self.fitbit_minutes_heart_peak = heart_summary[3].get("minutes",0)
-            self.fitbit_heart_time_series = heart_full
-        
 
         self.save()
 
@@ -296,6 +309,32 @@ class Session_day_subject_actvity(models.Model):
 
         return fitbitError
 
+    #return minutes on wrist
+    def getWristMinutes(self) -> int:
+
+        v = eval(str(self.fitbit_heart_time_series))
+        v = v.get("activities-heart-intraday",-1)
+
+        if v == -1:
+            return 0
+        
+        v = v.get('dataset',-1)
+        if v==-1:
+            return 0
+        
+        return len(v)
+
+    #return string formated wrist minutes
+    def getFormatedWristMinutes(self) -> str:
+        m = self.getWristMinutes()
+
+        v = f'{math.floor(m/60)}hrs'
+
+        if m % 60 != 0 :
+            v += f' {m%60}mins'
+
+        return v
+    
     #return CSV response for data download
     def getCSVResponse(self,writer):
         # ["Session","Period","Block","Date","Subject ID", "Subject Code","Heart Activity Minutes",
@@ -338,4 +377,5 @@ class Session_day_subject_actvity(models.Model):
             "immune_maintenance_hours" : immune_maintenance_hours,
             "heart_improvment_minutes" : self.getTodaysHeartImprovmentMinutes(),
             "immune_improvment_hours":self.getTodaysImmuneImprovmentHours(),
+            "time_on_wrist":self.getFormatedWristMinutes(),
         }

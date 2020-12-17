@@ -305,6 +305,7 @@ def getSessionDaySubject(data,session_subject,session_day):
 
         if session_day_subject_actvity:
             session_day_subject_actvity_previous_day = session_day_subject_actvity.getPreviousActivityDay()
+            session_day_subject_actvity.pullFibitBitHeartRate()
 
         if session_day_subject_actvity_previous_day:
            
@@ -314,6 +315,8 @@ def getSessionDaySubject(data,session_subject,session_day):
 
             #pull data from fitbit
             fitbitError = session_day_subject_actvity_previous_day.pullFitbitActvities()
+            if not fitbitError:
+                session_day_subject_actvity_previous_day.pullFibitBitHeartRate()
 
             #calc today's actvity
             session_subject.calcTodaysActivity(session_day.period_number)

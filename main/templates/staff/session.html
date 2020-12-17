@@ -46,6 +46,9 @@
                                         block_2_immune_pay:"",
                                         block_3_immune_pay:"",
 
+                                        fixed_pay_per_day:"",
+                                        minimum_wrist_minutes:"",
+
                                         treatment_3_heart_bonus:"",
                                         treatment_3_immune_bonus:"",
                                         treatment_3_bonus_target_count:"",
@@ -983,13 +986,13 @@
                                
                             </div>
                             <div class="col-1">
-                                
+                               
                             </div>
                             <div class="col-3" style="text-align: right;">
-                                
+                                {{parameterset_form.minimum_wrist_minutes.label}}:
                             </div>
                             <div class="col-1">
-                                
+                                <span v-html="session.parameterset.minimum_wrist_minutes"></span>
                             </div>
                         </div>
                         <div class="row">
