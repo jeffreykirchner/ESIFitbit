@@ -170,7 +170,7 @@ class Parameterset(models.Model):
         if self.minimum_wrist_minutes%60 != 0 :
             v += f' {self.minimum_wrist_minutes%60}mins'
 
-        return 
+        return v
 
     #get csv reponse for data file
     def getCSVResponse(self,writer,title,treatment):

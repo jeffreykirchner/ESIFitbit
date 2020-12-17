@@ -38,6 +38,8 @@ class Session_day_subject_actvity(models.Model):
     fitbit_minutes_heart_peak = models.IntegerField(default=0)                 #todays heart rate peak
     fitbit_heart_time_series =  models.CharField(max_length = 100000, default = '')  #today's heart rate time series
 
+    fitbit_on_wrist_minutes = models.IntegerField(default=0)         #minutes fit bit was one wrist (sum of heart time series) 
+
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
 
@@ -264,10 +266,23 @@ class Session_day_subject_actvity(models.Model):
             self.fitbit_minutes_heart_peak = heart_summary[3].get("minutes",0)
             self.fitbit_heart_time_series = heart_full
 
+            #store minutes on wrist
+            #v = eval(str(heart_full))
+            v = heart_full.get("activities-heart-intraday",-1)
+
+            if v == -1:
+                self.fitbit_on_wrist_minutes = 0
+            
+            v = v.get('dataset',-1)
+            if v==-1:
+                self.fitbit_on_wrist_minutes = 0
+            else:
+                self.fitbit_on_wrist_minutes = len(v)
+
             self.save()
-        
+       
         except Exception  as e:
-            logger.info(e)
+            logger.info(f'Error pullFibitBitHeartRate {e}')
             fitbitError = True
 
         return fitbitError
@@ -309,24 +324,9 @@ class Session_day_subject_actvity(models.Model):
 
         return fitbitError
 
-    #return minutes on wrist
-    def getWristMinutes(self) -> int:
-
-        v = eval(str(self.fitbit_heart_time_series))
-        v = v.get("activities-heart-intraday",-1)
-
-        if v == -1:
-            return 0
-        
-        v = v.get('dataset',-1)
-        if v==-1:
-            return 0
-        
-        return len(v)
-
     #return string formated wrist minutes
     def getFormatedWristMinutes(self) -> str:
-        m = self.getWristMinutes()
+        m = self.fitbit_on_wrist_minutes
 
         v = f'{math.floor(m/60)}hrs'
 
@@ -347,7 +347,7 @@ class Session_day_subject_actvity(models.Model):
                          self.getTodaysImmuneEarnings(),self.payment_today,self.fitbit_minutes_sedentary,self.fitbit_minutes_lightly_active,
                          self.fitbit_minutes_fairly_active,self.fitbit_minutes_very_active,self.fitbit_steps,self.fitbit_calories,
                          self.fitbit_minutes_heart_out_of_range,self.fitbit_minutes_heart_fat_burn,self.fitbit_minutes_heart_cardio,
-                         self.fitbit_minutes_heart_peak])
+                         self.fitbit_minutes_heart_peak,self.fitbit_on_wrist_minutes])
 
     #return json object of class
     def json(self):

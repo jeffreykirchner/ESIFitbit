@@ -247,7 +247,7 @@ class Session(models.Model):
                          "Check In Today", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today",
                          "Minutes Sedentary","Minutes Lightly Active","Minutes Fairly Active","Minutes Very Active","Steps","Calories",
                          "Heart Rate Minutes Out of Range","Heart Rate Minutes Fat Burn","Heart Rate Minutes Cardio",
-                         "Heart Rate Minutes Peak"])
+                         "Heart Rate Minutes Peak","Time On Wrist"])
 
         sd_list = self.session_days.all().order_by('period_number')
 

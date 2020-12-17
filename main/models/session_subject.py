@@ -456,7 +456,7 @@ class Session_subject(models.Model):
                 return False
 
     #get the formatted date string
-    def getFitbitLastSyncStr(self):
+    def getFitbitLastSyncStr (self,show_tz):
 
         if not self.fitBitLastSynced:
             return "---"
@@ -466,12 +466,17 @@ class Session_subject(models.Model):
 
         t = self.fitBitLastSynced.strftime("%#m/%#d/%Y %#I:%M %p")
 
-        p = Parameters.objects.first()
-        tz = pytz.timezone(self.fitBitTimeZone)
+        if show_tz:
+            p = Parameters.objects.first()
+            tz = pytz.timezone(self.fitBitTimeZone)
 
-        tz = tz.localize(datetime.now(), is_dst=None)
+            tz = tz.localize(datetime.now(), is_dst=None)
 
-        return  t + " " + tz.tzname()
+            v = t + " " + tz.tzname()
+        else:
+            v = t
+
+        return  v
 
     #return json object of class
     def json(self,get_fitbit_status,request_type):
@@ -494,7 +499,7 @@ class Session_subject(models.Model):
             "login_url": p.siteURL +'subjectHome/' + str(self.login_key),
             "fitBit_Link" : self.getFitBitLink(request_type),
             "fitBit_Attached" : fitBit_Attached,
-            "fitBit_last_synced":self.getFitbitLastSyncStr(),
+            "fitBit_last_synced":self.getFitbitLastSyncStr(True),
             "get_fitbit_status" : get_fitbit_status,
             "consent_required": self.consent_required,
             "questionnaire1_required":self.questionnaire1_required,
@@ -524,9 +529,11 @@ class Session_subject(models.Model):
         heart_time = "---"
         immune_score = "---"
         immune_time = "---"
+        wrist_time = "---|---"
 
         if sada:
-            sada_yesterday = self.Session_day_subject_actvities.filter(session_day__period_number = sada.session_day.period_number - 1).first()
+            #sada_yesterday = self.Session_day_subject_actvities.filter(session_day__period_number = sada.session_day.period_number - 1).first()
+            sada_yesterday = sada.getPreviousActivityDay()
 
             check_in = sada.check_in_today
             pay_pal = sada.paypal_today
@@ -537,10 +544,14 @@ class Session_subject(models.Model):
             sada_yesterday = None
 
         if sada_yesterday:
+            wrist_time = f'{sada_yesterday.getFormatedWristMinutes()} | {sada.getFormatedWristMinutes()}'
+
             if sada_yesterday.heart_activity_minutes >= 0:
                 heart_time =  f'{int(sada_yesterday.heart_activity_minutes)}mins'
             if sada_yesterday.immune_activity_minutes >= 0:
                 immune_time =  f'{math.floor(sada_yesterday.immune_activity_minutes/60)}hrs {sada_yesterday.immune_activity_minutes%60}mins'
+        elif sada:
+            wrist_time = f'---| {sada.getFormatedWristMinutes()}'
 
         return{
             "check_in":check_in,
@@ -550,6 +561,7 @@ class Session_subject(models.Model):
             "heart_time":heart_time,
             "immune_score":immune_score,
             "immune_time":immune_time,
+            "wrist_time":wrist_time,
         }
 
     #get json object of daily minutes exercising

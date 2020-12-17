@@ -30,7 +30,6 @@
                                                       immune_activity_hours:"--",
                                                       time_on_wrist:"--",},
                 graph_parameters:{},
-                parameterset:{},
                 payMeButtonText : 'Pay Me <i class="fab fa-paypal fa-lg"></i>',
                 refreshButtonText : '<i class="fas fa-sync fa-spin"></i>',
                 toggleState:"heart",
@@ -55,13 +54,15 @@
                 payment_help_text:`{{payment_help_text|safe}}`,   
                 fitbit_link:"",
                 fitBitLastSynced:"---",
+                fitBitTimeRequired:"---",
+                fitBitTimeRequirementMet:true,
                 notification_title:"",
                 notification_text:"",
                 session_treatment:"",
                 viewed_heart:false,
                 viewed_immune:false,
                 payment_toggle_background : "lightgrey",
-                payment_available : true
+                payment_available : true,
             },
 
             methods:{
@@ -82,6 +83,8 @@
                                         app.$data.session_complete = response.data.session_complete;                                        
                                         app.$data.questionnaire2_required = response.data.questionnaire2_required;
                                         app.$data.session_last_day = response.data.session_last_day;
+                                        app.$data.fitBitTimeRequired = response.data.fitBitTimeRequired;
+                                        app.$data.fitBitTimeRequirementMet = response.data.fitBitTimeRequirementMet;
                                     }
                                     else
                                     {
@@ -797,7 +800,7 @@
                                         </div>
                                         <div v-else-if="session_complete===false">
                                             
-                                            <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()" v-bind:disabled="fitbitError">
+                                            <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()" v-bind:disabled="fitbitError || fitBitTimeRequirementMet === false"> 
                                                 <span v-html="payMeButtonText"></span>
                                             </button>
                                             <div v-show="fitbitError">
@@ -806,8 +809,17 @@
                                             <div v-show="paymentError">
                                                 <span v-html="'***Payment Error***'" style="color: red;"></span>
                                             </div>
-                                        </div>    
-                                        
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class = "row mt-4">
+                                    <div class="col" style="text-align: center;">
+                                        Wrist time required: <span v-html="fitBitTimeRequired"></span>
+                                    </div>
+                                </div>
+                                <div class = "row">
+                                    <div class="col" style="text-align: center;" v-bind:style="[fitBitTimeRequirementMet ===false ? {'color': 'red' }:{}]">
+                                        Yesterday's time on wrist: <span v-html="session_day_subject_actvity_previous.time_on_wrist"></span>
                                     </div>
                                 </div>
                             {%endif%}
