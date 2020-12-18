@@ -572,7 +572,7 @@
                     }
                     else if(app.$data.toggleState=='immune')
                     {
-                        app.$data.helpTitle = "Immune Help"
+                        app.$data.helpTitle = "Sleep Help"
                         app.$data.helpText = app.$data.immune_help_text;
                     }
                     else if (app.$data.toggleState == 'payment')
@@ -680,8 +680,8 @@
                         </div>
                     
                         <div v-if="toggleState==='heart'">
-                            <div class="row mt-2">
-                                <div class="col" style="text-align: center;">Heart Health: <span style="font-weight: bold;" v-html = session_day_subject_actvity.heart_activity></span></div>
+                            <div class="row mt-1">
+                                <div class="col" style="text-align: center;">Heart Health Score: <span style="font-weight: bold;" v-html = session_day_subject_actvity.heart_activity></span></div>
                             </div>
                             <div class="row">
                                 <div class="col" style="text-align: center;">                             
@@ -693,20 +693,25 @@
                                     </div>                            
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row mt-1">
                                 <div class="col" style="text-align: center;">
-                                    Minutes Required to<br>Maintain Health at <span v-html = session_day_subject_actvity.heart_activity></span>: <span v-html="session_day_subject_actvity.heart_maintenance_minutes"></span>
+                                    Minutes Required to:
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col" style="text-align: center;">
-                                    Minutes Required to<br>Improve Health to <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_activity></span>: <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_minutes></span>
+                                    Maintain Score at <span v-html = session_day_subject_actvity.heart_activity></span>: <span v-html="session_day_subject_actvity.heart_maintenance_minutes"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col" style="text-align: center;">
+                                    Improve Score to <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_activity></span>: <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_minutes></span>
                                 </div>
                             </div>
                         </div>
                         <div v-else-if="toggleState==='immune'">
-                            <div class="row mt-2">
-                                <div class="col" style="text-align: center;">Sleep Health: <span style="font-weight: bold;" v-html = session_day_subject_actvity.immune_activity></span></div>
+                            <div class="row mt-1">
+                                <div class="col" style="text-align: center;">Sleep Health Score: <span style="font-weight: bold;" v-html = session_day_subject_actvity.immune_activity></span></div>
                             </div>
                             <div class="row">
                                 <div class="col" style="text-align: center;">                             
@@ -718,14 +723,19 @@
                                     </div>                            
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row mt-1">
                                 <div class="col" style="text-align: center;">
-                                    Hours Required to<br>Maintain Health at <span v-html = session_day_subject_actvity.immune_activity></span>: <span v-html="session_day_subject_actvity.immune_maintenance_hours"></span>
+                                    Hours Required to:
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col" style="text-align: center;">
-                                    Hours Required to<br>Improve Health to <span v-html = session_day_subject_actvity.immune_improvment_hours.target_activity></span>: <span v-html="session_day_subject_actvity.immune_improvment_hours.target_hours"></span>
+                                    Maintain Score at <span v-html = session_day_subject_actvity.immune_activity></span>: <span v-html="session_day_subject_actvity.immune_maintenance_hours"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col" style="text-align: center;">
+                                    Improve Score to <span v-html = session_day_subject_actvity.immune_improvment_hours.target_activity></span>: <span v-html="session_day_subject_actvity.immune_improvment_hours.target_hours"></span>
                                 </div>
                             </div>
                         </div>  
@@ -773,10 +783,10 @@
                                     <div class="col" style="text-align: center;">(Fixed Pay per Day)</div>
                                 </div>
                                 <div class="row mt">
-                                    <div class="col" style="text-align: center;">+ (Heart Pay) x (Today's Heart Health)</div>
+                                    <div class="col" style="text-align: center;">+ (Heart Pay) x (Today's Heart Score)</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col" style="text-align: center;">+ (Immune Pay) x (Today's Immune Health)</div>
+                                    <div class="col" style="text-align: center;">+ (Immune Pay) x (Today's Sleep Score)</div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col" style="text-align: center;">$[[session_day_subject_actvity.fixed_pay_per_day]]</div>
