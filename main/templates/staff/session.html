@@ -46,6 +46,9 @@
                                         block_2_immune_pay:"",
                                         block_3_immune_pay:"",
 
+                                        fixed_pay_per_day:"",
+                                        minimum_wrist_minutes:"",
+
                                         treatment_3_heart_bonus:"",
                                         treatment_3_immune_bonus:"",
                                         treatment_3_bonus_target_count:"",
@@ -983,13 +986,13 @@
                                
                             </div>
                             <div class="col-1">
-                                
+                               
                             </div>
                             <div class="col-3" style="text-align: right;">
-                                
+                                {{parameterset_form.minimum_wrist_minutes.label}}:
                             </div>
                             <div class="col-1">
-                                
+                                <span v-html="session.parameterset.minimum_wrist_minutes"></span>
                             </div>
                         </div>
                         <div class="row">
@@ -1352,28 +1355,26 @@
                                     Login<br>Link                    
                                 </th>
                                 <th style="text-align: center;">
-                                    Consent                   
-                                </th>
+                                    Consent<br>Pre/Post Survey                  
+                                </th>                                
                                 <th style="text-align: center;">
-                                    Pre<br>Survey                    
-                                </th>
-                                <th style="text-align: center;">
-                                    Post<br>Survey                    
-                                </th>
-                                <th style="text-align: center;">
-                                    Check In<br>Today               
-                                </th>
-                                <th style="text-align: center;">
-                                    PayPal<br>Today                   
+                                    Check In, PayPal<br>Today               
                                 </th>
                                 <th style="text-align: center;">
                                     Today's<br>Earnings                    
                                 </th>
                                 <th style="text-align: center;">
-                                    Current<br>Exercise                    
+                                    Heart<br>Score                    
                                 </th>
                                 <th style="text-align: center;">
-                                    Current<br>Sleep                    
+                                    Sleep<br>Score                    
+                                </th>
+                                <th style="text-align: center;">
+                                    Wrist Time<br>
+                                    YDA|2DAY                     
+                                </th>
+                                <th style="text-align: center;">
+                                    Last<br>Synced                    
                                 </th>
                                 <th style="text-align: center;">
                                     FitBit                                     
@@ -1398,44 +1399,42 @@
                                         <!-- <span v-html="s.login_url"></span>                            -->
                                     </td>
                                     <td style="text-align: center;">
-                                        <div v-if="s.consent_required === false" style="color:green">
+                                        <span v-if="s.consent_required === false" style="color:green">
                                             <i class="far fa-check-circle"></i>
-                                        </div>
-                                        <div v-else style="color:red">
+                                        </span>
+                                        <span v-else style="color:red">
                                             <i class="far fa-times-circle"></i>
-                                        </div>
+                                        </span>
+
+                                        <span v-if="s.questionnaire1_required === false" style="color:green">
+                                            <i class="far fa-check-circle"></i>
+                                        </span>
+                                        <span v-else style="color:red">
+                                            <i class="far fa-times-circle"></i>
+                                        </span>
+
+                                        <span v-if="s.questionnaire2_required === false" style="color:green">
+                                            <i class="far fa-check-circle"></i>
+                                        </span>
+                                        <span v-else style="color:red">
+                                            <i class="far fa-times-circle"></i>
+                                        </span>
+
                                     </td>
                                     <td style="text-align: center;">
-                                        <div v-if="s.questionnaire1_required === false" style="color:green">
+                                        <span v-if="s.todays_stats.check_in" style="color:green">
                                             <i class="far fa-check-circle"></i>
-                                        </div>
-                                        <div v-else style="color:red">
+                                        </span>
+                                        <span v-else style="color:red">
                                             <i class="far fa-times-circle"></i>
-                                        </div>
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <div v-if="s.questionnaire2_required === false" style="color:green">
+                                        </span>
+
+                                        <span v-if="s.todays_stats.pay_pal" style="color:green">
                                             <i class="far fa-check-circle"></i>
-                                        </div>
-                                        <div v-else style="color:red">
+                                        </span>
+                                        <span v-else style="color:red">
                                             <i class="far fa-times-circle"></i>
-                                        </div>
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <div v-if="s.todays_stats.check_in" style="color:green">
-                                            <i class="far fa-check-circle"></i>
-                                        </div>
-                                        <div v-else style="color:red">
-                                            <i class="far fa-times-circle"></i>
-                                        </div>
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <div v-if="s.todays_stats.pay_pal" style="color:green">
-                                            <i class="far fa-check-circle"></i>
-                                        </div>
-                                        <div v-else style="color:red">
-                                            <i class="far fa-times-circle"></i>
-                                        </div>                                        
+                                        </span>
                                     </td>
                                     <td style="text-align: center;">
                                         <span v-html="s.todays_stats.earnings"></span>  
@@ -1446,6 +1445,12 @@
                                     <td style="text-align: center;">
                                         <span v-html="s.todays_stats.immune_score"></span> | <span v-html="s.todays_stats.immune_time"></span>                    
                                     </td>
+                                    <td style="text-align: center;">
+                                        <span v-html="s.todays_stats.wrist_time"></span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span v-html = "s.fitBit_last_synced"></span>
+                                    </td>
                                     <td style="text-align: center;">                                        
                                         <a :href="s.fitBit_Link"><span v-html="'Setup'"></span></a>
 
@@ -1453,8 +1458,7 @@
                                             
                                         </span>
                                         <span v-else-if = "s.fitBit_Attached">
-                                            <span style="color: green;"><i class="far fa-check-circle"></i></span><br>
-                                            <span v-html = "s.fitBit_last_synced"></span>
+                                            <span style="color: green;"><i class="far fa-check-circle"></i></span>
                                         </span>
                                         <span v-else style="color: red;">
                                             <i class="far fa-times-circle"></i>

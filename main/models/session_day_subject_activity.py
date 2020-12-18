@@ -17,8 +17,8 @@ class Session_day_subject_actvity(models.Model):
     heart_activity_minutes = models.IntegerField(default=0)       #todays heart activity minutes
     immune_activity_minutes = models.IntegerField(default=0)      #todays immune activity minutes
 
-    heart_activity = models.DecimalField(decimal_places=5, default=0, max_digits=10)               #todays heart activity calculation
-    immune_activity = models.DecimalField(decimal_places=5, default=0, max_digits=10)              #todays immune activity calculation
+    heart_activity = models.DecimalField(decimal_places=2, default=0, max_digits=10)               #todays heart activity calculation
+    immune_activity = models.DecimalField(decimal_places=2, default=0, max_digits=10)              #todays immune activity calculation
     
     check_in_today = models.BooleanField(default=False)                                             #true if the user checked in today
     paypal_today = models.BooleanField(default=False)                                               #true if the user collected their payment today
@@ -38,6 +38,8 @@ class Session_day_subject_actvity(models.Model):
     fitbit_minutes_heart_peak = models.IntegerField(default=0)                 #todays heart rate peak
     fitbit_heart_time_series =  models.CharField(max_length = 100000, default = '')  #today's heart rate time series
 
+    fitbit_on_wrist_minutes = models.IntegerField(default=0)         #minutes fit bit was one wrist (sum of heart time series) 
+
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
 
@@ -52,7 +54,7 @@ class Session_day_subject_actvity(models.Model):
         verbose_name_plural = 'Session Days'
 
     #calc heart activity
-    def calcHeartActivity(self,heart_time,heartActivityMinus1):
+    def calcHeartActivity(self,heart_time,activity_score,round_result):
         logger = logging.getLogger(__name__)
 
         p_set = self.session_day.session.parameterset
@@ -61,42 +63,76 @@ class Session_day_subject_actvity(models.Model):
                                 p_set.heart_parameter_1,
                                 p_set.heart_parameter_2,
                                 p_set.heart_parameter_3,
-                                heartActivityMinus1)
+                                activity_score,
+                                round_result)
 
     #save heart activity    
     def saveHeartActivity(self,heart_time,heartActivityMinus1):
-        self.heart_activity = self.calcHeartActivity(heart_time,heartActivityMinus1)
+        self.heart_activity = self.calcHeartActivity(heart_time,heartActivityMinus1,True)
         self.save()
 
     #calc immune activity
-    def calcImmuneActivity(self,immune_time,immuneActivityMinus1):
+    def calcImmuneActivity(self,immune_time,activity_score,round_result):
         p_set = self.session_day.session.parameterset
 
         return self.calcActivity(immune_time/240,
                                 p_set.immune_parameter_1,
                                 p_set.immune_parameter_2,
                                 p_set.immune_parameter_3,
-                                immuneActivityMinus1)
+                                activity_score,
+                                round_result)
 
     #save immune activity    
     def saveImmuneActivity(self,immune_time,immuneActivityMinus1):
-        self.immune_activity = self.calcImmuneActivity(immune_time,immuneActivityMinus1)
+        self.immune_activity = self.calcImmuneActivity(immune_time,immuneActivityMinus1,True)
         self.save()
 
     #calc activity
-    def calcActivity(self,active_time,p1,p2,p3,activityMinus1): 
+    def calcActivity(self,active_time,a,b,c,activity_score,round_result): 
         logger = logging.getLogger(__name__)
         #immuneActivityTodayT-1 * (1 - (1 - immuneActivityTodayT-1) * (immune_parameter_1 / immune_parameter_2  - immuneTimeT-1 / (immuneTimeT-1 + immune_parameter_3))
 
         #logger.info(f'{active_time} {p1} {p2} {p3} {activityMinus1}')
         #v = float(activityMinus1) * (1 - (1 - float(activityMinus1)) * (float(p1) / float(p2)  - float(active_time) / (float(active_time) + float(p3))))
 
-        v = float(p1) * float(activityMinus1) + 0.5 * (1 + float(activityMinus1)) * (1- float(p1) * float(activityMinus1)) * ((float(active_time)**float(p2)) / (float(p3) + float(active_time)**float(p2))) 
+        a=float(a)
+        b=float(b)
+        c=float(c)
+
+        active_time = float(active_time)
+        activity_score = float(activity_score)
+
+        v = a * activity_score + 0.5 * (1 + activity_score) * (1 - a * activity_score) * (active_time**b / (c + active_time**b))
 
         if v < 0:
             v = 0
 
-        return min(1,v)     
+        if round_result:
+            v = round(v,2)
+
+        return min(1,v)   
+
+    #calc minutes required to maintain target actvitity level
+    def calcMaintenance(self,a,b,c,y,z,n):
+        logger = logging.getLogger(__name__)
+
+        a = float(a)
+        b=float(b)
+        c=float(c)
+        y=float(y)
+        z=float(z)
+        n=float(n)
+
+        #v = 2**(1/b) * e * ((a * c * d - c * d)/(a**2 * d**2 - 2 * a * d + 2 * d - 1))**(1/b)
+        # x = 2^(1/b) n ((a c y - c z)/(a y^2 - a y - y + 2 z - 1))^(1/b)
+
+        #v = 2.0**(1 / float(b)) * float(e) * ((float(a) * float(c) * float(d) - float(c) * float(d))/((float(d) - 1.0) * (float(a) * float(d) + 1.0)))**(1.0/float(b))
+        v = 2.0**(1/b) * n * ((a * c * y - c * z)/(a * y**2 - a * y - y + 2 * z - 1))**(1/b)
+        logger.info(f"calcMaintenance {v}")
+
+        v= round(v,2)
+
+        return v 
     
     #get number of minutes for heart maintenance
     def getHeartMaintenance(self):
@@ -107,6 +143,7 @@ class Session_day_subject_actvity(models.Model):
         return self.calcMaintenance(p_set.heart_parameter_1,
                                     p_set.heart_parameter_2,
                                     p_set.heart_parameter_3,
+                                    self.heart_activity,
                                     self.heart_activity,
                                     15)
 
@@ -120,26 +157,17 @@ class Session_day_subject_actvity(models.Model):
                                     p_set.immune_parameter_2,
                                     p_set.immune_parameter_3,
                                     self.immune_activity,
+                                    self.immune_activity,
                                     240)
-
-    #calc minutes required to maintain target actvitity level
-    def calcMaintenance(self,a,b,c,d,e):
-        logger = logging.getLogger(__name__)
-
-        #v = 2**(1/b) * e * ((a * c * d - c * d)/(a**2 * d**2 - 2 * a * d + 2 * d - 1))**(1/b)
-
-        v = 2.0**(1 / float(b)) * float(e) * ((float(a) * float(c) * float(d) - float(c) * float(d))/((float(d) - 1.0) * (float(a) * float(d) + 1.0)))**(1.0/float(b))
-        logger.info(f"calcMaintenance {v}")
-        return v
 
     #heart activity * 100
     def heart_activity_formatted(self):
-        v = round(self.heart_activity * 100,2)
+        v = int(self.heart_activity * 100)
         return f'{v}'
 
     #immune activity * 100
     def immune_activity_formatted(self):
-        v = round(self.immune_activity * 100,2)
+        v = int(self.immune_activity * 100)
         return f'{v}'
 
     #return the activity day before this one
@@ -158,7 +186,7 @@ class Session_day_subject_actvity(models.Model):
     
     #get range of possible heart activities for tomorrow
     def getHeartActivityFutureRange(self):
-
+        logger = logging.getLogger(__name__)
         v = []
 
         ps = self.session_day.session.parameterset
@@ -166,8 +194,10 @@ class Session_day_subject_actvity(models.Model):
         value_step = (ps.x_max_heart-ps.x_min_heart) / 100
         current_value = ps.x_min_heart
 
+        logger.info(f'getHeartActivityFutureRange {self.heart_activity} {self.id} {self.session_day.period_number}')
+
         for i in range(99):
-            v.append({"x":current_value, "y": self.calcHeartActivity(current_value,self.heart_activity)*100})
+            v.append({"x":current_value, "y": self.calcHeartActivity(current_value,self.heart_activity,False)*100})
             current_value += value_step
 
         return v
@@ -183,7 +213,7 @@ class Session_day_subject_actvity(models.Model):
         current_value = ps.x_min_immune*60
 
         for i in range(99):
-            v.append({"x":current_value, "y": self.calcImmuneActivity(current_value,self.immune_activity)*100})
+            v.append({"x":current_value, "y": self.calcImmuneActivity(current_value,self.immune_activity,False)*100})
             current_value += value_step
 
         return v
@@ -210,34 +240,43 @@ class Session_day_subject_actvity(models.Model):
         logger = logging.getLogger(__name__)
         p_set = self.session_day.session.parameterset
 
-        max_activity = self.calcHeartActivity(1440,self.heart_activity)
+        max_activity = self.calcHeartActivity(1440,self.heart_activity,True)
 
         target_activity = (float(self.heart_activity) + max_activity)/2
+
+        target_activity = round(target_activity,2)
+
 
         target_minutes = self.calcMaintenance(p_set.heart_parameter_1,
                                     p_set.heart_parameter_2,
                                     p_set.heart_parameter_3,
-                                    target_activity,
+                                    self.heart_activity,
+                                    target_activity,                                   
                                     15)
 
         logger.info(f'getTodaysHeartImprovmentMinutes heart_activity {self.heart_activity} max_activity {max_activity} target_activity {target_activity} target_minutes {target_minutes}')
 
         target_minutes = math.ceil(target_minutes)
 
-        return {"target_activity": f'{target_activity*100:0.2f}',"target_minutes":f' {target_minutes}mins'}
+        target_activity = int(target_activity*100)
+
+        return {"target_activity": f'{target_activity}',"target_minutes":f' {target_minutes}mins'}
 
     #get immune improvment minutes
     def getTodaysImmuneImprovmentHours(self):
         logger = logging.getLogger(__name__)
         p_set = self.session_day.session.parameterset
 
-        max_activity = self.calcImmuneActivity(1440,self.immune_activity)
+        max_activity = self.calcImmuneActivity(1440,self.immune_activity,True)
 
         target_activity = (float(self.immune_activity) + max_activity)/2
+
+        target_activity = round(target_activity,2)
 
         target_minutes = self.calcMaintenance(p_set.immune_parameter_1,
                                     p_set.immune_parameter_2,
                                     p_set.immune_parameter_3,
+                                    self.immune_activity,
                                     target_activity,
                                     240)
 
@@ -245,7 +284,47 @@ class Session_day_subject_actvity(models.Model):
 
         target_minutes = math.ceil(target_minutes)
 
-        return {"target_activity": f'{target_activity*100:0.2f}',"target_hours":f'{math.floor(target_minutes/60)}hrs {target_minutes%60}mins'}
+        target_activity = int(target_activity*100)
+
+        return {"target_activity": f'{target_activity}',"target_hours":f'{math.floor(target_minutes/60)}hrs {target_minutes%60}mins'}
+
+    #pull heart rate data
+    def pullFibitBitHeartRate(self):
+        logger = logging.getLogger(__name__)
+        fitbitError = False
+
+        #heart rate
+        try:
+            heart_full = self.session_subject.getFitbitHeartRate(self.session_day.date) 
+            #logger.info(f'pullFitbitActvities {temp_h}')    ]
+        
+            heart_summary = heart_full['activities-heart'][0]['value']['heartRateZones']
+            self.fitbit_minutes_heart_out_of_range = heart_summary[0].get("minutes",0)   
+            self.fitbit_minutes_heart_fat_burn = heart_summary[1].get("minutes",0)
+            self.fitbit_minutes_heart_cardio = heart_summary[2].get("minutes",0)
+            self.fitbit_minutes_heart_peak = heart_summary[3].get("minutes",0)
+            self.fitbit_heart_time_series = heart_full
+
+            #store minutes on wrist
+            #v = eval(str(heart_full))
+            v = heart_full.get("activities-heart-intraday",-1)
+
+            if v == -1:
+                self.fitbit_on_wrist_minutes = 0
+            
+            v = v.get('dataset',-1)
+            if v==-1:
+                self.fitbit_on_wrist_minutes = 0
+            else:
+                self.fitbit_on_wrist_minutes = len(v)
+
+            self.save()
+       
+        except Exception  as e:
+            logger.info(f'Error pullFibitBitHeartRate {e}')
+            fitbitError = True
+
+        return fitbitError
 
     #pull actvities from fitbit and store
     def pullFitbitActvities(self):
@@ -263,18 +342,6 @@ class Session_day_subject_actvity(models.Model):
             self.fitbit_minutes_very_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesVeryActive")
             self.fitbit_steps = self.session_subject.getFibitActivityMinutes(self.session_day.date,"steps")
             self.fitbit_calories = self.session_subject.getFibitActivityMinutes(self.session_day.date,"calories")
-
-            #heart rate
-            heart_full = self.session_subject.getFitbitHeartRate(self.session_day.date) 
-            #logger.info(f'pullFitbitActvities {temp_h}')    ]
-        
-            heart_summary = heart_full['activities-heart'][0]['value']['heartRateZones']
-            self.fitbit_minutes_heart_out_of_range = heart_summary[0].get("minutes",0)   
-            self.fitbit_minutes_heart_fat_burn = heart_summary[1].get("minutes",0)
-            self.fitbit_minutes_heart_cardio = heart_summary[2].get("minutes",0)
-            self.fitbit_minutes_heart_peak = heart_summary[3].get("minutes",0)
-            self.fitbit_heart_time_series = heart_full
-        
 
         self.save()
 
@@ -296,6 +363,17 @@ class Session_day_subject_actvity(models.Model):
 
         return fitbitError
 
+    #return string formated wrist minutes
+    def getFormatedWristMinutes(self) -> str:
+        m = self.fitbit_on_wrist_minutes
+
+        v = f'{math.floor(m/60)}hrs'
+
+        if m % 60 != 0 :
+            v += f' {m%60}mins'
+
+        return v
+    
     #return CSV response for data download
     def getCSVResponse(self,writer):
         # ["Session","Period","Block","Date","Subject ID", "Subject Code","Heart Activity Minutes",
@@ -308,7 +386,7 @@ class Session_day_subject_actvity(models.Model):
                          self.getTodaysImmuneEarnings(),self.payment_today,self.fitbit_minutes_sedentary,self.fitbit_minutes_lightly_active,
                          self.fitbit_minutes_fairly_active,self.fitbit_minutes_very_active,self.fitbit_steps,self.fitbit_calories,
                          self.fitbit_minutes_heart_out_of_range,self.fitbit_minutes_heart_fat_burn,self.fitbit_minutes_heart_cardio,
-                         self.fitbit_minutes_heart_peak])
+                         self.fitbit_minutes_heart_peak,self.fitbit_on_wrist_minutes])
 
     #return json object of class
     def json(self):
@@ -338,4 +416,5 @@ class Session_day_subject_actvity(models.Model):
             "immune_maintenance_hours" : immune_maintenance_hours,
             "heart_improvment_minutes" : self.getTodaysHeartImprovmentMinutes(),
             "immune_improvment_hours":self.getTodaysImmuneImprovmentHours(),
+            "time_on_wrist":self.getFormatedWristMinutes(),
         }

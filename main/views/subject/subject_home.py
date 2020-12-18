@@ -18,10 +18,12 @@ def Subject_Home(request,id):
 
     session_subject = Session_subject.objects.filter(login_key = id).first()
 
+    session_day = None
+
     if session_subject:
         session_day = session_subject.session.getCurrentSessionDay()
 
-    logger.info(session_subject)
+    logger.info(f'Subject_Home {session_subject} {session_day}')
 
     if request.method == 'POST':     
 
@@ -63,26 +65,47 @@ def Subject_Home(request,id):
             for f in session_subject_questionnaire2_form:
                 session_subject_questionnaire2_form_ids.append(str(f.html_name))
 
+            #which screen to show, baseline or full
+            baseline_payment = False
+            baseline_heart = False
+            baseline_sleep = False
+
+            if session_subject.session.treatment == "B":
+                baseline_payment = True
+                baseline_heart = True
+                baseline_sleep = True
+            
+            if session_day and session_day.getCurrentHeartPay() == 0:
+                baseline_payment = True
+
+            logger.info(f'{baseline_payment} {baseline_heart} {baseline_sleep}')
+
+            session = session_subject.session
+
             return render(request,'subject/home.html',{"id":id,  
                                                     "status":"success",    
-                                                    "before_start_date":session_subject.session.isBeforeStartDate(), 
-                                                    "session_canceled":session_subject.session.canceled,
-                                                    "session_started":session_subject.session.started,                                                   
-                                                    "start_date":session_subject.session.getDateString(),    
-                                                    "session_complete":session_subject.session.complete(),  
+                                                    "before_start_date":session.isBeforeStartDate(), 
+                                                    "session_canceled":session.canceled,
+                                                    "session_started":session.started,                                                   
+                                                    "start_date":session.getDateString(),    
+                                                    "session_complete":session.complete(),  
                                                     "session_subject_questionnaire1_form_ids":session_subject_questionnaire1_form_ids,
                                                     "session_subject_questionnaire1_form":session_subject_questionnaire1_form,
                                                     "session_subject_questionnaire2_form_ids":session_subject_questionnaire2_form_ids,
                                                     "session_subject_questionnaire2_form":session_subject_questionnaire2_form,  
                                                     "heart_help_text":p.heartHelpText,
                                                     "immune_help_text":p.immuneHelpText,
-                                                    "payment_help_text":p.paymentHelpText if session_subject.session.treatment != "B" else p.paymentHelpTextBaseline,                       
+                                                    "payment_help_text":p.paymentHelpText if not baseline_payment else p.paymentHelpTextBaseline,                       
                                                     "session_subject":session_subject,
-                                                    "session_treatment":session_subject.session.treatment})
+                                                    "baseline_payment":baseline_payment,
+                                                    "baseline_heart":baseline_heart,
+                                                    "baseline_sleep":baseline_sleep,
+                                                    "session_treatment":session.treatment})
         else:
+            logger.info("Error: subject Home, subject not found")
             return render(request,'subject/home.html',{"id":id,  
-                                                        "contact_email":p.contactEmail,
-                                                        "status":"fail",
+                                                       "contact_email":p.contactEmail,
+                                                       "status":"fail",
                                                             })
 
 #take pre session questionnaire
@@ -179,71 +202,82 @@ def payMe(data,session_subject,session_day):
     #check that session is not complete    
     if not session_day:
         status = "fail"  
-        message = "Error: Session day not found"
+        message = "Pay ErPayror: Session day not found"
         logger.info(message) 
 
     #check that session is not complete   
     if status == "success": 
         if not session_day.session.started:
             status = "fail"  
-            message = "Error: Session not started"
+            message = "Pay Error: Session not started"
             logger.info(message) 
 
     #check for consent form
     if status == "success":
         if p.consentFormRequired and session_subject.consent_required:
             status = "fail"   
-            message = "Error: Consent required" 
+            message = "Pay Error: Consent required" 
             logger.info(message)
     
     #check that questionnaire two is done before last payment
     if status == "success":
         if p.questionnaire1Required and session_subject.getQuestionnaire1Required() :
             status = "fail"  
-            message = "Error: Questionnaire 1 required"  
+            message = "Pay Error: Questionnaire 1 required"  
             logger.info(message)
 
     #check that session day activity exists
     if status == "success":
         if not session_day_subject_actvity:
             status = "fail" 
-            message = "Error: Could not find session_day_subject_actvity"   
+            message = "Pay Error: Could not find session_day_subject_actvity"   
             logger.info(message)
 
     #check that it is the day of the specified session day
     if status == "success":
         if session_day_subject_actvity.session_day.date != todaysDate().date():
             status = "fail"  
-            message = "Error: Session_day.date does not match today's date"  
+            message = "Pay Error: Session_day.date does not match today's date"  
             logger.info(message)   
 
     #check that session is not complete
     if status == "success":
         if session_day.session.complete():
             status = "fail"  
-            message = "Error: Session is already complete"
+            message = "Pay Error: Session is already complete"
             logger.info(message) 
 
     #check that session is not canceled
     if status == "success":
         if session_day.session.canceled:
             status = "fail"   
-            message =  "Error: Session is canceled"
+            message =  "Pay Error: Session is canceled"
             logger.info(message)      
 
     #check that subject has not already been paid
     if status == "success":
         if session_day_subject_actvity.paypal_today:
             status="fail"
-            message = "Error: Double payment attempt"
+            message = "Pay Error: Double payment attempt"
             logger.info(message)
     
     #check that questionnaire two is done before last payment
     if status == "success":
         if p.questionnaire2Required and session_subject.getQuestionnaire2Required() :
             status = "fail"  
-            message = "Error: Questionnaire 2 required"  
+            message = "Pay Error: Questionnaire 2 required"  
             logger.info(message)
+
+    #check that subject has had the required wrist time
+    if status == "success":
+        # logger.info(f'{session_day.period_number }')
+        if session_day.period_number > 1:
+            pd = session_day_subject_actvity.getPreviousActivityDay()
+            # logger.info(f'{pd.fitbit_on_wrist_minutes} {session_day.period_number} {session_day.session.parameterset.minimum_wrist_minutes}')
+            if pd.fitbit_on_wrist_minutes < session_day.session.parameterset.minimum_wrist_minutes:
+                status = "fail"
+                message = "Pay Error: Wrist time too low."  
+                logger.info(message)
     
     if status == "success":
         try:
@@ -280,23 +314,24 @@ def getSessionDaySubject(data,session_subject,session_day):
     #check that today is a session day
     if not session_day:
         status = "fail"
-        logger.info("Session day not found.")
+        logger.info("Get subject error: Session day not found.")
 
     #check that a session subject exists for user
     if not session_subject:
         status = "fail"
-        logger.info("Session subject not found.")
+        logger.info("Get subject error: Session subject not found.")
     
     #chec if session is already complete
     if session_subject.session.complete():
         status = "fail"
-        logger.info("The session is complete.")
+        logger.info("Get subject error: The session is complete.")
 
     #check fitbit is attached and store last sync date
     if not session_subject.getFitBitAttached():
         fitbitError=True
         status == "fail"
-
+        logger.info("Get subject error: The fitbit is not connected.")
+    
     if status == "success":
         #check if subject missed past days
         session_subject.fitBitCatchUp()
@@ -305,6 +340,7 @@ def getSessionDaySubject(data,session_subject,session_day):
 
         if session_day_subject_actvity:
             session_day_subject_actvity_previous_day = session_day_subject_actvity.getPreviousActivityDay()
+            session_day_subject_actvity.pullFibitBitHeartRate()
 
         if session_day_subject_actvity_previous_day:
            
@@ -314,6 +350,8 @@ def getSessionDaySubject(data,session_subject,session_day):
 
             #pull data from fitbit
             fitbitError = session_day_subject_actvity_previous_day.pullFitbitActvities()
+            if not fitbitError:
+                session_day_subject_actvity_previous_day.pullFibitBitHeartRate()
 
             #calc today's actvity
             session_subject.calcTodaysActivity(session_day.period_number)
@@ -342,7 +380,7 @@ def getSessionDaySubject(data,session_subject,session_day):
     if status == "fail":
         return JsonResponse({"status":status,
                              "fitbitError":fitbitError,
-                             "fitBitLastSynced":"---" if fitbitError else session_subject.getFitbitLastSyncStr(),
+                             "fitBitLastSynced":"---" if fitbitError else session_subject.getFitbitLastSyncStr(False),
                              "fitbit_link":session_subject.getFitBitLink("subject"),
                              "questionnaire1_required":session_subject.getQuestionnaire1Required(),
                              "consent_required":consent_required,
@@ -363,10 +401,19 @@ def getSessionDaySubject(data,session_subject,session_day):
             notification_text = notification_text.replace("[immune pay]",f'{ps.getImmunePay(p_number)/100:0.2f}')
             notification_text = notification_text.replace("[fixed pay]",f'{ps.fixed_pay_per_day:0.2f}')
 
+        fitBitTimeRequirementMet = True
+        fitBitTimeRequired = ps.getFormatedWristMinutes()
+
+        if p_number>1:            
+            if session_day_subject_actvity_previous_day.fitbit_on_wrist_minutes < ps.minimum_wrist_minutes :
+                fitBitTimeRequirementMet = False
+
         return JsonResponse({"status":status,
                         "fitbitError":fitbitError,
-                        "fitBitLastSynced":session_subject.getFitbitLastSyncStr(),
+                        "fitBitLastSynced":session_subject.getFitbitLastSyncStr(False),
                         "fitbit_link":session_subject.getFitBitLink("subject"),
+                        "fitBitTimeRequired": fitBitTimeRequired,
+                        "fitBitTimeRequirementMet": fitBitTimeRequirementMet,
                         "session_date":session_date,
                         "notification_title":notification_title,
                         "notification_text":notification_text,

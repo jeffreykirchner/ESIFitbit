@@ -23,12 +23,13 @@
                                              heart_maintenance_minutes:"--",
                                              immune_maintenance_hours:"--", 
                                              heart_improvment_minutes:{target_activity: "--",target_minutes:"--"},
-                                             immune_improvment_hours:{target_activity: "--",target_hours:"--"}                                      
+                                             immune_improvment_hours:{target_activity: "--",target_hours:"--"},   
+                                             time_on_wrist:"--"                                 
                                              },
                 session_day_subject_actvity_previous:{heart_activity_minutes:"--",
-                                                      immune_activity_hours:"--",},
+                                                      immune_activity_hours:"--",
+                                                      time_on_wrist:"--",},
                 graph_parameters:{},
-                parameterset:{},
                 payMeButtonText : 'Pay Me <i class="fab fa-paypal fa-lg"></i>',
                 refreshButtonText : '<i class="fas fa-sync fa-spin"></i>',
                 toggleState:"heart",
@@ -53,13 +54,15 @@
                 payment_help_text:`{{payment_help_text|safe}}`,   
                 fitbit_link:"",
                 fitBitLastSynced:"---",
+                fitBitTimeRequired:"---",
+                fitBitTimeRequirementMet:true,
                 notification_title:"",
                 notification_text:"",
                 session_treatment:"",
                 viewed_heart:false,
                 viewed_immune:false,
                 payment_toggle_background : "lightgrey",
-                payment_available : true
+                payment_available : true,
             },
 
             methods:{
@@ -80,6 +83,8 @@
                                         app.$data.session_complete = response.data.session_complete;                                        
                                         app.$data.questionnaire2_required = response.data.questionnaire2_required;
                                         app.$data.session_last_day = response.data.session_last_day;
+                                        app.$data.fitBitTimeRequired = response.data.fitBitTimeRequired;
+                                        app.$data.fitBitTimeRequirementMet = response.data.fitBitTimeRequirementMet;
                                     }
                                     else
                                     {
@@ -567,7 +572,7 @@
                     }
                     else if(app.$data.toggleState=='immune')
                     {
-                        app.$data.helpTitle = "Immune Help"
+                        app.$data.helpTitle = "Sleep Help"
                         app.$data.helpText = app.$data.immune_help_text;
                     }
                     else if (app.$data.toggleState == 'payment')
@@ -675,8 +680,8 @@
                         </div>
                     
                         <div v-if="toggleState==='heart'">
-                            <div class="row mt-2">
-                                <div class="col" style="text-align: center;">Heart Health: <span style="font-weight: bold;" v-html = session_day_subject_actvity.heart_activity></span></div>
+                            <div class="row mt-1">
+                                <div class="col" style="text-align: center;">Heart Health Score: <span style="font-weight: bold;" v-html = session_day_subject_actvity.heart_activity></span></div>
                             </div>
                             <div class="row">
                                 <div class="col" style="text-align: center;">                             
@@ -688,20 +693,25 @@
                                     </div>                            
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row mt-1">
                                 <div class="col" style="text-align: center;">
-                                    Minutes Required to<br>Maintain Health at <span v-html = session_day_subject_actvity.heart_activity></span>: <span v-html="session_day_subject_actvity.heart_maintenance_minutes"></span>
+                                    Minutes Required to:
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col" style="text-align: center;">
-                                    Minutes Required to<br>Improve Health to <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_activity></span>: <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_minutes></span>
+                                    Maintain Score at <span v-html = session_day_subject_actvity.heart_activity></span>: <span v-html="session_day_subject_actvity.heart_maintenance_minutes"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col" style="text-align: center;">
+                                    Improve Score to <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_activity></span>: <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_minutes></span>
                                 </div>
                             </div>
                         </div>
                         <div v-else-if="toggleState==='immune'">
-                            <div class="row mt-2">
-                                <div class="col" style="text-align: center;">Sleep Health: <span style="font-weight: bold;" v-html = session_day_subject_actvity.immune_activity></span></div>
+                            <div class="row mt-1">
+                                <div class="col" style="text-align: center;">Sleep Health Score: <span style="font-weight: bold;" v-html = session_day_subject_actvity.immune_activity></span></div>
                             </div>
                             <div class="row">
                                 <div class="col" style="text-align: center;">                             
@@ -713,19 +723,24 @@
                                     </div>                            
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row mt-1">
                                 <div class="col" style="text-align: center;">
-                                    Hours Required to<br>Maintain Health at <span v-html = session_day_subject_actvity.immune_activity></span>: <span v-html="session_day_subject_actvity.immune_maintenance_hours"></span>
+                                    Hours Required to:
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col" style="text-align: center;">
-                                    Hours Required to<br>Improve Health to <span v-html = session_day_subject_actvity.immune_improvment_hours.target_activity></span>: <span v-html="session_day_subject_actvity.immune_improvment_hours.target_hours"></span>
+                                    Maintain Score at <span v-html = session_day_subject_actvity.immune_activity></span>: <span v-html="session_day_subject_actvity.immune_maintenance_hours"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col" style="text-align: center;">
+                                    Improve Score to <span v-html = session_day_subject_actvity.immune_improvment_hours.target_activity></span>: <span v-html="session_day_subject_actvity.immune_improvment_hours.target_hours"></span>
                                 </div>
                             </div>
                         </div>  
                         <div v-else-if="toggleState==='payment'">
-                            {%if session_treatment == 'B'%}
+                            {%if baseline_payment %}
                                 <div class="row mt-2">
                                     <div class="col" style="text-align: center;">Your Payment today = </div>
                                 </div>
@@ -768,10 +783,10 @@
                                     <div class="col" style="text-align: center;">(Fixed Pay per Day)</div>
                                 </div>
                                 <div class="row mt">
-                                    <div class="col" style="text-align: center;">+ (Heart Pay) x (Today's Heart Health)</div>
+                                    <div class="col" style="text-align: center;">+ (Heart Pay) x (Today's Heart Score)</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col" style="text-align: center;">+ (Immune Pay) x (Today's Immune Health)</div>
+                                    <div class="col" style="text-align: center;">+ (Immune Pay) x (Today's Sleep Score)</div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col" style="text-align: center;">$[[session_day_subject_actvity.fixed_pay_per_day]]</div>
@@ -795,7 +810,7 @@
                                         </div>
                                         <div v-else-if="session_complete===false">
                                             
-                                            <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()" v-bind:disabled="fitbitError">
+                                            <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()" v-bind:disabled="fitbitError || fitBitTimeRequirementMet === false"> 
                                                 <span v-html="payMeButtonText"></span>
                                             </button>
                                             <div v-show="fitbitError">
@@ -804,8 +819,17 @@
                                             <div v-show="paymentError">
                                                 <span v-html="'***Payment Error***'" style="color: red;"></span>
                                             </div>
-                                        </div>    
-                                        
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class = "row mt-4">
+                                    <div class="col" style="text-align: center;">
+                                        Wrist time required: <span v-html="fitBitTimeRequired"></span>
+                                    </div>
+                                </div>
+                                <div class = "row">
+                                    <div class="col" style="text-align: center;" v-bind:style="[fitBitTimeRequirementMet ===false ? {'color': 'red' }:{}]">
+                                        Yesterday's time on wrist: <span v-html="session_day_subject_actvity_previous.time_on_wrist"></span>
                                     </div>
                                 </div>
                             {%endif%}
@@ -833,7 +857,16 @@
                 
             </div>  
             <div class="card-footer">
-               <center> Fitbit last synced: <span v-html="fitBitLastSynced"></span></center>
+                <div class="row">
+                    <div class="col" style="text-align: center;">
+                        Fitbit last synced: <span v-html="fitBitLastSynced"></span>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col" style="text-align: center;">
+                        Today's time on wrist: <span v-html="session_day_subject_actvity.time_on_wrist"></span>
+                    </div>
+                </div>
             </div>                  
         </div>                
     </div>
