@@ -18,10 +18,12 @@ def Subject_Home(request,id):
 
     session_subject = Session_subject.objects.filter(login_key = id).first()
 
+    session_day = None
+
     if session_subject:
         session_day = session_subject.session.getCurrentSessionDay()
 
-    logger.info(session_subject)
+    logger.info(f'Subject_Home {session_subject} {session_day}')
 
     if request.method == 'POST':     
 
@@ -63,23 +65,44 @@ def Subject_Home(request,id):
             for f in session_subject_questionnaire2_form:
                 session_subject_questionnaire2_form_ids.append(str(f.html_name))
 
+            #which screen to show, baseline or full
+            baseline_payment = False
+            baseline_heart = False
+            baseline_sleep = False
+
+            if session_subject.session.treatment == "B":
+                baseline_payment = True
+                baseline_heart = True
+                baseline_sleep = True
+            
+            if session_day and session_day.getCurrentHeartPay() == 0:
+                baseline_payment = True
+
+            logger.info(f'{baseline_payment} {baseline_heart} {baseline_sleep}')
+
+            session = session_subject.session
+
             return render(request,'subject/home.html',{"id":id,  
                                                     "status":"success",    
-                                                    "before_start_date":session_subject.session.isBeforeStartDate(), 
-                                                    "session_canceled":session_subject.session.canceled,
-                                                    "session_started":session_subject.session.started,                                                   
-                                                    "start_date":session_subject.session.getDateString(),    
-                                                    "session_complete":session_subject.session.complete(),  
+                                                    "before_start_date":session.isBeforeStartDate(), 
+                                                    "session_canceled":session.canceled,
+                                                    "session_started":session.started,                                                   
+                                                    "start_date":session.getDateString(),    
+                                                    "session_complete":session.complete(),  
                                                     "session_subject_questionnaire1_form_ids":session_subject_questionnaire1_form_ids,
                                                     "session_subject_questionnaire1_form":session_subject_questionnaire1_form,
                                                     "session_subject_questionnaire2_form_ids":session_subject_questionnaire2_form_ids,
                                                     "session_subject_questionnaire2_form":session_subject_questionnaire2_form,  
                                                     "heart_help_text":p.heartHelpText,
                                                     "immune_help_text":p.immuneHelpText,
-                                                    "payment_help_text":p.paymentHelpText if session_subject.session.treatment != "B" else p.paymentHelpTextBaseline,                       
+                                                    "payment_help_text":p.paymentHelpText if not baseline_payment else p.paymentHelpTextBaseline,                       
                                                     "session_subject":session_subject,
-                                                    "session_treatment":session_subject.session.treatment})
+                                                    "baseline_payment":baseline_payment,
+                                                    "baseline_heart":baseline_heart,
+                                                    "baseline_sleep":baseline_sleep,
+                                                    "session_treatment":session.treatment})
         else:
+            logger.info("Error: subject Home, subject not found")
             return render(request,'subject/home.html',{"id":id,  
                                                        "contact_email":p.contactEmail,
                                                        "status":"fail",
