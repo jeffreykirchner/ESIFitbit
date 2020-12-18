@@ -771,8 +771,18 @@
                                             <div v-show="paymentError">
                                                 <span v-html="'***Payment Error***'" style="color: red;"></span>
                                             </div>
-                                        </div>    
-                                        
+                                        </div>  
+                                    </div>                                    
+                                </div>
+
+                                <div class = "row mt-4">
+                                    <div class="col" style="text-align: center;">
+                                        Wrist time required: <span v-html="fitBitTimeRequired"></span>
+                                    </div>
+                                </div>
+                                <div class = "row">
+                                    <div class="col" style="text-align: center;" v-bind:style="[fitBitTimeRequirementMet ===false ? {'color': 'red' }:{}]">
+                                        Yesterday's time on wrist: <span v-html="session_day_subject_actvity_previous.time_on_wrist"></span>
                                     </div>
                                 </div>
                             {%else%}
