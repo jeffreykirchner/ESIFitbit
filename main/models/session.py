@@ -247,7 +247,7 @@ class Session(models.Model):
                          "Check In Today", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today",
                          "Minutes Sedentary","Minutes Lightly Active","Minutes Fairly Active","Minutes Very Active","Steps","Calories",
                          "Heart Rate Minutes Out of Range","Heart Rate Minutes Fat Burn","Heart Rate Minutes Cardio",
-                         "Heart Rate Minutes Peak"])
+                         "Heart Rate Minutes Peak","Time On Wrist"])
 
         sd_list = self.session_days.all().order_by('period_number')
 
@@ -293,7 +293,7 @@ class Session(models.Model):
                           'Block 1 heart pay','Block 2 heart pay','Block 3 heart pay', 
                           'Block 1 immune pay','Block 2 immune pay','Block 3 immune pay',
                           'Block 1 day count','Block 2 day count','Block 3 day count', 
-                          'Fixed pay per day',
+                          'Fixed pay per day','Minutes required on wrist',
                           'Treatment 3 heart bonus','Treatment 3 immune bonus','Treatment 3 bonus target count',  
                           'Y min heart','Y max heart','Y ticks heart','X min heart','X max heart','X ticks heart',  
                           'Y min immune','Y max immune','Y ticks immune','X min immune','X max immune','X ticks immune'])
@@ -326,7 +326,6 @@ class Session(models.Model):
                 writer.writerow([sdsa.session_subject.student_id,'$0.00'])
 
         return csv_response
-
 
     #return json object of class
     def json(self):

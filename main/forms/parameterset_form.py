@@ -42,6 +42,10 @@ class Parameterset_form(forms.ModelForm):
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.fixed_pay_per_day"}))
     
+    minimum_wrist_minutes = forms.DecimalField(label='Minimum Wrist Minutes',
+                            min_value=0,
+                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.minimum_wrist_minutes"}))
+    
     block_1_heart_pay = forms.DecimalField(label='Block 1 Heart Pay ($)',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_1_heart_pay",

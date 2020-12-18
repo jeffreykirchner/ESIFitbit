@@ -2,7 +2,7 @@
 from django.test import TestCase
 import logging
 
-from main.models import Session
+from main.models import Session,Session_day_subject_actvity
 from main.globals.todaysDate import todaysDate
 from datetime import datetime,timedelta
 import json
@@ -47,6 +47,8 @@ class subjectCompleteTestCase(TestCase):
 
         session = Session.objects.first()
         self.session = session
+
+        Session_day_subject_actvity.objects.filter(session_day__session = session).update(fitbit_on_wrist_minutes = session.parameterset.minimum_wrist_minutes)
         
     def testPayMe(self):
         '''after Start PayMe '''
@@ -57,6 +59,7 @@ class subjectCompleteTestCase(TestCase):
         session_subject = self.session.session_subjects.all().first()
         session_day = self.session.getCurrentSessionDay()
         session_day_subject_actvity = session_subject.Session_day_subject_actvities.get(session_day__period_number = 4)
+        session_day_subject_actvity.fitbit_on_wrist_minutes = self.session.parameterset
 
         session_subject.consent_required = False
         session_subject.questionnaire1_required = False
@@ -106,6 +109,8 @@ class subjectLastDayTestCase(TestCase):
 
         session = Session.objects.first()
         self.session = session
+
+        Session_day_subject_actvity.objects.filter(session_day__session = session).update(fitbit_on_wrist_minutes = session.parameterset.minimum_wrist_minutes)
         
     def testPayMe(self):
         '''after Start PayMe '''
@@ -136,6 +141,8 @@ class subjectLastDayTestCase(TestCase):
         self.assertEquals("",r['message'])    
         session_day_subject_actvity = session_subject.Session_day_subject_actvities.filter(session_day__period_number = 4).first()
         self.assertTrue(session_day_subject_actvity.paypal_today) 
+
+    
 
 #test subject after experiment has started
 class subjectAfterStartTestCase(TestCase):
@@ -213,6 +220,39 @@ class subjectAfterStartTestCase(TestCase):
         r = json.loads(payMe({},session_subject,session_day).content.decode("UTF-8"))     
         session_day_subject_actvity = session_subject.Session_day_subject_actvities.filter(session_day__period_number = 1).first()   
         self.assertIn("Session is canceled",r['message'])
+    
+    #test low and high wrist time
+    def testWristTime(self):
+        session = self.session
+
+        #before start
+        session_subject = self.session.session_subjects.all().first()
+        session_day = self.session.session_days.get(period_number = 2)
+        session_day.date = datetime.now().date()
+        session_day.save()
+        session_day_subject_actvity = Session_day_subject_actvity.objects.get(session_day = session_day,session_subject = session_subject)
+
+        session_subject.consent_required = False
+        session_subject.questionnaire1_required = False
+
+        session_subject.save()
+
+        #minutes too low
+        r = json.loads(payMe({},session_subject,session_day).content.decode("UTF-8"))    
+        self.assertEquals("Pay Error: Wrist time too low.",r['message'])    
+        session_day_subject_actvity = Session_day_subject_actvity.objects.get(session_day = session_day,session_subject = session_subject)
+        self.assertFalse(session_day_subject_actvity.paypal_today)
+
+        #minutes high enough
+        session_day_m1 = self.session.session_days.get(period_number = 1)
+        session_day_subject_actvity = Session_day_subject_actvity.objects.get(session_day = session_day_m1,session_subject = session_subject)
+        session_day_subject_actvity.fitbit_on_wrist_minutes = self.session.parameterset.minimum_wrist_minutes
+        session_day_subject_actvity.save()
+
+        r = json.loads(payMe({},session_subject,session_day).content.decode("UTF-8"))    
+        self.assertEquals("",r['message'])    
+        session_day_subject_actvity = Session_day_subject_actvity.objects.get(session_day = session_day,session_subject = session_subject)
+        self.assertTrue(session_day_subject_actvity.paypal_today)
 
 #test subject before experiment starts
 class subjectBeforeStartTestCase(TestCase):

@@ -2,6 +2,7 @@ from django.db import models
 import logging
 import traceback
 from django.utils.timezone import now
+import math
 
 from django.core import serializers
 
@@ -32,6 +33,7 @@ class Parameterset(models.Model):
 
     #fixed pay per day $
     fixed_pay_per_day = models.DecimalField(decimal_places=2, default=4.00, max_digits=6)
+    minimum_wrist_minutes = models.IntegerField(default = 1080)
 
     #number of days for each time block
     block_1_day_count = models.IntegerField(default = 1)
@@ -99,6 +101,7 @@ class Parameterset(models.Model):
         self.block_3_day_count = ps.block_3_day_count
 
         self.fixed_pay_per_day = ps.fixed_pay_per_day
+        self.minimum_wrist_minutes = ps.minimum_wrist_minutes
 
         self.treatment_3_heart_bonus = ps.treatment_3_heart_bonus
         self.treatment_3_immune_bonus = ps.treatment_3_immune_bonus
@@ -149,7 +152,7 @@ class Parameterset(models.Model):
         else:
             return 3
     
-    #return trus if block 2 or 3 starts today
+    #return true if block 2 or 3 starts today
     def getBlockChangeToday(self,period):
 
         #start of block 2
@@ -160,6 +163,14 @@ class Parameterset(models.Model):
         if period == self.block_2_day_count+self.block_1_day_count+1+1:
             return True
 
+    #return string formated wrist minutes
+    def getFormatedWristMinutes(self) -> str:
+        v = f'{math.floor(self.minimum_wrist_minutes/60)}hrs'
+
+        if self.minimum_wrist_minutes%60 != 0 :
+            v += f' {self.minimum_wrist_minutes%60}mins'
+
+        return v
 
     #get csv reponse for data file
     def getCSVResponse(self,writer,title,treatment):
@@ -170,7 +181,7 @@ class Parameterset(models.Model):
                           self.block_1_heart_pay,self.block_2_heart_pay,self.block_3_heart_pay, 
                           self.block_1_immune_pay,self.block_2_immune_pay,self.block_3_immune_pay,
                           self.block_1_day_count,self.block_2_day_count,self.block_3_day_count, 
-                          self.fixed_pay_per_day,
+                          self.fixed_pay_per_day,self.minimum_wrist_minutes,
                           self.treatment_3_heart_bonus,self.treatment_3_immune_bonus,self.treatment_3_bonus_target_count,  
                           self.y_min_heart,self.y_max_heart,self.y_ticks_heart,self.x_min_heart,self.x_max_heart,self.x_ticks_heart,  
                           self.y_min_immune,self.y_max_immune,self.y_ticks_immune,self.x_min_immune,self.x_max_immune,self.x_ticks_immune])
@@ -200,6 +211,7 @@ class Parameterset(models.Model):
             "block_3_immune_pay":self.block_3_immune_pay,
 
             "fixed_pay_per_day":self.fixed_pay_per_day,
+            "minimum_wrist_minutes":self.minimum_wrist_minutes,
 
             "treatment_3_heart_bonus":self.treatment_3_heart_bonus,
             "treatment_3_immune_bonus":self.treatment_3_immune_bonus,
