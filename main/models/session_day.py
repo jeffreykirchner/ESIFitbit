@@ -88,7 +88,7 @@ class Session_day(models.Model):
 
     #return CSV response for data download
     def getCSVResponse(self,writer):
-        sdsa_list = self.Session_day_subject_actvities_SD.all().order_by('session_subject__id_number')
+        sdsa_list = self.Session_day_subject_actvities_SD.filter(session_subject__soft_delete=False).order_by('session_subject__id_number')
 
         for sdsa in sdsa_list:
             sdsa.getCSVResponse(writer)

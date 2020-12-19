@@ -215,7 +215,7 @@ class Session(models.Model):
         text = text.replace("[end date]", self.getEndDateString())
         text = text.replace("[contact email]", p.contactEmail)
 
-        return main.globals.sendMassInvitations(self.session_subjects.all(),self.invitation_text_subject,text)
+        return main.globals.sendMassInvitations(self.session_subjects.filter(soft_delete=False),self.invitation_text_subject,text)
 
     #send email canceling session
     def sendCancelation(self):
@@ -224,7 +224,7 @@ class Session(models.Model):
 
         text = text.replace("[contact email]", p.contactEmail)
 
-        return main.globals.sendMassInvitations(self.session_subjects.all(),self.cancelation_text_subject,text)
+        return main.globals.sendMassInvitations(self.session_subjects.filter(soft_delete=False),self.cancelation_text_subject,text)
 
     #return true if today's date past end date
     def complete(self):
@@ -264,7 +264,7 @@ class Session(models.Model):
                          'Exercise Variation Likert','Exercise Variation Explanation','Full Name','Address Line 1','Address Line 2',
                          'City','State','Zip Code'])
 
-        ss_list = self.session_subjects.all().order_by('id_number')
+        ss_list = self.session_subjects.filter(soft_delete=False).order_by('id_number')
         
         for ss in ss_list:
             if ss.Session_subject_questionnaire1.all():
@@ -278,7 +278,7 @@ class Session(models.Model):
                          'Exercise Change Post','Exercise Changed Post Explanation',
                          'Health Concern Post','Health Concern Post Explanation'])
 
-        ss_list = self.session_subjects.all().order_by('id_number')
+        ss_list = self.session_subjects.filter(soft_delete=False).order_by('id_number')
         
         for ss in ss_list:
             if ss.Session_subject_questionnaire2.all():
@@ -315,7 +315,9 @@ class Session(models.Model):
 
         logger.info(f'getCSVEarnings date {date}')
 
-        sdsa_list = main.models.Session_day_subject_actvity.objects.filter(session_day__session=self,session_day__date = date)
+        sdsa_list = main.models.Session_day_subject_actvity.objects.filter(session_subject__soft_delete=False,
+                                                                           session_day__session=self,
+                                                                           session_day__date = date)
 
         logger.info(sdsa_list)
 
@@ -331,7 +333,7 @@ class Session(models.Model):
     def json(self):
 
         email_list=""
-        for s in self.session_subjects.all():
+        for s in self.session_subjects.filter(soft_delete=False):
             if email_list != "":
                 email_list +=", "
 
