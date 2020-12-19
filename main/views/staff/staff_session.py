@@ -63,6 +63,11 @@ def Staff_Session(request,id):
         import_parameters_form = Import_parameters_form()
         p = Parameters.objects.first()
         yesterdays_date = todaysDate() - timedelta(days=1)
+
+        #get list of form ids
+        subject_form_ids=[]
+        for i in subject_form:
+            subject_form_ids.append(i.html_name)
         
         return render(request,'staff/session.html',{'id': id,
                                                     'parameterset_form':parameterset_form,
@@ -70,6 +75,7 @@ def Staff_Session(request,id):
                                                     'subject_form':subject_form,
                                                     'help_text': p.manualHelpText,
                                                     'import_parameters_form':import_parameters_form,
+                                                    'subject_form_ids':subject_form_ids,
                                                     'yesterdays_date' : yesterdays_date.date().strftime("%Y-%m-%d")})     
 
 #get list of experiment sessions
