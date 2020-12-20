@@ -63,6 +63,7 @@
                 viewed_immune:false,
                 payment_toggle_background : "lightgrey",
                 payment_available : true,
+                soft_delete:false,
             },
 
             methods:{
@@ -74,6 +75,8 @@
                                 })
                                 .then(function (response) {     
                                     app.$data.status = response.data.status;
+
+                                    app.$data.soft_delete = response.data.soft_delete;
 
                                     if(app.$data.status != "fail")
                                     {
@@ -98,10 +101,12 @@
                                     app.$data.fitbitError = response.data.fitbitError;       
                                     app.$data.fitBitLastSynced = response.data.fitBitLastSynced;                     
 
-                                    app.toggleConsentForm();
-                                    app.toggleQuesionnaire1();
-                                    app.toggleQuesionnaire2();
-                                                                      
+                                    if(!app.$data.soft_delete)
+                                    {
+                                        app.toggleConsentForm();
+                                        app.toggleQuesionnaire1();
+                                        app.toggleQuesionnaire2();
+                                    }                                 
 
                                     if(app.$data.toggleState == 'heart')
                                     {
@@ -193,7 +198,10 @@
                     app.$data.notification_title = response.data.notification_title;
                     app.$data.notification_text = response.data.notification_text;
 
-                    app.showNotificationBox();
+                    if(!app.$data.soft_delete)
+                    {
+                        app.showNotificationBox();
+                    }
 
                     if (response.data.session_day_subject_actvity_previous)
                         app.$data.session_day_subject_actvity_previous=response.data.session_day_subject_actvity_previous;
@@ -647,7 +655,7 @@
                             </div>                             
                         </div>
                     </div>
-                {%elif session_complete%}
+                {%elif session_complete or soft_delete%}
                     <div class="row">
                         <div class="col" style="text-align: center;">
                             The experiment is complete.<br>

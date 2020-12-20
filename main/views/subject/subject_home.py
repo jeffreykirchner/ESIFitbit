@@ -89,6 +89,7 @@ def Subject_Home(request,id):
                                                     "session_started":session.started,                                                   
                                                     "start_date":session.getDateString(),    
                                                     "session_complete":session.complete(),  
+                                                    "soft_delete":session_subject.soft_delete,
                                                     "session_subject_questionnaire1_form_ids":session_subject_questionnaire1_form_ids,
                                                     "session_subject_questionnaire1_form":session_subject_questionnaire1_form,
                                                     "session_subject_questionnaire2_form_ids":session_subject_questionnaire2_form_ids,
@@ -267,6 +268,13 @@ def payMe(data,session_subject,session_day):
             status = "fail"  
             message = "Pay Error: Questionnaire 2 required"  
             logger.info(message)
+    
+    #check that subject has not be removed from session
+    if status == "success":
+        if session_subject.soft_delete:
+            status = "fail"
+            message = "Pay Error: Subject was removed from session"  
+            logger.info(message)
 
     #check that subject has had the required wrist time
     if status == "success":
@@ -382,6 +390,7 @@ def getSessionDaySubject(data,session_subject,session_day):
                              "fitbitError":fitbitError,
                              "fitBitLastSynced":"---" if fitbitError else session_subject.getFitbitLastSyncStr(False),
                              "fitbit_link":session_subject.getFitBitLink("subject"),
+                             "soft_delete":session_subject.soft_delete,
                              "questionnaire1_required":session_subject.getQuestionnaire1Required(),
                              "consent_required":consent_required,
                              "consent_form_text":consent_form_text,
@@ -415,6 +424,7 @@ def getSessionDaySubject(data,session_subject,session_day):
                         "fitBitTimeRequired": fitBitTimeRequired,
                         "fitBitTimeRequirementMet": fitBitTimeRequirementMet,
                         "session_date":session_date,
+                        "soft_delete":session_subject.soft_delete,
                         "notification_title":notification_title,
                         "notification_text":notification_text,
                         "consent_required":consent_required,
