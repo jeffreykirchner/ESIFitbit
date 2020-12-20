@@ -49,13 +49,13 @@ class Likert_variation2(models.TextChoices):
 class Likert_change(models.TextChoices):
     DEFAULT = "", _('')
     ZERO = 0, _('N/A')
-    ONE = 1, _('Very much more')
-    TWO = 2, _('Much more')
-    THREE = 3, _('A little more')
-    FOUR = 4, _('The same')
-    FIVE = 5, _('A little less')
-    SIX = 6, _('Much less')
-    SEVEN = 7, _('Very much less')
+    ONE = 1, _('very much more')
+    TWO = 2, _('much more')
+    THREE = 3, _('a little more')
+    FOUR = 4, _('the same')
+    FIVE = 5, _('a little less')
+    SIX = 6, _('much less')
+    SEVEN = 7, _('very much less')
 
 class Yes_No(models.TextChoices):
     DEFAULT = "", _('')
