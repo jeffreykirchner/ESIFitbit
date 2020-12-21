@@ -69,6 +69,7 @@
                 cancelationButtonText: 'Cancel Session <i class="fas fa-ban"></i>',
                 downloadDataButtonText:'Download Data <i class="fas fa-scroll fa-xs"></i>',
                 downloadEarningsButtonText:'Download Earnings <i class="fas fa-cash-register"></i>',
+                downloadParametersetButtonText:'Download Parameters <i class="fas fa-download"></i>',
                 refreshSubjectTableButtonText:'Refresh <i class="fas fa-sync fa-spin"></i>',
                 emailResult:'',
                 emailResultCancelation:'',
@@ -470,6 +471,38 @@
                                 .catch(function (error) {
                                     console.log(error);
                                 });
+                },
+
+                //download parameter set
+                downloadParameterset:function(){
+                    app.$data.downloadParametersetButtonText = '<i class="fas fa-spinner fa-spin"></i>';
+
+                    axios.post('/session/{{id}}/', {
+                                    action :"downloadParameterset",
+                                                                                                                                                                                                      
+                                })
+                                .then(function (response) {    
+                                                             
+                                    console.log(response.data.parameterset);
+
+                                    var downloadLink = document.createElement("a");
+                                    var jsonse = JSON.stringify(response.data.parameterset);
+                                    var blob = new Blob([jsonse], {type: "application/json"});
+                                    var url = URL.createObjectURL(blob);
+                                    downloadLink.href = url;
+                                    downloadLink.download = "FitBit_Session_" + app.$data.session.id + "_Parameter_Set.json";
+
+                                    document.body.appendChild(downloadLink);
+                                    downloadLink.click();
+                                    document.body.removeChild(downloadLink);
+
+                                    app.$data.downloadParametersetButtonText ='Download Parameters <i class="fas fa-download"></i>';
+                                                                    
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });
+
                 },
 
                 //import parameters
@@ -902,6 +935,9 @@
                         <span class="align-middle">Parameters</span>
                         
                         <span class="float-right">
+                            <button class="btn btn-outline-primary" type="button" v-on:click = "downloadParameterset()">
+                                <span v-html = "downloadParametersetButtonText"></span>
+                            </button>
                             <button class="btn btn-outline-primary" type="button" v-on:click = "showImportParameters()">
                                 Import <i class="fas fa-file-import"></i>
                             </button>

@@ -53,6 +53,8 @@ def Staff_Session(request,id):
             return refreshSubjectTable(data,id)
         elif data["action"] == "downloadEarnings":
             return downloadEarnings(data,id)
+        elif data["action"] == "downloadParameterset":
+            return downloadParameterset(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -448,4 +450,11 @@ def downloadEarnings(data,id):
 
     return s.getCSVEarnings(data["date"])
 
+def downloadParameterset(data,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Download data")
+    logger.info(data)
 
+    s=Session.objects.get(id=id) 
+
+    return JsonResponse({"parameterset": s.parameterset.json()},safe=False) 
