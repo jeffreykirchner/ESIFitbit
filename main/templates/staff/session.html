@@ -69,7 +69,11 @@
                 cancelationButtonText: 'Cancel Session <i class="fas fa-ban"></i>',
                 downloadDataButtonText:'Download Data <i class="fas fa-scroll fa-xs"></i>',
                 downloadEarningsButtonText:'Download Earnings <i class="fas fa-cash-register"></i>',
-                downloadParametersetButtonText:'Download Parameters <i class="fas fa-download"></i>',
+                downloadParametersetButtonText:'Download <i class="fas fa-download"></i>',
+                uploadParametersetButtonText:'Upload  <i class="fas fa-upload"></i>',
+                uploadParametersetMessaage:'',
+                upload_file: '',
+                upload_file_name:'Choose File',
                 refreshSubjectTableButtonText:'Refresh <i class="fas fa-sync fa-spin"></i>',
                 emailResult:'',
                 emailResultCancelation:'',
@@ -496,7 +500,7 @@
                                     downloadLink.click();
                                     document.body.removeChild(downloadLink);
 
-                                    app.$data.downloadParametersetButtonText ='Download Parameters <i class="fas fa-download"></i>';
+                                    app.$data.downloadParametersetButtonText ='Download <i class="fas fa-download"></i>';
                                                                     
                                 })
                                 .catch(function (error) {
@@ -504,6 +508,41 @@
                                 });
 
                 },
+
+                uploadParameterset:function(){
+
+                    if(app.$data.file == "")
+                        return;
+
+                    app.$data.upload_messaage = "";
+                    app.$data.uploadParametersetButtonText = '<i class="fas fa-spinner fa-spin"></i>';
+
+                    let formData = new FormData();
+                    formData.append('file', app.$data.file);
+
+                    axios.post('/session/{{id}}/', formData,
+                            {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data'
+                                    }
+                                } 
+                            )
+                            .then(function (response) {     
+
+                                app.$data.upload_messaage = response.data.message;
+                                app.$data.uploadParametersetButtonText= 'Upload <i class="fas fa-upload"></i>'
+                                                                                
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                                app.$data.searching=false;
+                            });                        
+                        },
+
+                handleFileUpload:function(){
+                    app.$data.upload_file = this.$refs.file.files[0];
+                    app.$data.upload_file_name = app.$data.upload_file.name;
+                    },
 
                 //import parameters
                 importParameters:function(){                   
@@ -602,7 +641,7 @@
                },
                             
                 //show edit parameters modal
-                showImportParameters:function(s_id,index){
+                showImportParameters:function(){
 
                     $('#importParametersModal').modal('show');                   
                 },
@@ -621,6 +660,14 @@
                     }
                 },
             
+                //fire when sho
+                showUploadParameters:function(){
+                    $('#parameterSetModal').modal('show');
+                },
+
+                hideUploadParameters:function(){
+                },
+                
                 displayErrors:function(errors){
                     for(var e in errors)
                     {
@@ -908,6 +955,7 @@
                 $('#sendMessageModalCenter').on("hidden.bs.modal", this.hideSendInvitations); 
                 $('#sendCancelationsModalCenter').on("hidden.bs.modal", this.hideCancelSession);  
                 $('#editSubjectModal').on("hidden.bs.modal", this.hideEditSubject);  
+                $('#hideUploadParameters').on("hidden.bs.modal", this.hideEditSubject); 
             },
         });
 
@@ -935,13 +983,16 @@
                         <span class="align-middle">Parameters</span>
                         
                         <span class="float-right">
-                            <button class="btn btn-outline-primary" type="button" v-on:click = "downloadParameterset()">
+                            <button class="btn btn-outline-primary" type="button" v-on:click = "showUploadParameters()" title = "Upload from a file.">
+                                Upload  <i class="fas fa-upload"></i>
+                            </button>
+                            <button class="btn btn-outline-primary" type="button" v-on:click = "downloadParameterset()" title="Download to a file.">
                                 <span v-html = "downloadParametersetButtonText"></span>
                             </button>
-                            <button class="btn btn-outline-primary" type="button" v-on:click = "showImportParameters()">
+                            <button class="btn btn-outline-primary" type="button" v-on:click = "showImportParameters()" title="Import from another session.">
                                 Import <i class="fas fa-file-import"></i>
                             </button>
-                            <button class="btn btn-outline-primary" type="button" v-on:click = "showEditParameters()">
+                            <button class="btn btn-outline-primary" type="button" v-on:click = "showEditParameters()" title="Show edit form.">
                                 Edit <i class="far fa-edit"></i>
                             </button>
                         </span>
@@ -1560,5 +1611,6 @@
 {%include "modals/importParametersModal.html"%}
 {%include "modals/sendInvitationModal.html"%}
 {%include "modals/sendCancelationModal.html"%}
+{%include "modals/uploadParametersSetModal.html"%}
 
 {%endblock content%}

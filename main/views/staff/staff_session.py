@@ -21,40 +21,49 @@ def Staff_Session(request,id):
 
     if request.method == 'POST':     
 
-        data = json.loads(request.body.decode('utf-8'))
+        f=""
+        
+        f = request.FILES.get('file',-1)
 
-        if data["action"] == "getSession":
-            return getSession(data,id)
-        elif data["action"] == "deleteSubject":
-            return deleteSubject(data,id)
-        elif data["action"] == "addSubject":
-            return addSubject(data,id)
-        elif data["action"] == "updateParameters":
-            return updateParameters(data,id)
-        elif data["action"] == "updateSession":
-            return updateSession(data,id)
-        elif data["action"] == "updateSubject":
-            return updateSubject(data,id)
-        elif data["action"] ==  "showFitbitStatus":
-            return showFitbitStatus(data,id)
-        elif data["action"] ==  "importParameters":
-            return importParameters(data,id)
-        elif data["action"] == "backFillSessionDays":
-            return backFillSessionDays(data,id)
-        elif data["action"] == "startSession":
-            return startSession(data,id)
-        elif data["action"] == "sendInvitations":
-            return sendInvitations(data,id)
-        elif data["action"] == "downloadData":
-            return downloadData(data,id)
-        elif data["action"] == "sendCancelations":
-            return sendCancelations(data,id)
-        elif data["action"] == "refreshSubjectTable":
-            return refreshSubjectTable(data,id)
-        elif data["action"] == "downloadEarnings":
-            return downloadEarnings(data,id)
-        elif data["action"] == "downloadParameterset":
-            return downloadParameterset(data,id)
+        #check for file upload
+        if f!=-1:
+            return takeFileUpload(f,id)
+        else:
+
+            data = json.loads(request.body.decode('utf-8'))
+
+            if data["action"] == "getSession":
+                return getSession(data,id)
+            elif data["action"] == "deleteSubject":
+                return deleteSubject(data,id)
+            elif data["action"] == "addSubject":
+                return addSubject(data,id)
+            elif data["action"] == "updateParameters":
+                return updateParameters(data,id)
+            elif data["action"] == "updateSession":
+                return updateSession(data,id)
+            elif data["action"] == "updateSubject":
+                return updateSubject(data,id)
+            elif data["action"] ==  "showFitbitStatus":
+                return showFitbitStatus(data,id)
+            elif data["action"] ==  "importParameters":
+                return importParameters(data,id)
+            elif data["action"] == "backFillSessionDays":
+                return backFillSessionDays(data,id)
+            elif data["action"] == "startSession":
+                return startSession(data,id)
+            elif data["action"] == "sendInvitations":
+                return sendInvitations(data,id)
+            elif data["action"] == "downloadData":
+                return downloadData(data,id)
+            elif data["action"] == "sendCancelations":
+                return sendCancelations(data,id)
+            elif data["action"] == "refreshSubjectTable":
+                return refreshSubjectTable(data,id)
+            elif data["action"] == "downloadEarnings":
+                return downloadEarnings(data,id)
+            elif data["action"] == "downloadParameterset":
+                return downloadParameterset(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -450,11 +459,20 @@ def downloadEarnings(data,id):
 
     return s.getCSVEarnings(data["date"])
 
+#download the parameters in json format
 def downloadParameterset(data,id):
     logger = logging.getLogger(__name__) 
-    logger.info("Download data")
+    logger.info("Download parameter set")
     logger.info(data)
 
     s=Session.objects.get(id=id) 
 
     return JsonResponse({"parameterset": s.parameterset.json()},safe=False) 
+
+#take parameter file upload
+def takeFileUpload(f,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Upload parameter set")
+    logger.info(data)
+
+    s=Session.objects.get(id=id)
