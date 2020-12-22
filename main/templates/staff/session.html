@@ -72,7 +72,7 @@
                 downloadParametersetButtonText:'Download <i class="fas fa-download"></i>',
                 uploadParametersetButtonText:'Upload  <i class="fas fa-upload"></i>',
                 uploadParametersetMessaage:'',
-                upload_file: '',
+                upload_file: null,
                 upload_file_name:'Choose File',
                 refreshSubjectTableButtonText:'Refresh <i class="fas fa-sync fa-spin"></i>',
                 emailResult:'',
@@ -511,14 +511,14 @@
 
                 uploadParameterset:function(){
 
-                    if(app.$data.file == "")
+                    if(app.$data.upload_file == null)
                         return;
 
-                    app.$data.upload_messaage = "";
+                    app.$data.uploadParametersetMessaage = "";
                     app.$data.uploadParametersetButtonText = '<i class="fas fa-spinner fa-spin"></i>';
 
                     let formData = new FormData();
-                    formData.append('file', app.$data.file);
+                    formData.append('file', app.$data.upload_file);
 
                     axios.post('/session/{{id}}/', formData,
                             {
@@ -529,8 +529,14 @@
                             )
                             .then(function (response) {     
 
-                                app.$data.upload_messaage = response.data.message;
-                                app.$data.uploadParametersetButtonText= 'Upload <i class="fas fa-upload"></i>'
+                                app.$data.uploadParametersetMessaage = response.data.message;
+
+                                app.updateSession(response);
+
+                                app.$data.uploadParametersetButtonText= 'Upload <i class="fas fa-upload"></i>';
+                                // app.$data.upload_file = null;
+                                //app.$data.upload_file_name='Choose File';
+
                                                                                 
                             })
                             .catch(function (error) {
@@ -541,7 +547,9 @@
 
                 handleFileUpload:function(){
                     app.$data.upload_file = this.$refs.file.files[0];
+                    //$('parameterFileUpload').val("");
                     app.$data.upload_file_name = app.$data.upload_file.name;
+
                     },
 
                 //import parameters
@@ -662,6 +670,7 @@
             
                 //fire when sho
                 showUploadParameters:function(){
+                    app.$data.uploadParametersetMessaage = "";
                     $('#parameterSetModal').modal('show');
                 },
 

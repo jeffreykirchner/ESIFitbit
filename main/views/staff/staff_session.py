@@ -23,10 +23,14 @@ def Staff_Session(request,id):
 
         f=""
         
-        f = request.FILES.get('file',-1)
+        try:
+            f = request.FILES['file']
+        except Exception  as e: 
+            logger.info(f'Staff_Session no file upload: {e}')
+            f = -1
 
         #check for file upload
-        if f!=-1:
+        if f != -1:
             return takeFileUpload(f,id)
         else:
 
@@ -473,6 +477,28 @@ def downloadParameterset(data,id):
 def takeFileUpload(f,id):
     logger = logging.getLogger(__name__) 
     logger.info("Upload parameter set")
-    logger.info(data)
+    
 
     s=Session.objects.get(id=id)
+    ps = s.parameterset
+
+    #format incoming data
+    v=""
+
+    for chunk in f.chunks():
+        v+=str(chunk.decode("utf-8"))
+
+    message = ""
+
+    try:
+        v=eval(v)
+        logger.info(v)       
+   
+        message = ps.setup_from_dict(v)
+    except Exception as e:
+        message = f"Failed to load parameter set: {e}"
+        logger.info(message)       
+
+    return JsonResponse({"session" : getSessionJSON(id),
+                         "message":message,
+                                },safe=False)

@@ -4,6 +4,8 @@ import traceback
 from django.utils.timezone import now
 import math
 
+from django.db.utils import IntegrityError
+
 from django.core import serializers
 
 #experiment session parameters
@@ -73,6 +75,64 @@ class Parameterset(models.Model):
 
     def get_heart_activity(heart_activity,heart_actvity_minutes):
         return 0
+
+    #load values from dictionary
+    def setup_from_dict(self,d):
+        
+        message = "Parameters loaded successfully."
+
+        try:
+
+            self.heart_activity_inital = d.get("heart_activity_inital")
+            self.heart_parameter_1 = d.get("heart_parameter_1")
+            self.heart_parameter_2 = d.get("heart_parameter_2")
+            self.heart_parameter_3 = d.get("heart_parameter_3")
+            
+            self.immune_activity_inital = d.get("immune_activity_inital")
+            self.immune_parameter_1 = d.get("immune_parameter_1")
+            self.immune_parameter_2 = d.get("immune_parameter_2")
+            self.immune_parameter_3 = d.get("immune_parameter_3")
+
+            self.block_1_heart_pay = d.get("block_1_heart_pay")
+            self.block_2_heart_pay = d.get("block_2_heart_pay")
+            self.block_3_heart_pay = d.get("block_3_heart_pay")
+
+            self.block_1_immune_pay = d.get("block_1_immune_pay")
+            self.block_2_immune_pay = d.get("block_2_immune_pay")
+            self.block_3_immune_pay = d.get("block_3_immune_pay")
+
+            self.block_1_day_count = d.get("block_1_day_count")
+            self.block_2_day_count = d.get("block_2_day_count")
+            self.block_3_day_count = d.get("block_3_day_count")
+
+            self.fixed_pay_per_day = d.get("fixed_pay_per_day")
+            self.minimum_wrist_minutes = d.get("minimum_wrist_minutes")
+
+            self.treatment_3_heart_bonus = d.get("treatment_3_heart_bonus")
+            self.treatment_3_immune_bonus = d.get("treatment_3_immune_bonus")
+            self.treatment_3_bonus_target_count = d.get("treatment_3_bonus_target_count")
+
+            self.y_min_heart = d.get("y_min_heart")
+            self.y_max_heart = d.get("y_max_heart")
+            self.y_ticks_heart = d.get("y_ticks_heart")
+            self.x_min_heart = d.get("x_min_heart")
+            self.x_max_heart = d.get("x_max_heart")
+            self.x_ticks_heart = d.get("x_ticks_heart")
+
+            self.y_min_immune = d.get("y_min_immune")
+            self.y_max_immune = d.get("y_max_immune")
+            self.y_ticks_immune = d.get("y_ticks_immune")
+            self.x_min_immune = d.get("x_min_immune")
+            self.x_max_immune = d.get("x_max_immune")
+            self.x_ticks_immune = d.get("x_ticks_immune")
+
+            self.save()
+
+        except IntegrityError as e:       
+            message = f"Failed to load parameter set: {e}"
+            #logger.info(message)
+        
+        return message
     
     #copy another parameter set into this one
     def setup(self,ps):
