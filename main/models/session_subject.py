@@ -395,7 +395,7 @@ class Session_subject(models.Model):
 
         tempClientID = settings.FITBIT_CLIENT_ID
         tempState = str(self.id) + ";" + str(self.session.id) + ";" + request_type
-        fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20sleep%20settings%20profile&expires_in=604800&prompt=login%20consent&state={tempState}"
+        fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20sleep%20settings&expires_in=604800&prompt=login%20consent&state={tempState}"
 
         return fitBit_Link
 
@@ -461,7 +461,7 @@ class Session_subject(models.Model):
         if not self.fitBitLastSynced:
             return "---"
 
-        if self.fitBitTimeZone == "":
+        if show_tz and self.fitBitTimeZone == "":
             return "---"
 
         t = self.fitBitLastSynced.strftime("%#m/%#d/%Y %#I:%M %p")
@@ -499,7 +499,7 @@ class Session_subject(models.Model):
             "login_url": p.siteURL +'subjectHome/' + str(self.login_key),
             "fitBit_Link" : self.getFitBitLink(request_type),
             "fitBit_Attached" : fitBit_Attached,
-            "fitBit_last_synced":self.getFitbitLastSyncStr(True),
+            "fitBit_last_synced":self.getFitbitLastSyncStr(False),
             "get_fitbit_status" : get_fitbit_status,
             "consent_required": self.consent_required,
             "questionnaire1_required":self.questionnaire1_required,
