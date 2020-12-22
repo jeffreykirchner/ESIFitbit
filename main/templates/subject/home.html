@@ -295,7 +295,7 @@
 
                     if(!app.$data.viewed_immune)
                     {
-                        alert("Please confirm your Immune Health before payment.")
+                        alert("Please confirm your Sleep Health before payment.")
                         return;
                     }
 
@@ -638,6 +638,7 @@
                     <div class="row">
                         <div class="col" style="text-align: center;">
                             The study has been canceled.<br>
+                            <u>Please return your Fitbit.</u><br>
                             No further action is required on your part.
                         </div>
                     </div>
@@ -646,11 +647,11 @@
                         <div class="col" style="text-align: center;">
                             The study has not yet started.<br>
                             <div v-if="fitbitError">
-                                Please connect your fitbit before {{start_date}}.<br>
-                                <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect fitbit</a>
+                                Please connect your Fitbit before {{start_date}}.<br>
+                                <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a>
                             </div>
                             <div v-else>
-                                Your fitbit is connected.<br>
+                                Your Fitbit is connected.<br>
                                 The study will begin on {{start_date}}.                                
                             </div>                             
                         </div>
@@ -659,6 +660,7 @@
                     <div class="row">
                         <div class="col" style="text-align: center;">
                             The study is complete.<br>
+                            <u>Please return your Fitbit.</u><br>
                             Thank you for your participation!
                         </div>
                     </div>
@@ -694,7 +696,7 @@
                             <div class="row">
                                 <div class="col" style="text-align: center;">                             
                                     <div v-if="fitbitError">
-                                        Yesterday's Active Minutes: <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect fitbit</a>
+                                        Yesterday's Active Minutes: <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a>
                                     </div>
                                     <div v-else>
                                         Yesterday's Active Minutes: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.heart_activity_minutes></span>
@@ -724,7 +726,7 @@
                             <div class="row">
                                 <div class="col" style="text-align: center;">                             
                                     <div v-if="fitbitError">
-                                        Yesterday's Hours Sleeping: <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect fitbit</a>
+                                        Yesterday's Hours Sleeping: <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a>
                                     </div>
                                     <div v-else>
                                         Yesterday's Hours Sleeping: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.immune_activity_hours></span>
@@ -763,9 +765,9 @@
                                 <div class = "row mt-4">
                                     <div class="col" style="text-align: center;">
                                         <div v-if="session_day_subject_actvity.paypal_today">
-                                            <span style="color: red;" v-html="'Your payment is on the way.<br>Check your email.'"></span>
+                                            <span style="color: red;" v-html="'Your payment will arrive tomorrow morning.<br>Check your email.'"></span>
                                             <div v-show="session_complete">
-                                                <span style="color: red;" v-html="'The study is complete, thank you for your participation!'"></span>
+                                                <span style="color: red;" v-html="'The study is complete, thank you for your participation!<br><u>Please return your Fitbit.</u>'"></span>
                                             </div>
                                         </div>
                                         <div v-else-if="session_complete===false">
@@ -774,7 +776,7 @@
                                                 <span v-html="payMeButtonText"></span>
                                             </button>
                                             <div v-show="fitbitError">
-                                                <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect fitbit</a>
+                                                <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a>
                                             </div>
                                             <div v-show="paymentError">
                                                 <span v-html="'***Payment Error***'" style="color: red;"></span>
@@ -804,7 +806,7 @@
                                     <div class="col" style="text-align: center;">+ (Heart Pay) x (Today's Heart Score)</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col" style="text-align: center;">+ (Immune Pay) x (Today's Sleep Score)</div>
+                                    <div class="col" style="text-align: center;">+ (Sleep Pay) x (Today's Sleep Score)</div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col" style="text-align: center;">$[[session_day_subject_actvity.fixed_pay_per_day]]</div>
@@ -823,7 +825,7 @@
                                         <div v-if="session_day_subject_actvity.paypal_today">
                                             <span style="color: red;" v-html="'Your payment will arrive tomorrow morning.<br>Check your email.'"></span>
                                             <div v-show="session_complete">
-                                                <span style="color: red;" v-html="'The study is complete, thank you for your participation!'"></span>
+                                                <span style="color: red;" v-html="'The study is complete, thank you for your participation!<br><u>Please return your Fitbit.</u>'"></span>
                                             </div>
                                         </div>
                                         <div v-else-if="session_complete===false">
@@ -832,7 +834,7 @@
                                                 <span v-html="payMeButtonText"></span>
                                             </button>
                                             <div v-show="fitbitError">
-                                                <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect fitbit</a>
+                                                <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a>
                                             </div>
                                             <div v-show="paymentError">
                                                 <span v-html="'***Payment Error***'" style="color: red;"></span>
