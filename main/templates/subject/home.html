@@ -637,28 +637,28 @@
                 {%elif session_canceled%}
                     <div class="row">
                         <div class="col" style="text-align: center;">
-                            The experiment has been canceled.<br>
+                            The study has been canceled.<br>
                             No further action is required on your part.
                         </div>
                     </div>
                 {%elif not session_started or before_start_date %}
                     <div class="row">
                         <div class="col" style="text-align: center;">
-                            The experiment has not yet started.<br>
+                            The study has not yet started.<br>
                             <div v-if="fitbitError">
                                 Please connect your fitbit before {{start_date}}.<br>
                                 <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect fitbit</a>
                             </div>
                             <div v-else>
                                 Your fitbit is connected.<br>
-                                The experiment will begin on {{start_date}}.                                
+                                The study will begin on {{start_date}}.                                
                             </div>                             
                         </div>
                     </div>
                 {%elif session_complete or soft_delete%}
                     <div class="row">
                         <div class="col" style="text-align: center;">
-                            The experiment is complete.<br>
+                            The study is complete.<br>
                             Thank you for your participation!
                         </div>
                     </div>
@@ -765,7 +765,7 @@
                                         <div v-if="session_day_subject_actvity.paypal_today">
                                             <span style="color: red;" v-html="'Your payment is on the way.<br>Check your email.'"></span>
                                             <div v-show="session_complete">
-                                                <span style="color: red;" v-html="'The experiment is complete, thank you for your participation!'"></span>
+                                                <span style="color: red;" v-html="'The study is complete, thank you for your participation!'"></span>
                                             </div>
                                         </div>
                                         <div v-else-if="session_complete===false">
@@ -823,7 +823,7 @@
                                         <div v-if="session_day_subject_actvity.paypal_today">
                                             <span style="color: red;" v-html="'Your payment will arrive tomorrow morning.<br>Check your email.'"></span>
                                             <div v-show="session_complete">
-                                                <span style="color: red;" v-html="'The experiment is complete, thank you for your participation!'"></span>
+                                                <span style="color: red;" v-html="'The study is complete, thank you for your participation!'"></span>
                                             </div>
                                         </div>
                                         <div v-else-if="session_complete===false">
@@ -865,7 +865,7 @@
                     <div v-else>
                         <div class="row">
                             <div class="col" style="text-align: center;">
-                                There was an error loading the experiment.<br>
+                                There was an error loading the study.<br>
                                 Please refresh your browser.
                             </div>
                         </div>
