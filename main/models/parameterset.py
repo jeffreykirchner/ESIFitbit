@@ -12,13 +12,13 @@ from django.core import serializers
 class Parameterset(models.Model):
 
     #heartActivityToday = heartActivityTodayT-1 * (1 - (1 - heartActivityTodayT-1) * (heart_parameter_1 / heart_parameter_2  - heartTimeT-1 / (heartTimeT-1 + heart_parameter_3))
-    heart_activity_inital =  models.DecimalField(decimal_places=10, default=0.6, max_digits=20)
+    heart_activity_inital =  models.DecimalField(decimal_places=5, default=0.6, max_digits=20)
     heart_parameter_1 = models.DecimalField(decimal_places=5, default=0.5, max_digits=20) 
     heart_parameter_2 = models.DecimalField(decimal_places=5, default=3.0, max_digits=20)
     heart_parameter_3 = models.DecimalField(decimal_places=5, default=6.0, max_digits=20)
 
     #immuneActivityToday = immuneActivityTodayT-1 * (1 - (1 - immuneActivityTodayT-1) * (immune_parameter_1 / immune_parameter_2  - immuneTimeT-1 / (immuneTimeT-1 + immune_parameter_3))
-    immune_activity_inital =  models.DecimalField(decimal_places=10, default=0.6, max_digits=20)
+    immune_activity_inital =  models.DecimalField(decimal_places=5, default=0.6, max_digits=20)
     immune_parameter_1 = models.DecimalField(decimal_places=5, default=0.2, max_digits=20) 
     immune_parameter_2 = models.DecimalField(decimal_places=5, default=4.0, max_digits=20)
     immune_parameter_3 = models.DecimalField(decimal_places=5, default=4.0, max_digits=20) 
