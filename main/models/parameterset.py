@@ -70,8 +70,8 @@ class Parameterset(models.Model):
         return str(self.id)
     
     class Meta:
-        verbose_name = 'Experiment Parameter Set'
-        verbose_name_plural = 'Experiment Parameter Sets'
+        verbose_name = 'Study Parameter Set'
+        verbose_name_plural = 'Study Parameter Sets'
 
     def get_heart_activity(heart_activity,heart_actvity_minutes):
         return 0

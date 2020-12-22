@@ -39,15 +39,15 @@ class Parameters_form(forms.ModelForm):
                                         choices=((True, 'Yes'), (False,'No' )),                 
                                         widget=forms.Select)
 
-    questionnaire1Required = forms.ChoiceField(label='Pre-Experiment Questionnaire',
+    questionnaire1Required = forms.ChoiceField(label='Pre-Study Questionnaire',
                                         choices=((True, 'Yes'), (False,'No' )),                 
                                         widget=forms.Select)
 
-    questionnaire2Required = forms.ChoiceField(label='Post-Experiment Questionnaire',
+    questionnaire2Required = forms.ChoiceField(label='Post-Study Questionnaire',
                                         choices=((True, 'Yes'), (False,'No' )),                 
                                         widget=forms.Select)
 
-    experimentTimeZone = forms.ChoiceField(label="Experiment Timezone",
+    experimentTimeZone = forms.ChoiceField(label="Study Timezone",
                                         choices=[(tz, tz) for tz in pytz.all_timezones])
     
     trackerDataOnly = forms.ChoiceField(label='Only Fitness Tracker Data',

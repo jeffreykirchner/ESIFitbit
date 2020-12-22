@@ -11,6 +11,7 @@ class Session_subject_questionnaire1_form(forms.ModelForm):
     #sleep
     sleep_hours = forms.DecimalField(label='How many hours do you sleep in a typical night?',
                             min_value=0,
+                            max_value=24,
                             widget=forms.NumberInput(attrs={"value":"","step":"0.1","min":0,"max":24}))
     
     sleep_importance = forms.TypedChoiceField(label='How important is it to you to get a good night’s sleep?', 
@@ -25,7 +26,8 @@ class Session_subject_questionnaire1_form(forms.ModelForm):
     #exercise
     exercise_minutes = forms.IntegerField(label='How many minutes do you exercise in a typical day?',
                             min_value=0,
-                            widget=forms.NumberInput(attrs={"value":"","step":1,"min":0,"max":24}))
+                            max_value=1440,
+                            widget=forms.NumberInput(attrs={"value":"","step":1,"min":0,"max":1440}))
     
     exercise_importance = forms.TypedChoiceField(label='How important is it to you to exercise?', 
                                          choices=Likert_importance.choices,
