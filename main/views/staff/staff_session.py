@@ -21,38 +21,53 @@ def Staff_Session(request,id):
 
     if request.method == 'POST':     
 
-        data = json.loads(request.body.decode('utf-8'))
+        f=""
+        
+        try:
+            f = request.FILES['file']
+        except Exception  as e: 
+            logger.info(f'Staff_Session no file upload: {e}')
+            f = -1
 
-        if data["action"] == "getSession":
-            return getSession(data,id)
-        elif data["action"] == "deleteSubject":
-            return deleteSubject(data,id)
-        elif data["action"] == "addSubject":
-            return addSubject(data,id)
-        elif data["action"] == "updateParameters":
-            return updateParameters(data,id)
-        elif data["action"] == "updateSession":
-            return updateSession(data,id)
-        elif data["action"] == "updateSubject":
-            return updateSubject(data,id)
-        elif data["action"] ==  "showFitbitStatus":
-            return showFitbitStatus(data,id)
-        elif data["action"] ==  "importParameters":
-            return importParameters(data,id)
-        elif data["action"] == "backFillSessionDays":
-            return backFillSessionDays(data,id)
-        elif data["action"] == "startSession":
-            return startSession(data,id)
-        elif data["action"] == "sendInvitations":
-            return sendInvitations(data,id)
-        elif data["action"] == "downloadData":
-            return downloadData(data,id)
-        elif data["action"] == "sendCancelations":
-            return sendCancelations(data,id)
-        elif data["action"] == "refreshSubjectTable":
-            return refreshSubjectTable(data,id)
-        elif data["action"] == "downloadEarnings":
-            return downloadEarnings(data,id)
+        #check for file upload
+        if f != -1:
+            return takeFileUpload(f,id)
+        else:
+
+            data = json.loads(request.body.decode('utf-8'))
+
+            if data["action"] == "getSession":
+                return getSession(data,id)
+            elif data["action"] == "deleteSubject":
+                return deleteSubject(data,id)
+            elif data["action"] == "addSubject":
+                return addSubject(data,id)
+            elif data["action"] == "updateParameters":
+                return updateParameters(data,id)
+            elif data["action"] == "updateSession":
+                return updateSession(data,id)
+            elif data["action"] == "updateSubject":
+                return updateSubject(data,id)
+            elif data["action"] ==  "showFitbitStatus":
+                return showFitbitStatus(data,id)
+            elif data["action"] ==  "importParameters":
+                return importParameters(data,id)
+            elif data["action"] == "backFillSessionDays":
+                return backFillSessionDays(data,id)
+            elif data["action"] == "startSession":
+                return startSession(data,id)
+            elif data["action"] == "sendInvitations":
+                return sendInvitations(data,id)
+            elif data["action"] == "downloadData":
+                return downloadData(data,id)
+            elif data["action"] == "sendCancelations":
+                return sendCancelations(data,id)
+            elif data["action"] == "refreshSubjectTable":
+                return refreshSubjectTable(data,id)
+            elif data["action"] == "downloadEarnings":
+                return downloadEarnings(data,id)
+            elif data["action"] == "downloadParameterset":
+                return downloadParameterset(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -63,6 +78,11 @@ def Staff_Session(request,id):
         import_parameters_form = Import_parameters_form()
         p = Parameters.objects.first()
         yesterdays_date = todaysDate() - timedelta(days=1)
+
+        #get list of form ids
+        subject_form_ids=[]
+        for i in subject_form:
+            subject_form_ids.append(i.html_name)
         
         return render(request,'staff/session.html',{'id': id,
                                                     'parameterset_form':parameterset_form,
@@ -70,6 +90,7 @@ def Staff_Session(request,id):
                                                     'subject_form':subject_form,
                                                     'help_text': p.manualHelpText,
                                                     'import_parameters_form':import_parameters_form,
+                                                    'subject_form_ids':subject_form_ids,
                                                     'yesterdays_date' : yesterdays_date.date().strftime("%Y-%m-%d")})     
 
 #get list of experiment sessions
@@ -442,4 +463,42 @@ def downloadEarnings(data,id):
 
     return s.getCSVEarnings(data["date"])
 
+#download the parameters in json format
+def downloadParameterset(data,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Download parameter set")
+    logger.info(data)
 
+    s=Session.objects.get(id=id) 
+
+    return JsonResponse({"parameterset": s.parameterset.json()},safe=False) 
+
+#take parameter file upload
+def takeFileUpload(f,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Upload parameter set")
+    
+
+    s=Session.objects.get(id=id)
+    ps = s.parameterset
+
+    #format incoming data
+    v=""
+
+    for chunk in f.chunks():
+        v+=str(chunk.decode("utf-8"))
+
+    message = ""
+
+    try:
+        v=eval(v)
+        logger.info(v)       
+   
+        message = ps.setup_from_dict(v)
+    except Exception as e:
+        message = f"Failed to load parameter set: {e}"
+        logger.info(message)       
+
+    return JsonResponse({"session" : getSessionJSON(id),
+                         "message":message,
+                                },safe=False)

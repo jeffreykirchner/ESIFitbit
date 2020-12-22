@@ -10,31 +10,31 @@ class Parameterset_form(forms.ModelForm):
                             min_value=0.0001,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.heart_activity_inital"}))
 
-    heart_parameter_1 = forms.DecimalField(label='Heart Parameter 1',
+    heart_parameter_1 = forms.DecimalField(label='Heart P1',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.heart_parameter_1"}))
     
-    heart_parameter_2 = forms.DecimalField(label='Heart Parameter 2',
+    heart_parameter_2 = forms.DecimalField(label='Heart P2',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.heart_parameter_2"}))
     
-    heart_parameter_3 = forms.DecimalField(label='Heart Parameter 3',
+    heart_parameter_3 = forms.DecimalField(label='Heart P3',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.heart_parameter_3"}))
 
-    immune_activity_inital = forms.DecimalField(label='Immune Activity T1',
+    immune_activity_inital = forms.DecimalField(label='Sleep Activity T1',
                             min_value=0.0001,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.immune_activity_inital"}))
 
-    immune_parameter_1 = forms.DecimalField(label='Immune Parameter 1',
+    immune_parameter_1 = forms.DecimalField(label='Sleep P1',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.immune_parameter_1"}))
     
-    immune_parameter_2 = forms.DecimalField(label='Immune Parameter 2',
+    immune_parameter_2 = forms.DecimalField(label='Sleep P2',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.immune_parameter_2"}))
     
-    immune_parameter_3 = forms.DecimalField(label='Immune Parameter 3',
+    immune_parameter_3 = forms.DecimalField(label='Sleep P3',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.immune_parameter_3"}))
 
@@ -61,17 +61,17 @@ class Parameterset_form(forms.ModelForm):
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_3_heart_pay",
                                                             "v-bind:disabled" :"session.treatment === 'B'"}))
     
-    block_1_immune_pay = forms.DecimalField(label='Block 1 Immune Pay ($)',
+    block_1_immune_pay = forms.DecimalField(label='Block 1 Sleep Pay ($)',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_1_immune_pay",
                                                             "v-bind:disabled" :"session.treatment === 'B'"}))
     
-    block_2_immune_pay = forms.DecimalField(label='Block 2 Immune Pay ($)',
+    block_2_immune_pay = forms.DecimalField(label='Block 2 Sleep Pay ($)',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_2_immune_pay",
                                                             "v-bind:disabled" :"session.treatment === 'B'"}))
 
-    block_3_immune_pay = forms.DecimalField(label='Block 3 Immune Pay ($)',
+    block_3_immune_pay = forms.DecimalField(label='Block 3 Sleep Pay ($)',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_3_immune_pay",
                                                             "v-bind:disabled" :"session.treatment === 'B'"}))
@@ -95,7 +95,7 @@ class Parameterset_form(forms.ModelForm):
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.treatment_3_heart_bonus"}))
 
-    treatment_3_immune_bonus = forms.DecimalField(label='Immune Bonus ($)',
+    treatment_3_immune_bonus = forms.DecimalField(label='Sleep Bonus ($)',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.treatment_3_immune_bonus"}))
     
@@ -127,27 +127,27 @@ class Parameterset_form(forms.ModelForm):
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.x_ticks_heart"}))
     
-    y_min_immune = forms.DecimalField(label='Immune Y Minimum',
+    y_min_immune = forms.DecimalField(label='Sleep Y Minimum',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.y_min_immune"}))
     
-    y_max_immune = forms.DecimalField(label='Immune Y Maximum',
+    y_max_immune = forms.DecimalField(label='Sleep Y Maximum',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.y_max_immune"}))
     
-    y_ticks_immune = forms.DecimalField(label='Immune Y Ticks',
+    y_ticks_immune = forms.DecimalField(label='Sleep Y Ticks',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.y_ticks_immune"}))
     
-    x_min_immune = forms.DecimalField(label='Immune X Minimum',
+    x_min_immune = forms.DecimalField(label='Sleep X Minimum',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.x_min_immune"}))
     
-    x_max_immune = forms.DecimalField(label='Immune X Maximum',
+    x_max_immune = forms.DecimalField(label='Sleep X Maximum',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.x_max_immune"}))
     
-    x_ticks_immune = forms.DecimalField(label='Immune X Ticks',
+    x_ticks_immune = forms.DecimalField(label='Sleep X Ticks',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.x_ticks_immune"}))
 

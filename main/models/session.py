@@ -192,7 +192,7 @@ class Session(models.Model):
 
     #return total number of days of session
     def numberOfDays(self):
-        return self.parameterset.block_1_day_count+self.parameterset.block_2_day_count+self.parameterset.block_3_day_count
+        return self.parameterset.block_1_day_count+self.parameterset.block_2_day_count+self.parameterset.block_3_day_count+1
     
     #calc and store end date
     def calcEndDate(self):
@@ -200,7 +200,7 @@ class Session(models.Model):
         d_end = todaysDate()
         d_end = d_end.replace(day=self.start_date.day,month=self.start_date.month, year=self.start_date.year)
 
-        d_end += timedelta(days=self.numberOfDays())
+        d_end += timedelta(days=self.numberOfDays()-1)
 
         self.end_date=d_end.date()
         self.save()

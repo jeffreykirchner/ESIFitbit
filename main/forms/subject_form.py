@@ -15,9 +15,11 @@ class Subject_form(forms.ModelForm):
                             widget=forms.TextInput(attrs={"v-model":"currentSubject.student_id"}))
 
     gmail_address = forms.CharField(label='Gmail Address (FitBit)',
+                            required=False,
                             widget=forms.TextInput(attrs={"v-model":"currentSubject.gmail_address"}))
     
     gmail_password = forms.CharField(label='Gmail Password (FitBit)',
+                            required=False,
                             widget=forms.TextInput(attrs={"v-model":"currentSubject.gmail_password"}))
 
     display_color = forms.CharField(label='Display Color',
