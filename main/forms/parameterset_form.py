@@ -1,10 +1,15 @@
 from django import forms
-from main.models import Parameterset
+from main.models import Parameterset,Consent_forms
 from django.contrib.auth.models import User
 from django.forms import ModelChoiceField
 import pytz
 
 class Parameterset_form(forms.ModelForm):
+
+    consent_form = forms.ModelChoiceField(label="Consent Form",
+                                            empty_label=None,
+                                            queryset=Consent_forms.objects.all(),
+                                            widget=forms.Select(attrs={"v-model":"session.parameterset.consent_form"}))
 
     heart_activity_inital = forms.DecimalField(label='Heart Activity T1',
                             min_value=0.0001,
