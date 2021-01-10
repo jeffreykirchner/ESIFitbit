@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.conf import settings
+from django.db.models.functions import Lower
 
-from main.forms import Parameters_form
+from main.forms import Parameters_form,Consent_form_form
 
 from main.models import *
 
@@ -22,3 +23,17 @@ class parametersadmin(admin.ModelAdmin):
       actions = []
 
 admin.site.register(Parameters, parametersadmin)
+
+#consent forms
+class consent_formsadmin(admin.ModelAdmin):
+
+      ordering = [Lower('name')]
+
+      actions = []
+      list_display = ['name']
+      
+      form = Consent_form_form
+
+      
+
+admin.site.register(Consent_forms, consent_formsadmin)

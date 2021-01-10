@@ -6,10 +6,14 @@ import math
 
 from django.db.utils import IntegrityError
 
+import main
+
 from django.core import serializers
 
 #experiment session parameters
 class Parameterset(models.Model):
+
+    consent_form = models.ForeignKey('main.Consent_forms',on_delete=models.CASCADE,null=True,blank=True)
 
     #heartActivityToday = heartActivityTodayT-1 * (1 - (1 - heartActivityTodayT-1) * (heart_parameter_1 / heart_parameter_2  - heartTimeT-1 / (heartTimeT-1 + heart_parameter_3))
     heart_activity_inital =  models.DecimalField(decimal_places=5, default=0.6, max_digits=20)
@@ -83,6 +87,8 @@ class Parameterset(models.Model):
 
         try:
 
+            self.consent_form = main.models.Consent_forms.objects.get(id=d.get("consent_form"))
+
             self.heart_activity_inital = d.get("heart_activity_inital")
             self.heart_parameter_1 = d.get("heart_parameter_1")
             self.heart_parameter_2 = d.get("heart_parameter_2")
@@ -137,6 +143,8 @@ class Parameterset(models.Model):
     #copy another parameter set into this one
     def setup(self,ps):
         self.save()
+
+        self.consent_form = ps.consent_form
 
         self.heart_activity_inital = ps.heart_activity_inital
         self.heart_parameter_1 = ps.heart_parameter_1
@@ -251,6 +259,8 @@ class Parameterset(models.Model):
         return{
             
             "id":self.id,
+
+            "consent_form" : self.consent_form.id,
 
             "heart_activity_inital":self.heart_activity_inital,
             "heart_parameter_1":self.heart_parameter_1,

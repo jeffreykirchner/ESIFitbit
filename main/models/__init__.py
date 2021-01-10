@@ -7,4 +7,5 @@ from .session_subject import *
 from .session_day_subject_activity import *
 from .session_subject_questionnaire1 import * 
 from .session_subject_questionnaire2 import * 
+from .consent_forms import *
 
