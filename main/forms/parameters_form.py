@@ -30,10 +30,6 @@ class Parameters_form(forms.ModelForm):
 
     cancelationText = forms.CharField(label='Cancelation Email, Text',
                                      widget=forms.Textarea(attrs={"rows":"15", "cols":"125"}))
-
-    
-    consentForm = forms.CharField(label='Consent Form',
-                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
     
     consentFormRequired = forms.ChoiceField(label='Consent Form Required',
                                         choices=((True, 'Yes'), (False,'No' )),                 

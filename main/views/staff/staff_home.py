@@ -8,7 +8,7 @@ from django.conf import settings
 
 from main.globals.todaysDate import todaysDate
 
-from main.models import Session,Parameterset,Session_day,Parameters
+from main.models import Session,Parameterset,Session_day,Parameters,Consent_forms
 
 @login_required
 def Staff_Home(request):
@@ -54,6 +54,7 @@ def createSession(data):
 
     #create parameter set
     ps = Parameterset()
+    ps.consent_form=Consent_forms.objects.all().first()
     ps.save()
 
     #create session

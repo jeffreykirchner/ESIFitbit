@@ -260,7 +260,7 @@ class Parameterset(models.Model):
             
             "id":self.id,
 
-            "consent_form" : self.consent_form.id,
+            "consent_form" : self.consent_form.id if self.consent_form else None,
 
             "heart_activity_inital":self.heart_activity_inital,
             "heart_parameter_1":self.heart_parameter_1,
