@@ -378,9 +378,11 @@ def getSessionDaySubject(data,session_subject,session_day):
 
     consent_required = False
 
+    #get consent form if needed
     if p.consentFormRequired and session_subject.consent_required:
         consent_required = True
-        consent_form_text = p.consentForm
+        ps = session_subject.session.parameterset
+        consent_form_text = ps.consent_form.body_text
     else:
         consent_required = False
         consent_form_text=""

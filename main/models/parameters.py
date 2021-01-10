@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 
 #gloabal parameters for site
 class Parameters(models.Model):
+
     contactEmail =  models.CharField(max_length = 1000,default = "JohnSmith@abc.edu")      #primary contact for subjects
     experimentTimeZone = models.CharField(max_length = 1000,default = "US/Pacific")        #time zone the experiment is in
     maxDailyEarnings = models.DecimalField(decimal_places=2, max_digits=5,default = 20)   #max money that can be paid to a subject per year  
@@ -16,7 +17,6 @@ class Parameters(models.Model):
     cancelationTextSubject = models.CharField(max_length = 1000,default = "")              #email subject text when an experiment is canceled
     cancelationText = models.CharField(max_length = 10000,default = "")                    #email text when an experiment is canceled
 
-    consentForm = models.CharField(max_length = 50000, default ="")                        #consent for subject must agree to before participation 
     consentFormRequired = models.BooleanField(default=True)                                #true if subject must agree to special consent form before doing experiment
 
     questionnaire1Required = models.BooleanField(default=True)                             #enable pre experiment questionnaire
