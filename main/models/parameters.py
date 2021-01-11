@@ -10,6 +10,7 @@ class Parameters(models.Model):
     experimentTimeZone = models.CharField(max_length = 1000,default = "US/Pacific")        #time zone the experiment is in
     maxDailyEarnings = models.DecimalField(decimal_places=2, max_digits=5,default = 20)   #max money that can be paid to a subject per year  
     siteURL = models.CharField(max_length = 200,default = "https://www.google.com/")       #site URL used for display in emails
+    testEmailAccount = models.CharField(max_length = 1000,default = "")                     #email account used for debug mode emails
 
     invitationTextSubject = models.CharField(max_length = 1000,default = "")               #email subject text for the single day invitation
     invitationText = models.CharField(max_length = 10000,default = "")                     #email text for the single day invitation

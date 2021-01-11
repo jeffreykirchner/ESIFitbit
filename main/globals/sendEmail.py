@@ -35,13 +35,20 @@ def sendMassInvitations(subjectList,subject,message):
         #fill in subject parameters
 
         if settings.DEBUG:
-            message_list[block_count] += ((subject, new_message,from_email,["TestSubject" + str(random.randrange(1, 50)) + "@esirecruiter.net"]),)   #use for test emails
+            message_list[block_count] += ((subject, new_message,from_email,[getTestSubjectEmail()]),)   #use for test emails
         else:
             message_list[block_count] += ((subject, new_message,from_email,[s.contact_email]),)  
 
         c+=1
     
     return sendMassEmail(block_count,message_list)
+
+#return the test account email to be used
+def getTestSubjectEmail():
+    p = Parameters.objects.get(id=1)
+    s = p.testEmailAccount
+
+    return s
 
 #send mass email to list,takes a list
 def sendMassEmail(block_count,message_list):
