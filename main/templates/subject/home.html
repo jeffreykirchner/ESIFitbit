@@ -83,8 +83,7 @@
                                         app.updateSessionDaySubject(response);    
                                         app.$data.refreshButtonText = '<i class="fas fa-sync"></i>';  
                                         
-                                        app.$data.session_complete = response.data.session_complete;                                        
-                                        app.$data.questionnaire2_required = response.data.questionnaire2_required;
+                                        app.$data.session_complete = response.data.session_complete;                                       
                                         app.$data.session_last_day = response.data.session_last_day;
                                         app.$data.fitBitTimeRequired = response.data.fitBitTimeRequired;
                                         app.$data.fitBitTimeRequirementMet = response.data.fitBitTimeRequirementMet;
@@ -97,6 +96,7 @@
                                     app.$data.consent_required = response.data.consent_required;
                                     app.$data.consent_form_text = response.data.consent_form_text;
                                     app.$data.questionnaire1_required = response.data.questionnaire1_required;
+                                    app.$data.questionnaire2_required = response.data.questionnaire2_required;
                                     app.$data.fitbit_link = response.data.fitbit_link;  
                                     app.$data.fitbitError = response.data.fitbitError;       
                                     app.$data.fitBitLastSynced = response.data.fitBitLastSynced;                     

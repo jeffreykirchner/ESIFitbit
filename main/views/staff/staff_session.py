@@ -134,24 +134,38 @@ def addSubject(data,id):
     s=Session.objects.get(id=id)
 
     if not s.started:
-        ss = Session_subject()
-        ss.session=s
-        ss.display_color = getRandomHexColor()
-        ss.save()
-
-        sda = Session_day_subject_actvity()
-        sda.session_subject = ss
-        sda.session_day = s.session_days.filter(period_number = 1).first()
-        sda.check_in_today = True
-        sda.heart_activity_minutes = -1
-        sda.immune_activity_minutes = -1
-        sda.heart_activity = s.parameterset.heart_activity_inital
-        sda.immune_activity = s.parameterset.immune_activity_inital
-        sda.save()    
+        ss = getNewSubject(id)
+          
 
     return JsonResponse({"session_subjects": getSubjectListJSON(id,False),
                          "session" : getSessionJSON(id), 
                                 },safe=False) 
+
+#create and return new session subject
+def getNewSubject(id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Create new subject")
+
+    s=Session.objects.get(id=id)
+
+    ss = Session_subject()
+    ss.session=s
+    ss.display_color = getRandomHexColor()
+    ss.name="*** Name Here ***"
+    ss.save()
+
+    sda = Session_day_subject_actvity()
+    sda.session_subject = ss
+    sda.session_day = s.session_days.filter(period_number = 1).first()
+    sda.check_in_today = True
+    sda.heart_activity_minutes = -1
+    sda.immune_activity_minutes = -1
+    sda.heart_activity = s.parameterset.heart_activity_inital
+    sda.immune_activity = s.parameterset.immune_activity_inital
+    sda.save() 
+
+    return ss
+   
 
 #refresh subject table
 def refreshSubjectTable(data,id):
@@ -476,29 +490,75 @@ def downloadParameterset(data,id):
 #take parameter file upload
 def takeFileUpload(f,id):
     logger = logging.getLogger(__name__) 
-    logger.info("Upload parameter set")
-    
-
-    s=Session.objects.get(id=id)
-    ps = s.parameterset
+    logger.info("Upload file")
 
     #format incoming data
     v=""
 
     for chunk in f.chunks():
-        v+=str(chunk.decode("utf-8"))
+        v+=str(chunk.decode("utf-8-sig"))
 
     message = ""
 
     try:
-        v=eval(v)
-        logger.info(v)       
-   
-        message = ps.setup_from_dict(v)
+        if v[0]=="{":
+            return uploadParamterSet(v,id)
+        elif v[0:9] == "Last Name":
+            return uploadUserList(v,id)
+
     except Exception as e:
-        message = f"Failed to load parameter set: {e}"
+        message = f"Failed to load file: {e}"
         logger.info(message)       
 
     return JsonResponse({"session" : getSessionJSON(id),
+                         "message":message,
+                                },safe=False)
+
+#take parameter set to upload
+def uploadParamterSet(v,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Upload parameter set")
+    
+    s=Session.objects.get(id=id)
+    ps = s.parameterset
+
+    v=eval(v)
+    logger.info(v)       
+
+    message = ps.setup_from_dict(v)
+
+    return JsonResponse({"session" : getSessionJSON(id),
+                         "message":message,
+                                },safe=False)
+
+#take list of users to input add to session
+def uploadUserList(v,id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Upload user list")
+
+    message="Subjects loaded"
+
+    v=v.splitlines()
+
+    for i in range(len(v)):
+        v[i] = v[i].split(',')
+
+    logger.info(v) 
+
+    s=Session.objects.get(id=id)
+
+    if not s.started:
+
+        for i in v:
+            if i[0] !="Last Name":
+                ss = getNewSubject(id)
+
+                ss.name = i[1] + " " + i[0]
+                ss.contact_email = i[2]
+                ss.student_id = i[3]
+
+                ss.save()
+
+    return JsonResponse({"session_subjects" : getSubjectListJSON(id,False),
                          "message":message,
                                 },safe=False)

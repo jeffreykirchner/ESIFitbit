@@ -394,6 +394,7 @@ def getSessionDaySubject(data,session_subject,session_day):
                              "fitbit_link":session_subject.getFitBitLink("subject"),
                              "soft_delete":session_subject.soft_delete,
                              "questionnaire1_required":session_subject.getQuestionnaire1Required(),
+                             "questionnaire2_required":session_subject.getQuestionnaire2Required(),
                              "consent_required":consent_required,
                              "consent_form_text":consent_form_text,
                              },safe=False)
