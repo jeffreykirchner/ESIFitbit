@@ -74,6 +74,7 @@
                 uploadParametersetMessaage:'',
                 upload_file: null,
                 upload_file_name:'Choose File',
+                upload_mode:'',         //parameters or subject
                 refreshSubjectTableButtonText:'Refresh <i class="fas fa-sync fa-spin"></i>',
                 emailResult:'',
                 emailResultCancelation:'',
@@ -105,12 +106,12 @@
                                 });                        
                 },
                                 
-                //update the experiment list from server
+                //take update for the session parameters
                 updateSession:function(response){
                     app.$data.session = response.data.session;           
                 },
 
-                //update the experiment list from server
+                //take update the subject list
                 updateSubjects:function(response){
                     app.$data.session_subjects = response.data.session_subjects;      
                     Vue.nextTick(app.updateCanvases());                     
@@ -511,11 +512,7 @@
 
                 uploadParameterset:function(){
 
-                    if(app.$data.upload_file == null)
-                        return;
-
-                    app.$data.uploadParametersetMessaage = "";
-                    app.$data.uploadParametersetButtonText = '<i class="fas fa-spinner fa-spin"></i>';
+                    
 
                     let formData = new FormData();
                     formData.append('file', app.$data.upload_file);
@@ -534,16 +531,60 @@
                                 app.updateSession(response);
 
                                 app.$data.uploadParametersetButtonText= 'Upload <i class="fas fa-upload"></i>';
-                                // app.$data.upload_file = null;
-                                //app.$data.upload_file_name='Choose File';
+ 
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                                app.$data.searching=false;
+                            });                        
+                },
+                
+                //upload a list of subjects from a csv file        
+                uploadSubjects:function(){
+                   
 
+                    let formData = new FormData();
+                    formData.append('file', app.$data.upload_file);
+
+                    axios.post('/session/{{id}}/', formData,
+                            {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data'
+                                    }
+                                } 
+                            )
+                            .then(function (response) {     
+
+                                app.$data.uploadParametersetMessaage = response.data.message;
+                                app.updateSubjects(response);
+
+                                app.$data.uploadParametersetButtonText= 'Upload <i class="fas fa-upload"></i>';
                                                                                 
                             })
                             .catch(function (error) {
                                 console.log(error);
                                 app.$data.searching=false;
                             });                        
-                        },
+                },
+
+                //direct upload button click
+                uploadAction:function(){
+                    if(app.$data.upload_file == null)
+                        return;
+
+                    app.$data.uploadParametersetMessaage = "";
+                    app.$data.uploadParametersetButtonText = '<i class="fas fa-spinner fa-spin"></i>';
+
+                    if(app.$data.upload_mode == "parameters")
+                    {
+                        this.uploadParameterset();
+                    }
+                    else
+                    {
+                        this.uploadSubjects();
+                    }
+
+                },
 
                 handleFileUpload:function(){
                     app.$data.upload_file = this.$refs.file.files[0];
@@ -669,7 +710,8 @@
                 },
             
                 //fire when show upload parameters
-                showUploadParameters:function(){
+                showUploadParameters:function(upload_mode){
+                    app.$data.upload_mode = upload_mode;
                     app.$data.uploadParametersetMessaage = "";
                     $('#parameterSetModal').modal('show');
                 },
@@ -995,10 +1037,10 @@
                             <button class="btn btn-outline-primary" type="button" v-on:click = "downloadParameterset()" title="Download to a file.">
                                 <span v-html = "downloadParametersetButtonText"></span>
                             </button>
-                            <button class="btn btn-outline-primary" type="button" v-on:click = "showUploadParameters()" title = "Upload from a file.">
+                            <button class="btn btn-outline-primary" type="button" v-bind:disabled = "session.started" v-on:click = "showUploadParameters('parameters')" title = "Upload from a file.">
                                 Upload  <i class="fas fa-upload"></i>
                             </button>
-                            <button class="btn btn-outline-primary" type="button" v-on:click = "showImportParameters()" title="Import from another session.">
+                            <button class="btn btn-outline-primary" type="button" v-bind:disabled = "session.started" v-on:click = "showImportParameters()" title="Import from another session.">
                                 Import <i class="fas fa-file-import"></i>
                             </button>
                             <button class="btn btn-outline-primary" type="button" v-on:click = "showEditParameters()" title="Show edit form.">
@@ -1426,16 +1468,19 @@
                 <!-- subject card -->
                 <div class="card">                  
                     <div class="card-header">
-                        <span class="align-middle">Subjects</span>
+                        <span class="align-middle">Subjects ([[session_subjects.length]])</span>
 
                         <span class="float-right">
-                            <button class="btn btn-outline-primary" type="button" v-on:click = "refreshSubjectTable()">
+                            <button class="btn btn-outline-primary" type="button" v-on:click = "refreshSubjectTable()" title="Refresh the subjects table.">
                                 <span v-html = "refreshSubjectTableButtonText"></span>
                             </button>
-                            <button class="btn btn-outline-primary" type="button" v-on:click = "showFitbitStatus()">
+                            <button class="btn btn-outline-primary" type="button" v-on:click = "showFitbitStatus()" title="Test and show Fitbit connection status.">
                                 <span v-html = "showFitbitStatusButtonText"></span>
                             </button>
-                            <button class="btn btn-outline-success" type="button" v-on:click = "addSubject()" v-bind:disabled = "session.started">
+                            <button class="btn btn-outline-primary" type="button" v-bind:disabled = "session.started" v-on:click ="showUploadParameters('subjects')" title="Upload a list of subjects from the Recruiter.">
+                                Upload  <i class="fas fa-upload"></i>
+                            </button>
+                            <button class="btn btn-outline-success" type="button" v-on:click = "addSubject()" v-bind:disabled = "session.started" title="Add new subject to the session.">
                                 <span v-html="addSubjectButtonText"></span>
                             </button>
                         </span>
