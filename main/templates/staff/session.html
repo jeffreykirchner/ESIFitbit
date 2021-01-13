@@ -75,7 +75,7 @@
                 upload_file: null,
                 upload_file_name:'Choose File',
                 upload_mode:'',         //parameters or subject
-                refreshSubjectTableButtonText:'Refresh <i class="fas fa-sync fa-spin"></i>',
+                refreshSubjectTableButtonText:'Auto Refresh <i class="fas fa-sync fa-spin"></i>',
                 emailResult:'',
                 emailResultCancelation:'',
                 helpTitle:"Session Help",
@@ -84,6 +84,7 @@
                 graph_parameters:{},
                 earningsDownloadDate:"{{yesterdays_date}}",
                 subject_form_ids:{{subject_form_ids|safe}},
+                last_refresh:"",
             },
 
             methods:{
@@ -98,7 +99,7 @@
                                     app.updateSession(response);   
                                     app.updateSubjects(response);    
                                     app.graph_parameters = response.data.graph_parameters;
-                                    app.$data.refreshSubjectTableButtonText='Refresh <i class="fas fa-sync"></i>';    
+                                    app.$data.refreshSubjectTableButtonText='Auto Refresh <i class="fas fa-sync"></i>';    
                                     Vue.nextTick(app.updateCanvases());                               
                                 })
                                 .catch(function (error) {
@@ -114,7 +115,9 @@
                 //take update the subject list
                 updateSubjects:function(response){
                     app.$data.session_subjects = response.data.session_subjects;      
-                    Vue.nextTick(app.updateCanvases());                     
+                    Vue.nextTick(app.updateCanvases());    
+                    
+                    app.$data.last_refresh = moment(new Date).local().format('MM/DD/YYYY hh:mm:ss a');                  
                 },
 
                 //delete the selected experiment
@@ -152,14 +155,15 @@
 
                 //refresh subject table()
                 refreshSubjectTable:function(){
-                    app.$data.refreshSubjectTableButtonText = 'Refresh <i class="fas fa-sync fa-spin"></i>';
+                    app.$data.refreshSubjectTableButtonText = 'Auto Refresh <i class="fas fa-sync fa-spin"></i>';
 
                     axios.post('/session/{{id}}/', {
                                     action :"refreshSubjectTable" ,                                                                                                                                                                
                                 })
                                 .then(function (response) {     
                                     app.updateSubjects(response);     
-                                    app.$data.refreshSubjectTableButtonText = 'Refresh <i class="fas fa-sync"></i>';                                        
+                                    app.$data.refreshSubjectTableButtonText = 'Auto Refresh <i class="fas fa-sync"></i>';
+                                    setTimeout(app.refreshSubjectTable, 10000);                                        
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -1471,6 +1475,7 @@
                         <span class="align-middle">Subjects ([[session_subjects.length]])</span>
 
                         <span class="float-right">
+                            [[last_refresh]]
                             <button class="btn btn-outline-primary" type="button" v-on:click = "refreshSubjectTable()" title="Refresh the subjects table.">
                                 <span v-html = "refreshSubjectTableButtonText"></span>
                             </button>
