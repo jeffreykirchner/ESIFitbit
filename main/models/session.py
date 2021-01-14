@@ -262,9 +262,9 @@ class Session(models.Model):
                          'Health Importance Explanation','Health Importance Actions','Health Satisfaction Likert',
                          'Sleep Variation Likert','Sleep Variation Explanation',
                          'Exercise Variation Likert','Exercise Variation Explanation','Full Name','Address Line 1','Address Line 2',
-                         'City','State','Zip Code'])
+                         'City','State','Zip Code','Attended'])
 
-        ss_list = self.session_subjects.filter(soft_delete=False).order_by('id_number')
+        ss_list = self.session_subjects.order_by('id_number')
         
         for ss in ss_list:
             if ss.Session_subject_questionnaire1.all():

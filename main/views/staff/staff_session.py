@@ -165,7 +165,6 @@ def getNewSubject(id):
     sda.save() 
 
     return ss
-   
 
 #refresh subject table
 def refreshSubjectTable(data,id):

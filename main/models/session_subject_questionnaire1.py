@@ -92,7 +92,8 @@ class Session_subject_questionnaire1(models.Model):
                          self.health_importance,self.health_importance_explanation,self.health_importance_actions,
                          self.health_importance_actions,self.sleep_variation,self.sleep_variation_explanation,
                          self.exercise_variation,self.exercise_variation_explanation,self.address_full_name,
-                         self.address_line_1,self.address_line_2,self.address_city,self.address_state,self.address_zip_code])
+                         self.address_line_1,self.address_line_2,self.address_city,self.address_state,self.address_zip_code,
+                         not self.session_subject.soft_delete])
 
     def json(self):
         return{
