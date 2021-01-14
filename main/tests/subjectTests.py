@@ -228,7 +228,7 @@ class subjectAfterStartTestCase(TestCase):
         #before start
         session_subject = self.session.session_subjects.all().first()
         session_day = self.session.session_days.get(period_number = 2)
-        session_day.date = datetime.now().date()
+        session_day.date = todaysDate().date()
         session_day.save()
         session_day_subject_actvity = Session_day_subject_actvity.objects.get(session_day = session_day,session_subject = session_subject)
 

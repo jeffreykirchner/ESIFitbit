@@ -2,10 +2,12 @@ from django.db import models
 import logging
 import traceback
 from django.utils.timezone import now
-from . import Session_day,Session_subject
+from . import Session_day,Session_subject,Parameters
 import uuid
 import main
 import math
+from datetime import datetime,timedelta
+import pytz
 
 from enum import Enum
 
@@ -39,6 +41,8 @@ class Session_day_subject_actvity(models.Model):
     fitbit_heart_time_series =  models.CharField(max_length = 100000, default = '')  #today's heart rate time series
 
     fitbit_on_wrist_minutes = models.IntegerField(default=0)         #minutes fit bit was one wrist (sum of heart time series) 
+
+    last_login = models.DateTimeField(null=True,blank=True)          #first time the subject logged in this day 
 
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
@@ -363,6 +367,13 @@ class Session_day_subject_actvity(models.Model):
 
         return fitbitError
 
+    #update the last login time
+    def updateLast_login(self):
+        if not self.last_login:
+
+            self.last_login = datetime.now(pytz.UTC)
+            self.save()
+
     #return string formated wrist minutes
     def getFormatedWristMinutes(self) -> str:
         m = self.fitbit_on_wrist_minutes
@@ -376,6 +387,9 @@ class Session_day_subject_actvity(models.Model):
     
     #return CSV response for data download
     def getCSVResponse(self,writer):
+        p = Parameters.objects.first()
+        tz = pytz.timezone(p.experimentTimeZone)
+        last_login_str = "No login" if not self.last_login else self.last_login.astimezone(tz).strftime("%#m/%#d/%Y %H:%M:%S %Z")
         # ["Session","Period","Block","Date","Subject ID", "Subject Code","Heart Activity Minutes",
         #                  "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
         #                  "Check In Today", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today"]
@@ -386,7 +400,7 @@ class Session_day_subject_actvity(models.Model):
                          self.getTodaysImmuneEarnings(),self.payment_today,self.fitbit_minutes_sedentary,self.fitbit_minutes_lightly_active,
                          self.fitbit_minutes_fairly_active,self.fitbit_minutes_very_active,self.fitbit_steps,self.fitbit_calories,
                          self.fitbit_minutes_heart_out_of_range,self.fitbit_minutes_heart_fat_burn,self.fitbit_minutes_heart_cardio,
-                         self.fitbit_minutes_heart_peak,self.fitbit_on_wrist_minutes])
+                         self.fitbit_minutes_heart_peak,self.fitbit_on_wrist_minutes,last_login_str])
 
     #return json object of class
     def json(self):

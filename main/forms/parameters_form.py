@@ -71,8 +71,17 @@ class Parameters_form(forms.ModelForm):
     staffHomeHelpText = forms.CharField(label='Session List Help Text',
                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))  
 
-    blockChangeText = forms.CharField(label='Time Block Change Text',
-                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))                                                              
+    blockChangeSubject = forms.CharField(label='Notification of block change, subject',
+                                         widget=forms.TextInput(attrs={"size":"125"}))
+
+    blockChangeText = forms.CharField(label='Notification of block change, text',
+                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"})) 
+
+    blockPreChangeSubject = forms.CharField(label='Advanced notification of block change, subject',
+                                         widget=forms.TextInput(attrs={"size":"125"}))
+
+    blockPreChangeText = forms.CharField(label='Advanced notification of block change, text',
+                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))                                                             
 
     class Meta:
         model=Parameters
