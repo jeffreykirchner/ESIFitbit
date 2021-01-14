@@ -35,7 +35,7 @@
                 toggleState:"heart",
                 session_complete:false,
                 session_canceled:false,
-                fitbitError:false,
+                fitbitError:true,
                 consent_required:false,
                 consent_signature:"",
                 questionnaire1_required:false,
@@ -617,6 +617,12 @@
 
     </script>
 
+    <style>
+        [v-cloak] {
+        display: none;
+        }
+    </style>
+
 {%endblock head%}
 
 {%block content%}
@@ -770,7 +776,7 @@
                                     <div class="col" style="text-align: center;">$[[session_day_subject_actvity.fixed_pay_per_day]]</div>
                                 </div>                               
                                 
-                                <div class = "row mt-4">
+                                <div class = "row mt-4" v-cloak>
                                     <div class="col" style="text-align: center;">
                                         <div v-if="session_day_subject_actvity.paypal_today">
                                             <span style="color: red;" v-html="'Your payment will arrive tomorrow morning.<br>Check your email.'"></span>
