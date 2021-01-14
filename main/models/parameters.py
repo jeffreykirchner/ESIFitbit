@@ -33,7 +33,11 @@ class Parameters(models.Model):
     manualHelpText = models.CharField(max_length = 5000,default = "")                      # help text shown to staff
     staffHomeHelpText = models.CharField(max_length = 5000,default = "")                   # help text shown to staff home page
 
-    blockChangeText = models.CharField(max_length = 5000,default = "")                     # help text shown when time block changes
+    blockChangeSubject = models.CharField(max_length = 1000,default = "")                  #help subject shown when time block changes
+    blockChangeText = models.CharField(max_length = 5000,default = "")                     #help text shown when time block changes
+
+    blockPreChangeSubject = models.CharField(max_length = 1000,default = "")               #help subject shown 2 days before time block changes
+    blockPreChangeText = models.CharField(max_length = 5000,default = "")                  #help text shown 2 days before time block changes
 
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)

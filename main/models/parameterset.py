@@ -230,6 +230,21 @@ class Parameterset(models.Model):
         #start of block 3
         if period == self.block_2_day_count+self.block_1_day_count+1+1:
             return True
+    
+    #return true if time block changes in two days
+    def getBlockChangeInTwoDays(self,period):
+        
+        #check that not last block
+        if period+2 >= self.block_1_day_count+self.block_2_day_count+self.block_3_day_count +1:
+            return False
+        
+        #check block 2 start
+        if period == self.block_3_day_count + 1 - 1:
+            return True
+        
+        #check block 3 start
+        if period == self.block_2_day_count+self.block_1_day_count+1-1:
+            return True
 
     #return string formated wrist minutes
     def getFormatedWristMinutes(self) -> str:
