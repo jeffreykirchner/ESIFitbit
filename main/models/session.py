@@ -244,10 +244,10 @@ class Session(models.Model):
         writer.writerow(["Subject Data"])
         writer.writerow(["Session","Period","Block","Date","Subject ID", "Subject Code","Heart Activity Minutes",
                          "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
-                         "Check In Today", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today",
+                         "Fitbit Data Pulled", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today",
                          "Minutes Sedentary","Minutes Lightly Active","Minutes Fairly Active","Minutes Very Active","Steps","Calories",
                          "Heart Rate Minutes Out of Range","Heart Rate Minutes Fat Burn","Heart Rate Minutes Cardio",
-                         "Heart Rate Minutes Peak","Time On Wrist"])
+                         "Heart Rate Minutes Peak","Time On Wrist","First Login Time"])
 
         sd_list = self.session_days.all().order_by('period_number')
 

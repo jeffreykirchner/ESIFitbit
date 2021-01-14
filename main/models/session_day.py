@@ -78,7 +78,6 @@ class Session_day(models.Model):
     def getDateStr(self):
         return self.date.strftime("%m/%d/%Y")
 
-
     #true if this session day is the last day in a session
     def lastDay(self):
         if self.date==self.session.end_date:
@@ -92,7 +91,6 @@ class Session_day(models.Model):
 
         for sdsa in sdsa_list:
             sdsa.getCSVResponse(writer)
-
 
     #return json object of class
     def json(self):
