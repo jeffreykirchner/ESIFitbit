@@ -257,7 +257,7 @@ class Session(models.Model):
         writer.writerow([])
         writer.writerow(["Pre Questionnaire"])
 
-        writer.writerow(['Session','Subject ID','Subject Code','Sleep Hours','Sleep Likert','Sleep Explanation','Exercise Minutes',
+        writer.writerow(['Session','Subject ID','Subject Code','Consent Signature','Sleep Hours','Sleep Likert','Sleep Explanation','Exercise Minutes',
                          'Exercise Likert','Exercise Explanation','Health Importance Likert',
                          'Health Importance Explanation','Health Importance Actions','Health Satisfaction Likert',
                          'Sleep Variation Likert','Sleep Variation Explanation',
