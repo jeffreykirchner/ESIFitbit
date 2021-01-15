@@ -950,7 +950,7 @@
                         //ignore gaps
                         if(i>0)
                         {
-                            if(dataSet[i-1] > 0 && dataSet[i] > 0)
+                            if(dataSet[i-1] >= 0 && dataSet[i] >= 0)
                             {
                                 x1 = app.convertToX(i,xMax,xMin,w-marginY-margin2,markerWidth);
                                 y1 = app.convertToY(dataSet[i-1],yMax,yMin,h-marginX-margin2,markerWidth);
@@ -963,7 +963,7 @@
                            
                         }
                         
-                        if(dataSet[i] > 0 )
+                        if(dataSet[i] >= 0 )
                         {
                             ctx.beginPath();
                             ctx.arc(x,y,3,0,2*Math.PI);
