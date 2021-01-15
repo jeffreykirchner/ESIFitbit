@@ -54,7 +54,7 @@ def createSession(data):
 
     #create parameter set
     ps = Parameterset()
-    ps.consent_form=Consent_forms.objects.all().first()
+    ps.consent_form=Consent_forms.objects.all().last()
     ps.save()
 
     #create session
