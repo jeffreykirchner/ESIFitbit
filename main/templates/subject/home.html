@@ -896,11 +896,13 @@
                         Fitbit last synced: <span v-html="fitBitLastSynced"></span>
                     </div>
                 </div>
+                {% if not before_start_date %}
                 <div class="row mt-2">
                     <div class="col" style="text-align: center;">
                         Today's time on wrist: <span v-html="session_day_subject_actvity.time_on_wrist"></span>
                     </div>
                 </div>
+                {%endif%}
             </div>                  
         </div>                
     </div>
