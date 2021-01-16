@@ -525,6 +525,7 @@ def uploadParamterSet(v,id):
     logger.info(v)       
 
     message = ps.setup_from_dict(v)
+    s.calcEndDate()
 
     return JsonResponse({"session" : getSessionJSON(id),
                          "message":message,
