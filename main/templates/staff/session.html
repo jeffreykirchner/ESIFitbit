@@ -129,6 +129,7 @@
                             id:id,                                                                                                                             
                         })
                         .then(function (response) {   
+                            app.updateSession(response);
                             app.updateSubjects(response);                                                                          
                         })
                         .catch(function (error) {

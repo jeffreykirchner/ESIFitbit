@@ -191,7 +191,8 @@ def deleteSubject(data,id):
     # s.softDelete=True
     # s.save()
 
-    return JsonResponse({"session_subjects": getSubjectListJSON(id,False), 
+    return JsonResponse({"session" : getSessionJSON(id),
+                         "session_subjects": getSubjectListJSON(id,False), 
                                 },safe=False) 
 
 #update session parameters
