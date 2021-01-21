@@ -139,7 +139,7 @@ def submitQuestionnaire1(data,session_subject):
                              "questionnaire1_required":session_subject.questionnaire1_required,},safe=False)                         
                                 
     else:
-        logger.info("Invalid questionnaire1 form")
+        logger.warning("Invalid questionnaire1 form")
         return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
 
 #take post session questionnaire
@@ -170,7 +170,7 @@ def submitQuestionnaire2(data,session_subject):
                              "questionnaire2_required":session_subject.questionnaire2_required,},safe=False)                         
                                 
     else:
-        logger.info("Invalid questionnaire2 form")
+        logger.warning("Invalid questionnaire2 form")
         return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
 
 #subject accepts consent form
@@ -206,77 +206,77 @@ def payMe(data,session_subject,session_day):
     if not session_day:
         status = "fail"  
         message = "Pay ErPayror: Session day not found"
-        logger.info(message) 
+        logger.warning(message) 
 
     #check that session is not complete   
     if status == "success": 
         if not session_day.session.started:
             status = "fail"  
             message = "Pay Error: Session not started"
-            logger.info(message) 
+            logger.warning(message) 
 
     #check for consent form
     if status == "success":
         if p.consentFormRequired and session_subject.consent_required:
             status = "fail"   
             message = "Pay Error: Consent required" 
-            logger.info(message)
+            logger.warning(message)
     
     #check that questionnaire two is done before last payment
     if status == "success":
         if p.questionnaire1Required and session_subject.getQuestionnaire1Required() :
             status = "fail"  
             message = "Pay Error: Questionnaire 1 required"  
-            logger.info(message)
+            logger.warning(message)
 
     #check that session day activity exists
     if status == "success":
         if not session_day_subject_actvity:
             status = "fail" 
             message = "Pay Error: Could not find session_day_subject_actvity"   
-            logger.info(message)
+            logger.warning(message)
 
     #check that it is the day of the specified session day
     if status == "success":
         if session_day_subject_actvity.session_day.date != todaysDate().date():
             status = "fail"  
             message = "Pay Error: Session_day.date does not match today's date"  
-            logger.info(message)   
+            logger.warning(message)   
 
     #check that session is not complete
     if status == "success":
         if session_day.session.complete():
             status = "fail"  
             message = "Pay Error: Session is already complete"
-            logger.info(message) 
+            logger.warning(message) 
 
     #check that session is not canceled
     if status == "success":
         if session_day.session.canceled:
             status = "fail"   
             message =  "Pay Error: Session is canceled"
-            logger.info(message)      
+            logger.warning(message)      
 
     #check that subject has not already been paid
     if status == "success":
         if session_day_subject_actvity.paypal_today:
             status="fail"
             message = "Pay Error: Double payment attempt"
-            logger.info(message)
+            logger.warning(message)
     
     #check that questionnaire two is done before last payment
     if status == "success":
         if p.questionnaire2Required and session_subject.getQuestionnaire2Required() :
             status = "fail"  
             message = "Pay Error: Questionnaire 2 required"  
-            logger.info(message)
+            logger.warning(message)
     
     #check that subject has not be removed from session
     if status == "success":
         if session_subject.soft_delete:
             status = "fail"
             message = "Pay Error: Subject was removed from session"  
-            logger.info(message)
+            logger.warning(message)
 
     #check that subject has had the required wrist time
     if status == "success":
@@ -287,7 +287,7 @@ def payMe(data,session_subject,session_day):
             if pd.fitbit_on_wrist_minutes < session_day.session.parameterset.minimum_wrist_minutes:
                 status = "fail"
                 message = "Pay Error: Wrist time too low."  
-                logger.info(message)
+                logger.warning(message)
     
     if status == "success":
         try:

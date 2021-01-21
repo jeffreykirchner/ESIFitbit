@@ -18,7 +18,7 @@ def sendMassInvitations(subjectList,subject,message):
 
     message_list = []
     message_list.append(())
-    from_email = settings.EMAIL_HOST_USER    
+    from_email = getFromEmail()   
 
     block_count = 0
     c = 0
@@ -49,6 +49,10 @@ def getTestSubjectEmail():
     s = p.testEmailAccount
 
     return s
+
+#return the from address
+def getFromEmail():    
+    return f'"{settings.EMAIL_HOST_USER_NAME}" <{settings.EMAIL_HOST_USER }>'
 
 #send mass email to list,takes a list
 def sendMassEmail(block_count,message_list):

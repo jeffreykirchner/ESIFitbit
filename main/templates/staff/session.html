@@ -75,7 +75,7 @@
                 upload_file: null,
                 upload_file_name:'Choose File',
                 upload_mode:'',         //parameters or subject
-                refreshSubjectTableButtonText:'Auto Refresh <i class="fas fa-sync fa-spin"></i>',
+                refreshSubjectTableButtonText:'Auto Refresh: Off <i class="fas fa-sync fa-spin"></i>',
                 emailResult:'',
                 emailResultCancelation:'',
                 helpTitle:"Session Help",
@@ -85,6 +85,7 @@
                 earningsDownloadDate:"{{yesterdays_date}}",
                 subject_form_ids:{{subject_form_ids|safe}},
                 last_refresh:"",
+                auto_refresh:"Off",
             },
 
             methods:{
@@ -99,7 +100,7 @@
                                     app.updateSession(response);   
                                     app.updateSubjects(response);    
                                     app.graph_parameters = response.data.graph_parameters;
-                                    app.$data.refreshSubjectTableButtonText='Auto Refresh <i class="fas fa-sync"></i>';    
+                                    app.$data.refreshSubjectTableButtonText='Auto Refresh: ' + app.$data.auto_refresh + ' <i class="fas fa-sync"></i>';    
                                     Vue.nextTick(app.updateCanvases());                               
                                 })
                                 .catch(function (error) {
@@ -154,17 +155,38 @@
                                 });                        
                 },
 
+                //refresh subject table click
+                refreshSubjectTableClick:function(){
+
+                    if(app.$data.auto_refresh == "Off")
+                    {
+                        app.$data.auto_refresh = "On";
+                        this.refreshSubjectTable()
+                    }
+                    else
+                    {
+                        app.$data.auto_refresh = "Off";
+                        app.$data.refreshSubjectTableButtonText = 'Auto Refresh: ' + app.$data.auto_refresh + ' <i class="fas fa-sync"></i>';
+                    }
+                },
+
+
                 //refresh subject table()
                 refreshSubjectTable:function(){
-                    app.$data.refreshSubjectTableButtonText = 'Auto Refresh <i class="fas fa-sync fa-spin"></i>';
+
+                    app.$data.refreshSubjectTableButtonText = 'Auto Refresh: ' + app.$data.auto_refresh + ' <i class="fas fa-sync fa-spin"></i>';
 
                     axios.post('/session/{{id}}/', {
                                     action :"refreshSubjectTable" ,                                                                                                                                                                
                                 })
                                 .then(function (response) {     
                                     app.updateSubjects(response);     
-                                    app.$data.refreshSubjectTableButtonText = 'Auto Refresh <i class="fas fa-sync"></i>';
-                                    setTimeout(app.refreshSubjectTable, 10000);                                        
+                                    app.$data.refreshSubjectTableButtonText = 'Auto Refresh: ' + app.$data.auto_refresh + ' <i class="fas fa-sync"></i>';
+
+                                    if(app.$data.auto_refresh=="On")
+                                    {
+                                        setTimeout(app.refreshSubjectTable, 10000);            
+                                    }                            
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -1477,7 +1499,7 @@
 
                         <span class="float-right">
                             [[last_refresh]]
-                            <button class="btn btn-outline-primary" type="button" v-on:click = "refreshSubjectTable()" title="Refresh the subjects table.">
+                            <button class="btn btn-outline-primary" type="button" v-on:click = "refreshSubjectTableClick()" title="Refresh the subjects table.">
                                 <span v-html = "refreshSubjectTableButtonText"></span>
                             </button>
                             <button class="btn btn-outline-primary" type="button" v-on:click = "showFitbitStatus()" title="Test and show Fitbit connection status.">
