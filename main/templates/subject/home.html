@@ -22,9 +22,10 @@
                                              current_total_earnings:"--",
                                              heart_maintenance_minutes:"--",
                                              immune_maintenance_hours:"--", 
-                                             heart_improvment_minutes:{target_activity: "--",target_minutes:"--"},
+                                             heart_improvment_minutes:{target_activity: "--",target_minutes:"--" , target_bpm:"--"},
                                              immune_improvment_hours:{target_activity: "--",target_hours:"--"},   
-                                             time_on_wrist:"--"                                 
+                                             time_on_wrist:"--",
+
                                              },
                 session_day_subject_actvity_previous:{heart_activity_minutes:"--",
                                                       immune_activity_hours:"--",
@@ -346,7 +347,7 @@
                     {
                     app.drawAxis("healthChart",gp.y_min_heart,gp.y_max_heart,gp.y_ticks_heart,
                                                   gp.x_min_heart,gp.x_max_heart,gp.x_ticks_heart,
-                                                  "Tomorrow's Heart Health Score","Today's Active Minutes");
+                                                  "Tomorrow's Heart Health Score","Today's Zone Minutes");
                     
                     app.drawLine("healthChart",gp.y_min_heart,gp.y_max_heart,
                                                   gp.x_min_heart,gp.x_max_heart,
@@ -710,10 +711,10 @@
                             <div class="row">
                                 <div class="col" style="text-align: center;">                             
                                     <div v-if="fitbitError">
-                                        Yesterday's Active Minutes: <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a>
+                                        Yesterday's Zone Minutes: <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a>
                                     </div>
                                     <div v-else>
-                                        Yesterday's Active Minutes: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.heart_activity_minutes></span>
+                                        Yesterday's Zone Minutes: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.heart_activity_minutes></span>
                                     </div>                            
                                 </div>
                             </div>
@@ -776,39 +777,6 @@
                                     <div class="col" style="text-align: center;">$[[session_day_subject_actvity.fixed_pay_per_day]]</div>
                                 </div>                               
                                 
-                                <div class = "row mt-4" v-cloak>
-                                    <div class="col" style="text-align: center;">
-                                        <div v-if="session_day_subject_actvity.paypal_today">
-                                            <span style="color: red;" v-html="'Your payment will arrive tomorrow morning.<br>Check your email.'"></span>
-                                            <div v-show="session_complete">
-                                                <span style="color: red;" v-html="'The study is complete, thank you for your participation!<br><u>Please return your Fitbit.</u>'"></span>
-                                            </div>
-                                        </div>
-                                        <div v-else-if="session_complete===false">
-                                            
-                                            <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()" v-bind:disabled="fitbitError">
-                                                <span v-html="payMeButtonText"></span>
-                                            </button>
-                                            <div v-show="fitbitError">
-                                                <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a>
-                                            </div>
-                                            <div v-show="paymentError">
-                                                <span v-html="'***Payment Error***'" style="color: red;"></span>
-                                            </div>
-                                        </div>  
-                                    </div>                                    
-                                </div>
-
-                                <div class = "row mt-4">
-                                    <div class="col" style="text-align: center;">
-                                        Daily wrist time required: <span v-html="fitBitTimeRequired"></span>
-                                    </div>
-                                </div>
-                                <div class = "row">
-                                    <div class="col" style="text-align: center;" v-bind:style="[fitBitTimeRequirementMet ===false ? {'color': 'red' }:{}]">
-                                        Yesterday's time on wrist: <span v-html="session_day_subject_actvity_previous.time_on_wrist"></span>
-                                    </div>
-                                </div>
                             {%else%}
                                 <div class="row mt-2">
                                     <div class="col" style="text-align: center;">Your Payment today = </div>
@@ -834,39 +802,42 @@
                                 <div class="row mt-3">
                                     <div class="col" style="text-align: center;">$[[session_day_subject_actvity.fixed_pay_per_day]] + $[[session_day_subject_actvity.current_heart_earnings]] + $[[session_day_subject_actvity.current_immune_earnings]] = $[[session_day_subject_actvity.current_total_earnings]]</div>
                                 </div>
-                                <div class = "row mt-4">
-                                    <div class="col" style="text-align: center;">
-                                        <div v-if="session_day_subject_actvity.paypal_today">
-                                            <span style="color: red;" v-html="'Your payment will arrive tomorrow morning.<br>Check your email.'"></span>
-                                            <div v-show="session_complete">
-                                                <span style="color: red;" v-html="'The study is complete, thank you for your participation!<br><u>Please return your Fitbit.</u>'"></span>
-                                            </div>
-                                        </div>
-                                        <div v-else-if="session_complete===false">
-                                            
-                                            <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()" v-bind:disabled="fitbitError || fitBitTimeRequirementMet === false"> 
-                                                <span v-html="payMeButtonText"></span>
-                                            </button>
-                                            <div v-show="fitbitError">
-                                                <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a>
-                                            </div>
-                                            <div v-show="paymentError">
-                                                <span v-html="'***Payment Error***'" style="color: red;"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class = "row mt-4">
-                                    <div class="col" style="text-align: center;">
-                                        Daily wrist time required: <span v-html="fitBitTimeRequired"></span>
-                                    </div>
-                                </div>
-                                <div class = "row">
-                                    <div class="col" style="text-align: center;" v-bind:style="[fitBitTimeRequirementMet ===false ? {'color': 'red' }:{}]">
-                                        Yesterday's time on wrist: <span v-html="session_day_subject_actvity_previous.time_on_wrist"></span>
-                                    </div>
-                                </div>
+                                
                             {%endif%}
+
+                            <div class = "row mt-4" v-cloak>
+                                <div class="col" style="text-align: center;">
+                                    <div v-if="session_day_subject_actvity.paypal_today">
+                                        <span style="color: red;" v-html="'Your payment will arrive tomorrow morning.<br>Check your email.'"></span>
+                                        <div v-show="session_complete">
+                                            <span style="color: red;" v-html="'The study is complete, thank you for your participation!<br><u>Please return your Fitbit.</u>'"></span>
+                                        </div>
+                                    </div>
+                                    <div v-else-if="session_complete===false">
+                                        
+                                        <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()" v-bind:disabled="fitbitError || fitBitTimeRequirementMet === false"> 
+                                            <span v-html="payMeButtonText"></span>
+                                        </button>
+                                        <div v-show="fitbitError">
+                                            <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a>
+                                        </div>
+                                        <div v-show="paymentError">
+                                            <span v-html="'***Payment Error***'" style="color: red;"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class = "row mt-4">
+                                <div class="col" style="text-align: center;">
+                                    Daily wrist time required: <span v-html="fitBitTimeRequired"></span>
+                                </div>
+                            </div>
+                            <div class = "row">
+                                <div class="col" style="text-align: center;" v-bind:style="[fitBitTimeRequirementMet ===false ? {'color': 'red' }:{}]">
+                                    Yesterday's time on wrist: <span v-html="session_day_subject_actvity_previous.time_on_wrist"></span>
+                                </div>
+                            </div>                            
                             
                         </div>
 

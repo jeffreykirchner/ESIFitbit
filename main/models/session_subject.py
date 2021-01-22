@@ -280,7 +280,7 @@ class Session_subject(models.Model):
         p = Parameters.objects.first()
 
         temp_s = activity_date.strftime("%Y-%m-%d")
-        #temp_s = "today"
+        temp_s = "today"
         #temp_s="2020-11-20"
 
         if p.trackerDataOnly:
@@ -297,7 +297,7 @@ class Session_subject(models.Model):
         logger.info(heart_date) 
 
         temp_s = heart_date.strftime("%Y-%m-%d")
-        #temp_s = "today"
+        temp_s = "today"
         #temp_s="2020-11-20"
 
         fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/heart/date/{temp_s}/1d.json')
@@ -423,7 +423,18 @@ class Session_subject(models.Model):
                 a=[]
                 
                 for i in fitbit_response:
-                    a.append(datetime.strptime(i.get("lastSyncTime"),'%Y-%m-%dT%H:%M:%S.%f'))
+
+                    v = datetime.strptime(i.get("lastSyncTime"),'%Y-%m-%dT%H:%M:%S.%f')
+
+                    logger.info(f'getFitBitAttached sync time {v}')
+
+                    d = datetime.now(pytz.UTC)
+                    d = d.replace(hour=v.hour,minute=v.minute, second=v.second,microsecond=v.microsecond,
+                               year=v.year,month=v.month,day=v.day)
+
+                    logger.info(f'getFitBitAttached sync time {d}')
+
+                    a.append(d)
                 
                 a.sort(reverse=True)
 
@@ -527,6 +538,7 @@ class Session_subject(models.Model):
         earnings = "---"
         heart_score = "---"
         heart_time = "---"
+        heart_bpm = "---"
         immune_score = "---"
         immune_time = "---"
         wrist_time = "---|---"
@@ -540,6 +552,7 @@ class Session_subject(models.Model):
             earnings = f'${sada.getTodaysTotalEarnings():0.2f}'
             heart_score = f'{sada.heart_activity:0.2f}'
             immune_score = f'{sada.immune_activity:0.2f}'
+            heart_bpm = f'{sada.fitbit_min_heart_rate_zone_bpm}bpm'
         else:
             sada_yesterday = None
 
@@ -559,9 +572,10 @@ class Session_subject(models.Model):
             "earnings":earnings,
             "heart_score":heart_score,
             "heart_time":heart_time,
+            "heart_bpm":heart_bpm,
             "immune_score":immune_score,
             "immune_time":immune_time,
-            "wrist_time":wrist_time,
+            "wrist_time":wrist_time,            
         }
 
     #get json object of daily minutes exercising
