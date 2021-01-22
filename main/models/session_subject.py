@@ -280,7 +280,7 @@ class Session_subject(models.Model):
         p = Parameters.objects.first()
 
         temp_s = activity_date.strftime("%Y-%m-%d")
-        temp_s = "today"
+        #temp_s = "today"
         #temp_s="2020-11-20"
 
         if p.trackerDataOnly:
@@ -297,7 +297,7 @@ class Session_subject(models.Model):
         logger.info(heart_date) 
 
         temp_s = heart_date.strftime("%Y-%m-%d")
-        temp_s = "today"
+        #temp_s = "today"
         #temp_s="2020-11-20"
 
         fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/activities/heart/date/{temp_s}/1d.json')
