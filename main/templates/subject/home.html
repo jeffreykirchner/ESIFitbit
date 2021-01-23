@@ -663,7 +663,7 @@
                             The study has not yet started.<br>
                             <div v-if="fitbitError">
                                 Please connect your Fitbit before {{start_date}}.<br>
-                                <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a>
+                                <u><a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a></u>
                             </div>
                             <div v-else>
                                 Your Fitbit is connected.<br>
@@ -711,7 +711,7 @@
                             <div class="row">
                                 <div class="col" style="text-align: center;">                             
                                     <div v-if="fitbitError">
-                                        Yesterday's Zone Minutes: <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a>
+                                        Yesterday's Zone Minutes: <u><a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a></u>
                                     </div>
                                     <div v-else>
                                         Yesterday's Zone Minutes: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.heart_activity_minutes></span>
@@ -741,7 +741,7 @@
                             <div class="row">
                                 <div class="col" style="text-align: center;">                             
                                     <div v-if="fitbitError">
-                                        Yesterday's Hours Sleeping: <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a>
+                                        Yesterday's Hours Sleeping: <u><a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a></u>
                                     </div>
                                     <div v-else>
                                         Yesterday's Hours Sleeping: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.immune_activity_hours></span>
@@ -819,7 +819,7 @@
                                             <span v-html="payMeButtonText"></span>
                                         </button>
                                         <div v-show="fitbitError">
-                                            <a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a>
+                                            <u><a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a></u>
                                         </div>
                                         <div v-show="paymentError">
                                             <span v-html="'***Payment Error***'" style="color: red;"></span>
