@@ -41,6 +41,7 @@ class Session_day_subject_actvity(models.Model):
     fitbit_heart_time_series =  models.CharField(max_length = 100000, default = '')  #today's heart rate time series
 
     fitbit_on_wrist_minutes = models.IntegerField(default=0)         #minutes fit bit was one wrist (sum of heart time series) 
+    fitbit_min_heart_rate_zone_bpm = models.IntegerField(default=0)  #minimum bmp a subject must have to register active zone minutes
 
     last_login = models.DateTimeField(null=True,blank=True)          #first time the subject logged in this day 
 
@@ -264,7 +265,7 @@ class Session_day_subject_actvity(models.Model):
 
         target_activity = int(target_activity*100)
 
-        return {"target_activity": f'{target_activity}',"target_minutes":f' {target_minutes}mins'}
+        return {"target_activity": f'{target_activity}',"target_minutes":f' {target_minutes}mins',"target_bpm":f'{self.fitbit_min_heart_rate_zone_bpm}bpm'}
 
     #get immune improvment minutes
     def getTodaysImmuneImprovmentHours(self):
@@ -303,11 +304,27 @@ class Session_day_subject_actvity(models.Model):
             #logger.info(f'pullFitbitActvities {temp_h}')    ]
         
             heart_summary = heart_full['activities-heart'][0]['value']['heartRateZones']
-            self.fitbit_minutes_heart_out_of_range = heart_summary[0].get("minutes",0)   
-            self.fitbit_minutes_heart_fat_burn = heart_summary[1].get("minutes",0)
-            self.fitbit_minutes_heart_cardio = heart_summary[2].get("minutes",0)
-            self.fitbit_minutes_heart_peak = heart_summary[3].get("minutes",0)
+
+            #store heart rate ranges
+            for i in range(4):
+            
+                minutes = heart_summary[i].get("minutes",0)
+                name =  heart_summary[i].get("name","not found")
+
+                logger.info(f'pullFibitBitHeartRate {name} {minutes}')
+
+                if name == 'Out of Range':
+                    self.fitbit_minutes_heart_out_of_range = minutes
+                elif name == 'Fat Burn':
+                    self.fitbit_minutes_heart_fat_burn = minutes
+                    self.fitbit_min_heart_rate_zone_bpm =  heart_summary[i].get("min",0)
+                elif name == 'Cardio':
+                    self.fitbit_minutes_heart_cardio = minutes
+                elif name == 'Peak':
+                    self.fitbit_minutes_heart_peak = minutes
+
             self.fitbit_heart_time_series = heart_full
+            self.save()
 
             #store minutes on wrist
             #v = eval(str(heart_full))
@@ -321,6 +338,13 @@ class Session_day_subject_actvity(models.Model):
                 self.fitbit_on_wrist_minutes = 0
             else:
                 self.fitbit_on_wrist_minutes = len(v)
+
+                #active zone minutes
+                self.heart_activity_minutes = self.fitbit_minutes_heart_cardio * 2 + \
+                                              self.fitbit_minutes_heart_peak * 2 + \
+                                              self.fitbit_minutes_heart_fat_burn
+
+
 
             self.save()
        
@@ -349,6 +373,7 @@ class Session_day_subject_actvity(models.Model):
 
         self.save()
 
+        #old active minutes calculation
         heart_activity_minutes =  self.fitbit_minutes_fairly_active +  self.fitbit_minutes_very_active
 
         if immune_activity_minutes >= 0:
@@ -357,9 +382,10 @@ class Session_day_subject_actvity(models.Model):
             logger.info(f"immune_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")
             fitbitError=True
         
-        if heart_activity_minutes >= 0:
-            self.heart_activity_minutes = heart_activity_minutes
-        else:
+        #old calculation
+        #self.heart_activity_minutes = heart_activity_minutes
+
+        if heart_activity_minutes < 0:
             logger.info(f"heart_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")
             fitbitError=True
 
@@ -400,7 +426,7 @@ class Session_day_subject_actvity(models.Model):
                          self.getTodaysImmuneEarnings(),self.payment_today,self.fitbit_minutes_sedentary,self.fitbit_minutes_lightly_active,
                          self.fitbit_minutes_fairly_active,self.fitbit_minutes_very_active,self.fitbit_steps,self.fitbit_calories,
                          self.fitbit_minutes_heart_out_of_range,self.fitbit_minutes_heart_fat_burn,self.fitbit_minutes_heart_cardio,
-                         self.fitbit_minutes_heart_peak,self.fitbit_on_wrist_minutes,last_login_str])
+                         self.fitbit_minutes_heart_peak,self.fitbit_min_heart_rate_zone_bpm,self.fitbit_on_wrist_minutes,last_login_str])
 
     #return json object of class
     def json(self):
