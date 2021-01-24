@@ -15,10 +15,10 @@ ALLOWED_HOSTS = [os.environ['ALLOWED_HOST'],
                  'localhost',
                  '127.0.0.1']
 
-BASE_URL = 'http://localhost:8000/'
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+
+hostname = os.environ['DBHOST']
 
 DATABASES = {
     'default': {
