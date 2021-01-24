@@ -24,6 +24,7 @@
                          cancelation_text:"",
                          cancelation_text_subject:"",
                          email_list:"",
+                         current_period:"",
                          parameterset:{id:"",
                                         number_of_days:"",
                                         number_of_players:"",
@@ -169,7 +170,6 @@
                         app.$data.refreshSubjectTableButtonText = 'Auto Refresh: ' + app.$data.auto_refresh + ' <i class="fas fa-sync"></i>';
                     }
                 },
-
 
                 //refresh subject table()
                 refreshSubjectTable:function(){
@@ -945,6 +945,11 @@
                         return;
                     }
 
+                    if(app.$data.session.current_period=="---")
+                    {
+                        return;
+                    }
+
                     var canvas = document.getElementById(chartID),
                         ctx = canvas.getContext('2d');           
 
@@ -967,6 +972,12 @@
                    
                     for(i=0;i<dataSet.length;i++)
                     {
+                        //stop line at current period
+                        if(i == app.$data.session.current_period)
+                        {
+                            break;
+                        }
+
                         x = app.convertToX(i+1,xMax,xMin,w-marginY-margin2,markerWidth);
                         y = app.convertToY(dataSet[i],yMax,yMin,h-marginX-margin2,markerWidth);
 
@@ -985,15 +996,14 @@
                             }
                            
                         }
-                        
+                             
                         if(dataSet[i] >= 0 )
                         {
                             ctx.beginPath();
                             ctx.arc(x,y,3,0,2*Math.PI);
-                            ctx.fill();
-                        }
+                            ctx.fill();   
+                        }                    
 
-                        
                     }    
 
                     
@@ -1397,6 +1407,14 @@
                             </div>
                             <div class="col-8">
                                 <span v-html="session.end_date"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4" style="text-align: right;">
+                                Current Period:
+                            </div>
+                            <div class="col-8">
+                                <span v-html="session.current_period"></span>
                             </div>
                         </div>
                     </div>
