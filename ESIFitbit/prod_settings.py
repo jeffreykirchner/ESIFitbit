@@ -7,13 +7,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG',False)
 
 STATIC_ROOT = '/home/esi/ESIFitbit/main/static'
 
-ALLOWED_HOSTS = [os.environ['ALLOWED_HOST'],
-                 'localhost',
-                 '127.0.0.1']
+ALLOWED_HOSTS = [os.environ['ALLOWED_HOST']]
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
