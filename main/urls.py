@@ -25,6 +25,8 @@ urlpatterns = [
 
     #icons
     path('favicon.ico',RedirectView.as_view(url='/static/favicon.ico'),name='favicon'),
+    path('apple-touch-icon-precomposed.png',RedirectView.as_view(url='/static/apple-touch-icon-precomposed.png'),name='favicon'),
+    path('apple-touch-icon-120x120-precomposed.png',RedirectView.as_view(url='/static/apple-touch-icon-precomposed.png'),name='favicon'),
 
     #test page
     #path('test/',TemplateView.as_view(template_name="test.html"),name='test'),
