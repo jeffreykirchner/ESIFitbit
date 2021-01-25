@@ -6,7 +6,7 @@ from django.http import JsonResponse
 import logging
 from django.conf import settings
 
-from main.globals.todaysDate import todaysDate
+from main.globals import todaysDate
 
 from main.models import Session,Parameterset,Session_day,Parameters,Consent_forms
 
@@ -18,7 +18,6 @@ def Staff_Home(request):
     # logger.info("some info")
 
     if request.method == 'POST':     
-
 
         data = json.loads(request.body.decode('utf-8'))
 
