@@ -258,11 +258,12 @@ def updateSession(data,id):
         form.save()              
 
         #set first session day date to start date
-        sd = s.session_days.order_by('-date').first()
-        sd.date=s.start_date
-        sd.save()
+        if not s.started:
+            sd = s.session_days.order_by('date').first()
+            sd.date=s.start_date
+            sd.save()
 
-        s.calcEndDate()
+            s.calcEndDate()
 
         #check if session is base line
        

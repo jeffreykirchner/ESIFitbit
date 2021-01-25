@@ -973,7 +973,7 @@
                     for(i=0;i<dataSet.length;i++)
                     {
                         //stop line at current period
-                        if(i == app.$data.session.current_period)
+                        if(i >= app.$data.session.current_period-1)
                         {
                             break;
                         }
