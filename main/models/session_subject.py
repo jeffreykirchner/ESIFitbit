@@ -616,8 +616,8 @@ class Session_subject(models.Model):
                 logger.info("Fitbit refresh: User" + str(self.id))
                 logger.info(r)
             else:
-                logger.info("Fitbit refresh failed:")
-                logger.info(r) 
+                logger.warning("Fitbit refresh failed:")
+                logger.warning(r) 
 
             r = self.getFitbitInfo2(url)
         
