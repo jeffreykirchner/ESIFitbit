@@ -45,6 +45,8 @@ class Session_subject_questionnaire1(models.Model):
     address_state = models.CharField(max_length = 1000, default = '',verbose_name = 'Address State')
     address_zip_code = models.CharField(max_length = 1000, default = '',verbose_name = 'Address Zip Code')
 
+    birthdate = models.DateField(null=True,blank=True)
+
 
     def __str__(self):
         return "Pre Questionnaire"
@@ -93,7 +95,7 @@ class Session_subject_questionnaire1(models.Model):
                          self.health_satisfaction,self.sleep_variation,self.sleep_variation_explanation,
                          self.exercise_variation,self.exercise_variation_explanation,self.address_full_name,
                          self.address_line_1,self.address_line_2,self.address_city,self.address_state,self.address_zip_code,
-                         not self.session_subject.soft_delete])
+                         self.birthdate,not self.session_subject.soft_delete])
 
     def json(self):
         return{

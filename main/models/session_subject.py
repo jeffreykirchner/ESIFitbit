@@ -525,7 +525,7 @@ class Session_subject(models.Model):
             "address_city":q1.address_city if q1 else "---",
             "address_state":q1.address_state if q1 else "---",
             "address_zip_code":q1.address_zip_code if q1 else "---",
-
+            "birthdate":q1.birthdate.strftime("%#m/%#d/%Y") if q1 and q1.birthdate else "---",
         }
     
     #get json object of current stats to show on server

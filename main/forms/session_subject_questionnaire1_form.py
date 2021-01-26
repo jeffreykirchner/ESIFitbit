@@ -92,6 +92,11 @@ class Session_subject_questionnaire1_form(forms.ModelForm):
     address_zip_code = forms.CharField(label=mark_safe('Zip Code'),
                                          widget=forms.TextInput(attrs={}))
 
+    birthdate = forms.DateField(label="Birthdate (MM/DD/YYYYY)",
+                               input_formats=['%m/%d/%Y'],
+                               error_messages={'invalid': 'Format: M/D/YYYY'},                                                                                                           
+                               widget = forms.DateTimeInput(attrs={}))
+
     class Meta:
         model=Session_subject_questionnaire1
         exclude=['session_subject']
