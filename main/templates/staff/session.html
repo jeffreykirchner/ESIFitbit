@@ -25,6 +25,7 @@
                          cancelation_text_subject:"",
                          email_list:"",
                          current_period:"",
+                         complete:false,
                          parameterset:{id:"",
                                         number_of_days:"",
                                         number_of_players:"",
@@ -945,7 +946,7 @@
                         return;
                     }
 
-                    if(app.$data.session.current_period=="---")
+                    if(app.$data.session.current_period=="---"  && !app.$data.session.complete)
                     {
                         return;
                     }
@@ -973,9 +974,12 @@
                     for(i=0;i<dataSet.length;i++)
                     {
                         //stop line at current period
-                        if(i >= app.$data.session.current_period-1)
+                        if (app.$data.session.current_period !="---")
                         {
-                            break;
+                            if(i >= app.$data.session.current_period-1)
+                            {
+                                break;
+                            }
                         }
 
                         x = app.convertToX(i+1,xMax,xMin,w-marginY-margin2,markerWidth);
