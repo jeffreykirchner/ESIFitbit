@@ -262,7 +262,7 @@ class Session(models.Model):
                          'Health Importance Explanation','Health Importance Actions','Health Satisfaction Likert',
                          'Sleep Variation Likert','Sleep Variation Explanation',
                          'Exercise Variation Likert','Exercise Variation Explanation','Full Name','Address Line 1','Address Line 2',
-                         'City','State','Zip Code','Attended'])
+                         'City','State','Zip Code','Birthdate','Attended'])
 
         ss_list = self.session_subjects.order_by('id_number')
         
