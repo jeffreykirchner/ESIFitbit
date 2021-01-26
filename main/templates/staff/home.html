@@ -169,8 +169,13 @@
                             <td style="text-align: center;"> 
                                 <span v-html="s.start_date"></span> to <span v-html="s.end_date"></span>                                   
                             </td>
-                            <td style="text-align: center;">                                        
-                                <span v-html="s.current_period"></span>                                       
+                            <td style="text-align: center;">      
+                                <div v-if="s.complete">
+                                    Complete
+                                </div>
+                                <div v-else>
+                                    <span v-html="s.current_period"></span> 
+                                </div>                                                             
                             </td>
                             <td style="text-align: center;">                                        
                                 <span v-html="s.treatment_label"></span>                                       
