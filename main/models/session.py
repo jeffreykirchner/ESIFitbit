@@ -359,6 +359,7 @@ class Session(models.Model):
             "cancelation_text_subject":self.cancelation_text_subject,
             "email_list":email_list,
             "current_period" : current_session_day.period_number if current_session_day else "---",
+            "complete": self.complete(),
         }
 
 #delete associated user model when profile is deleted
