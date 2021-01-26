@@ -1,10 +1,13 @@
 from django import forms
+import logging
 from main.models import Session_subject_questionnaire1
 from django.contrib.auth.models import User
 from django.forms import ModelChoiceField
 import pytz
 from main.globals.likertScales import Likert_importance,Likert_satisfaction,Likert_variation,Likert_variation2
 from django.utils.safestring import mark_safe
+from main.globals.todaysDate import todaysDate
+from datetime import datetime,timedelta,timezone,date
 
 class Session_subject_questionnaire1_form(forms.ModelForm):
 
@@ -93,10 +96,31 @@ class Session_subject_questionnaire1_form(forms.ModelForm):
                                          widget=forms.TextInput(attrs={}))
 
     birthdate = forms.DateField(label="Birthdate (MM/DD/YYYYY)",
-                               input_formats=['%m/%d/%Y'],
-                               error_messages={'invalid': 'Format: M/D/YYYY'},                                                                                                           
-                               widget = forms.DateTimeInput(attrs={}))
+                                widget=forms.DateInput(attrs={"type":"date"}))
 
     class Meta:
         model=Session_subject_questionnaire1
         exclude=['session_subject']
+    
+    # def clean_birthdate(self):
+    #     birthdate = self.data['birthdate']
+
+    #     try:
+    #         logger = logging.getLogger(__name__)
+    #         logger.info(f'Clean birthdate {birthdate}')
+    #         b_day = datetime.strptime(birthdate,"%Y-%m-%d").date()
+    #         t_day = todaysDate().date()
+
+    #         #check if 18
+    #         if t_day - b_day.year>18:
+
+    #             return birthdate
+    #         else if
+
+    #         if d.years < 18:
+    #             raise forms.ValidationError('Must me 18 or older')
+            
+    #     except ValueError:
+    #         raise forms.ValidationError('Invalid Entry')
+
+    #     return birthdate
