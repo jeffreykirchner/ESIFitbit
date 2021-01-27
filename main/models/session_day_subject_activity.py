@@ -294,7 +294,7 @@ class Session_day_subject_actvity(models.Model):
         return {"target_activity": f'{target_activity}',"target_hours":f'{math.floor(target_minutes/60)}hrs {target_minutes%60}mins'}
 
     #pull heart rate data
-    def pullFibitBitHeartRate(self):
+    def pullFibitBitHeartRate(self,calc_active_minutes):
         logger = logging.getLogger(__name__)
         fitbitError = False
 
@@ -339,12 +339,11 @@ class Session_day_subject_actvity(models.Model):
             else:
                 self.fitbit_on_wrist_minutes = len(v)
 
-                #active zone minutes
-                self.heart_activity_minutes = self.fitbit_minutes_heart_cardio * 2 + \
-                                              self.fitbit_minutes_heart_peak * 2 + \
-                                              self.fitbit_minutes_heart_fat_burn
-
-
+                #active zone minutes, new calculation
+                if calc_active_minutes:
+                    self.heart_activity_minutes = self.fitbit_minutes_heart_cardio * 2 + \
+                                                  self.fitbit_minutes_heart_peak * 2 + \
+                                                  self.fitbit_minutes_heart_fat_burn
 
             self.save()
        
