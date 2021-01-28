@@ -10,7 +10,6 @@ SECRET_KEY = os.environ['SECRET_KEY']
 DEBUG = os.environ.get('DEBUG',False)
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATIC_ROOT = '/site/wwwroot/main/static/'
 
 ALLOWED_HOSTS = [os.environ['ALLOWED_HOST']]
 
