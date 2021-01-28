@@ -186,7 +186,7 @@ class Session_day_subject_actvity(models.Model):
             return main.models.Session_day_subject_actvity.objects.get(session_subject = self.session_subject,
                                                                        session_day__period_number = self.session_day.period_number-1)
         except Exception  as e: 
-            logger.info(e)
+            logger.warning(e)
             return None
     
     #get range of possible heart activities for tomorrow
@@ -348,7 +348,7 @@ class Session_day_subject_actvity(models.Model):
             self.save()
        
         except Exception  as e:
-            logger.info(f'Error pullFibitBitHeartRate {e}')
+            logger.warning(f'Error pullFibitBitHeartRate {e}')
             fitbitError = True
 
         return fitbitError
