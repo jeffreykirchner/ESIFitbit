@@ -48,7 +48,7 @@ LOGGING = {
        'logfile': {        
            'level':'INFO', 
            'class': 'logging.handlers.RotatingFileHandler',
-           'filename': 'logs/debug.log',
+           'filename': os.environ['LOG_LOCATION'],
            'maxBytes': 52428800,           #50 mb
            'backupCount' : 2,
            'formatter' : 'info_format',
