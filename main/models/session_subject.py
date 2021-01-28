@@ -640,9 +640,13 @@ class Session_subject(models.Model):
         headers = {'Authorization': 'Bearer ' + self.fitBitAccessToken,
                    'Accept-Language' :	'en_US'}    
 
-        r = requests.get(url, headers=headers).json()
+        try:            
+            r = requests.get(url, headers=headers).json()
 
-        logger.info("Fitbit request:" + url)
-        logger.info(r)
+            logger.info(f"Fitbit request: {url} ")
+            logger.info(f"Fitbit request:{r}")
 
-        return r
+            return r
+        except Exception  as e: 
+            logger.warning(f"getFitbitInfo2 error {e}")
+            return  "fail"
