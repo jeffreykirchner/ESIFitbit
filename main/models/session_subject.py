@@ -169,12 +169,13 @@ class Session_subject(models.Model):
 
         logger.info(f'fitBitCatchUp date {d_today.date()} subject activities {sa_list}')
 
+        if not self.getFitBitAttached():
+            logger.warning(f'fitBitCatchUp error not attached {d_today.date()} subject activities {sa_list}')
+            return
+
         #pull in actvity for days not checked in
         for s in sa_list:
             #if s.session_day.date < d_today.date():
-
-            s.check_in_today=True
-            s.save()
 
             logger.info(f'fitBitCatchUp {s.id}')
 
@@ -182,8 +183,15 @@ class Session_subject(models.Model):
 
             if previous_sa:
                 fitbiterror = previous_sa.pullFitbitActvities()
+
                 if not fitbiterror:
-                    previous_sa.pullFibitBitHeartRate()                  
+                    previous_sa.pullFibitBitHeartRate(True)
+
+                    s.check_in_today=True
+                    s.save()        
+                else:
+                    logger.warning(f'fitBitCatchUp error date {d_today.date()} subject activities {sa_list}')
+                    break
         
         #recalc activtivity scores
         if sa_list:
@@ -440,7 +448,10 @@ class Session_subject(models.Model):
 
                 self.fitBitLastSynced = a[0] #datetime.strptime(v,'%Y-%m-%dT%H:%M:%S.%f')
                 self.save()
+
                 return True
+        else:
+            return False
 
     #get subject's local timzone
     def getFitbitTimeZone(self):

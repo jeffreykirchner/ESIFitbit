@@ -332,42 +332,48 @@ def getSessionDaySubject(data,session_subject,session_day):
         logger.info("Get subject error: Session subject not found.")
     
     #chec if session is already complete
-    if session_subject.session.complete():
+    if status == "success" and session_subject.session.complete():
         status = "fail"
         logger.info("Get subject error: The session is complete.")
 
     #check fitbit is attached and store last sync date
     if not session_subject.getFitBitAttached():
         fitbitError=True
-        status == "fail"
         logger.info("Get subject error: The fitbit is not connected.")
     
     if status == "success":
-        #check if subject missed past days
-        session_subject.fitBitCatchUp()
+       
+        if not fitbitError:
+            #check if subject missed past days
+            session_subject.fitBitCatchUp()
 
         session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
 
         if session_day_subject_actvity:
+            
             session_day_subject_actvity_previous_day = session_day_subject_actvity.getPreviousActivityDay()
-            session_day_subject_actvity.pullFibitBitHeartRate()
+
+            if not fitbitError:
+                #get info for today's time on wrist
+                session_day_subject_actvity.pullFibitBitHeartRate(False)
 
             #store first login time
             session_day_subject_actvity.updateLast_login()
 
         if session_day_subject_actvity_previous_day:
            
-            #mark subject checkin as true
-            session_day_subject_actvity.check_in_today=True
-            session_day_subject_actvity.save()
-
-            #pull data from fitbit
-            fitbitError = session_day_subject_actvity_previous_day.pullFitbitActvities()
+            
             if not fitbitError:
-                session_day_subject_actvity_previous_day.pullFibitBitHeartRate()
+                #mark subject checkin as true
+                session_day_subject_actvity.check_in_today=True
+                session_day_subject_actvity.save()
 
-            #calc today's actvity
-            session_subject.calcTodaysActivity(session_day.period_number)
+                #pull data from fitbit            
+                session_day_subject_actvity_previous_day.pullFitbitActvities()
+                session_day_subject_actvity_previous_day.pullFibitBitHeartRate(True)
+
+                #calc today's actvity
+                session_subject.calcTodaysActivity(session_day.period_number)
 
             #get object again after calculation
             session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
