@@ -9,7 +9,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG',False)
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = '/home/esi/ESIFitbit/main/static'
 
 ALLOWED_HOSTS = [os.environ['ALLOWED_HOST']]
 
