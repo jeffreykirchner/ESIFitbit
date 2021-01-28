@@ -48,7 +48,7 @@ LOGGING = {
        'logfile': {        
            'level':'INFO', 
            'class': 'logging.handlers.RotatingFileHandler',
-           'filename': '/home/site/logs/chapman-experiments/debug.log',
+           'filename': '/home/site/logs/' +  os.environ['LOG_LOCATION'] + '/debug.log',
            'maxBytes': 52428800,           #50 mb
            'backupCount' : 2,
            'formatter' : 'info_format',
