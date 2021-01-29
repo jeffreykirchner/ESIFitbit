@@ -88,6 +88,7 @@
                 subject_form_ids:{{subject_form_ids|safe}},
                 last_refresh:"",
                 auto_refresh:"Off",
+                timeouts:[],
             },
 
             methods:{
@@ -168,6 +169,13 @@
                     else
                     {
                         app.$data.auto_refresh = "Off";
+
+                        for (var i = 0; i < app.$data.timeouts.length; i++) {
+                            clearTimeout(app.$data.timeouts[i]);
+                        }
+
+                        app.$data.timeouts=[];
+
                         app.$data.refreshSubjectTableButtonText = 'Auto Refresh: ' + app.$data.auto_refresh + ' <i class="fas fa-sync"></i>';
                     }
                 },
@@ -186,7 +194,7 @@
 
                                     if(app.$data.auto_refresh=="On")
                                     {
-                                        setTimeout(app.refreshSubjectTable, 10000);            
+                                        app.$data.timeouts.push(setTimeout(app.refreshSubjectTable, 10000));            
                                     }                            
                                 })
                                 .catch(function (error) {
@@ -1538,47 +1546,47 @@
                     </div>
                     <div class="card-body">                      
                                         
-                        <!-- session list -->
-                        <table class="table table-hover table-condensed">                            
+                        <!-- subject list -->
+                        <table class="table table-hover table-condensed table-responsive-xl">                            
 
                             <!-- <caption style="caption-side:top;text-align: center;">Subjects</caption> -->
 
                             <thead>
-                                <th>
+                                <th scope="col">
                                     Name
                                 </th> 
-                                <th style="text-align: center;">
+                                <th scope="col" style="text-align: center;">
                                     Color
                                 </th>
-                                <th style="text-align: center;">
+                                <th scope="col" style="text-align: center;">
                                     Login<br>Link                    
                                 </th>
-                                <th style="text-align: center;">
+                                <th scope="col" style="text-align: center;">
                                     Consent<br>Pre/Post Survey                  
                                 </th>                                
-                                <th style="text-align: center;">
+                                <th scope="col" style="text-align: center;">
                                     Check In, PayPal<br>Today               
                                 </th>
-                                <th style="text-align: center;">
+                                <th scope="col" style="text-align: center;">
                                     Today's<br>Earnings                    
                                 </th>
-                                <th style="text-align: center;">
+                                <th scope="col" style="text-align: center;">
                                     Heart<br>Score                    
                                 </th>
-                                <th style="text-align: center;">
+                                <th scope="col" style="text-align: center;">
                                     Sleep<br>Score                    
                                 </th>
-                                <th style="text-align: center;">
+                                <th scope="col" style="text-align: center;">
                                     Wrist Time<br>
                                     YDA|2DAY                     
                                 </th>
-                                <th style="text-align: center;">
+                                <th scope="col" style="text-align: center;">
                                     Last Experiment<br>Sync                  
                                 </th>
-                                <th style="text-align: center;">
+                                <th scope="col" style="text-align: center;">
                                     FitBit                                     
                                 </th>                                                      
-                                <th  style="text-align: center;">
+                                <th scope="col"  style="text-align: center;">
                                     Control
                                 </th>
                             </thead>
