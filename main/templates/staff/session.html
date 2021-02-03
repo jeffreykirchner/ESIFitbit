@@ -1643,7 +1643,12 @@
                                         </span>
                                     </td>
                                     <td style="text-align: center;">
-                                        <span v-html="s.todays_stats.earnings"></span>  
+                                        <span v-if="s.todays_stats.pay_pal">
+                                            <span v-html="s.todays_stats.earnings"></span>  
+                                        </span>
+                                        <span v-else>
+                                            ---
+                                        </span>
                                     </td>
                                     <td style="text-align: center;">
                                         <span v-html="s.todays_stats.heart_score"></span> | <span v-html="s.todays_stats.heart_time"></span> | <span v-html="s.todays_stats.heart_bpm"></span>                  
