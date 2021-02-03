@@ -210,13 +210,13 @@ class Session_subject(models.Model):
 
             v = 0
 
-            if p.trackerDataOnly:
-                for s in r['sleep']:
-                    if s['type']=='stages':
-                        v+=s['minutesAsleep']
+            # if p.trackerDataOnly:
+            #     for s in r['sleep']:
+            #         if s['type']=='stages':
+            #             v+=s['minutesAsleep']
 
-            else:
-                v = r['summary']['totalMinutesAsleep']
+            # else:
+            v = r['summary']['totalMinutesAsleep']
 
             logger.info(v)
             return v
@@ -273,7 +273,7 @@ class Session_subject(models.Model):
 
         temp_s = sleep_date.strftime("%Y-%m-%d")
         #temp_s = "today"
-        #temp_s="2020-10-22"
+        #temp_s="2021-1-25"
 
         fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1.2/user/-/sleep/date/{temp_s}.json')
 

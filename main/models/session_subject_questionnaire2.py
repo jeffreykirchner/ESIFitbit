@@ -23,6 +23,8 @@ class Session_subject_questionnaire2(models.Model):
     health_concern = models.CharField(max_length=100, choices=Likert_change.choices,verbose_name = 'Health Concern Post')
     health_concern_explaination = models.CharField(max_length = 10000, default = '',verbose_name = 'Health Concern Post Explanation')
 
+    #spring_break = models.CharField(max_length = 10000, default = '',verbose_name = 'Health Concern Post Explanation')
+
     def __str__(self):
         return "Post Questionnaire"
 
