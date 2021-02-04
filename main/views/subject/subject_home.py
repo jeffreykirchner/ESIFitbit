@@ -367,8 +367,9 @@ def getSessionDaySubject(data,session_subject,session_day):
             
             if not fitbitError:
                 #mark subject checkin as true
-                session_day_subject_actvity.check_in_today=True
-                session_day_subject_actvity.save()
+                if session_subject.fitbitSyncedToday():
+                    session_day_subject_actvity.check_in_today=True
+                    session_day_subject_actvity.save()
 
                 #pull data from fitbit            
                 session_day_subject_actvity_previous_day.pullFitbitActvities()
