@@ -434,6 +434,9 @@ class Session_subject(models.Model):
 
                     v = datetime.strptime(i.get("lastSyncTime"),'%Y-%m-%dT%H:%M:%S.%f')
 
+                    #test synced today
+                    #v = v-timedelta(days=1)
+
                     logger.info(f'getFitBitAttached sync time {v}')
 
                     d = datetime.now(pytz.UTC)
@@ -450,6 +453,23 @@ class Session_subject(models.Model):
                 self.save()
 
                 return True
+        else:
+            return False
+
+    #true if the subject has synced their fitbit today
+    def fitbitSyncedToday(self):
+        logger = logging.getLogger(__name__) 
+        d_today = todaysDate().date()
+
+        if not self.fitBitLastSynced:
+            return False
+
+        d_fitbit=self.fitBitLastSynced.date()
+
+        logger.info(f'fitbitSyncedToday {self} Today:{d_today} Last Synced:{d_fitbit}')
+
+        if d_fitbit>=d_today:
+            return True
         else:
             return False
 

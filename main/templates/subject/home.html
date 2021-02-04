@@ -56,6 +56,7 @@
                 fitbit_link:"",
                 fitBitLastSynced:"---",
                 fitBitTimeRequired:"---",
+                fitbitSyncedToday:false,
                 fitBitTimeRequirementMet:true,
                 notification_title:"",
                 notification_text:"",
@@ -88,6 +89,7 @@
                                         app.$data.session_last_day = response.data.session_last_day;
                                         app.$data.fitBitTimeRequired = response.data.fitBitTimeRequired;
                                         app.$data.fitBitTimeRequirementMet = response.data.fitBitTimeRequirementMet;
+                                       
                                     }
                                     else
                                     {
@@ -100,7 +102,8 @@
                                     app.$data.questionnaire2_required = response.data.questionnaire2_required;
                                     app.$data.fitbit_link = response.data.fitbit_link;  
                                     app.$data.fitbitError = response.data.fitbitError;       
-                                    app.$data.fitBitLastSynced = response.data.fitBitLastSynced;                     
+                                    app.$data.fitBitLastSynced = response.data.fitBitLastSynced;      
+                                    app.$data.fitbitSyncedToday = response.data.fitbitSyncedToday;               
 
                                     if(!app.$data.soft_delete)
                                     {
@@ -307,13 +310,13 @@
 
                     if(!app.$data.viewed_heart)
                     {
-                        alert("Please confirm your Heart Health before payment.")
+                        alert("Please view Heart Health tab before payment.")
                         return;
                     }
 
                     if(!app.$data.viewed_immune)
                     {
-                        alert("Please confirm your Sleep Health before payment.")
+                        alert("Please view the Sleep Health tab before payment.")
                         return;
                     }
 
@@ -815,7 +818,7 @@
                                     </div>
                                     <div v-else-if="session_complete===false">
                                         
-                                        <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()" v-bind:disabled="fitbitError || fitBitTimeRequirementMet === false"> 
+                                        <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()" v-bind:disabled="fitbitError || fitBitTimeRequirementMet === false || fitbitSyncedToday === false"> 
                                             <span v-html="payMeButtonText"></span>
                                         </button>
                                         <div v-show="fitbitError">
@@ -823,6 +826,9 @@
                                         </div>
                                         <div v-show="paymentError">
                                             <span v-html="'***Payment Error***'" style="color: red;"></span>
+                                        </div>
+                                        <div v-show="fitbitSyncedToday === false">
+                                            <span style="color: red;">You must sync your Fitbit with your phone.</span>
                                         </div>
                                     </div>
                                 </div>
@@ -864,7 +870,7 @@
             <div class="card-footer">
                 <div class="row">
                     <div class="col" style="text-align: center;">
-                        Fitbit last synced: <span v-html="fitBitLastSynced"></span>
+                        Fitbit last synced: <span v-html="fitBitLastSynced" v-bind:style="[fitbitSyncedToday ===false ? {'color': 'red' }:{}]"></span>
                     </div>
                 </div>
                 {% if not before_start_date %}
