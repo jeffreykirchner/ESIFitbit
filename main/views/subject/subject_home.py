@@ -317,6 +317,7 @@ def getSessionDaySubject(data,session_subject,session_day):
     p = Parameters.objects.first()
 
     fitbitError=False
+    fitbitSyncedToday=False
     status = "success"
     session_day_subject_actvity=None
     session_day_subject_actvity_previous_day=None
@@ -340,10 +341,11 @@ def getSessionDaySubject(data,session_subject,session_day):
     if not session_subject.getFitBitAttached():
         fitbitError=True
         logger.info("Get subject error: The fitbit is not connected.")
+
     
     if status == "success":
        
-        if not fitbitError:
+        if not fitbitError and session_subject.fitbitSyncedToday():
             #check if subject missed past days
             session_subject.fitBitCatchUp()
 
@@ -402,6 +404,7 @@ def getSessionDaySubject(data,session_subject,session_day):
         return JsonResponse({"status":status,
                              "fitbitError":fitbitError,
                              "fitBitLastSynced":"---" if fitbitError else session_subject.getFitbitLastSyncStr(False),
+                             "fitbitSyncedToday":session_subject.fitbitSyncedToday(),
                              "fitbit_link":session_subject.getFitBitLink("subject"),
                              "soft_delete":session_subject.soft_delete,
                              "questionnaire1_required":session_subject.getQuestionnaire1Required(),
@@ -441,6 +444,7 @@ def getSessionDaySubject(data,session_subject,session_day):
         return JsonResponse({"status":status,
                         "fitbitError":fitbitError,
                         "fitBitLastSynced":session_subject.getFitbitLastSyncStr(False),
+                        "fitbitSyncedToday":session_subject.fitbitSyncedToday(),
                         "fitbit_link":session_subject.getFitBitLink("subject"),
                         "fitBitTimeRequired": fitBitTimeRequired,
                         "fitBitTimeRequirementMet": fitBitTimeRequirementMet,
