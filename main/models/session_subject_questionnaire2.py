@@ -23,7 +23,7 @@ class Session_subject_questionnaire2(models.Model):
     health_concern = models.CharField(max_length=100, choices=Likert_change.choices,verbose_name = 'Health Concern Post')
     health_concern_explaination = models.CharField(max_length = 10000, default = '',verbose_name = 'Health Concern Post Explanation')
 
-    #spring_break = models.CharField(max_length = 10000, default = '',verbose_name = 'Health Concern Post Explanation')
+    holiday_break_explaination = models.CharField(max_length = 10000, default = '',verbose_name = 'How did you spend your last break?')
 
     def __str__(self):
         return "Post Questionnaire"
@@ -43,6 +43,8 @@ class Session_subject_questionnaire2(models.Model):
         self.health_concern = random.randrange(4, 10)
         self.health_concern_explaination = get_random_string(length=100)
 
+        self.holiday_break_explaination = get_random_string(length=100)
+
         self.save()
 
     #get csv data for data file
@@ -50,7 +52,8 @@ class Session_subject_questionnaire2(models.Model):
 
          writer.writerow([self.session_subject.session.title,self.session_subject.id_number,self.session_subject.login_key,
                          self.sleep_changed,self.sleep_changed_explaination,self.exercise_changed,
-                         self.exercise_changed_explaination,self.health_concern,self.health_concern_explaination])
+                         self.exercise_changed_explaination,self.health_concern,self.health_concern_explaination,
+                         self.holiday_break_explaination])
     
     def json(self):
         return{

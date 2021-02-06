@@ -276,7 +276,8 @@ class Session(models.Model):
         writer.writerow(['Session','Subject ID','Subject Code',
                          'Sleep Change Post','Sleep Change Post Explanation',
                          'Exercise Change Post','Exercise Changed Post Explanation',
-                         'Health Concern Post','Health Concern Post Explanation'])
+                         'Health Concern Post','Health Concern Post Explanation',
+                         'Holiday Break Explaination'])
 
         ss_list = self.session_subjects.filter(soft_delete=False).order_by('id_number')
         
