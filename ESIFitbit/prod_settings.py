@@ -49,8 +49,8 @@ LOGGING = {
            'level':'INFO', 
            'class': 'logging.handlers.RotatingFileHandler',
            'filename': os.environ['LOG_LOCATION'],
-           'maxBytes': 52428800,           #50 mb
-           'backupCount' : 2,
+           'maxBytes': 10485760,           #10 mb
+           'backupCount' : 5,
            'formatter' : 'info_format',
            'delay': True,
        },
