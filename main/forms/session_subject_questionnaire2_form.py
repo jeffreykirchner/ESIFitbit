@@ -34,6 +34,11 @@ class Session_subject_questionnaire2_form(forms.ModelForm):
     health_concern_explaination = forms.CharField(label=mark_safe('If you anticipate a change: how will you change?<br>If do NOT anticipate a change: why won’t you change?'),
                                         required=True,
                                         widget=forms.Textarea(attrs={"rows":"5", "cols":"75"}))
+    
+    holiday_break_explaination = forms.CharField(label=mark_safe('How did you spend your spring break?'),
+                                        required=True,
+                                        widget=forms.Textarea(attrs={"rows":"5", "cols":"75"}))
+
 
     class Meta:
         model=Session_subject_questionnaire2
