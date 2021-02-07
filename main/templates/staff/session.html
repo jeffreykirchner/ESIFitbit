@@ -1076,7 +1076,7 @@
 <div class="row justify-content-lg-center">
     <div class="col col-lg-12">
         <div class="row">
-            <div class="col-8">
+            <div class="col-md-8">
                 <!-- parameters card -->
                 <div class="card">
                     <div class="card-header">
@@ -1099,6 +1099,9 @@
                                                                         
                     </div>
                     <div class="card-body">
+                        <!-- hide on mobile -->
+                        <div class="d-none d-md-block">
+
                         <!-- activity formula -->
                         <div class="row mt-2">
                             <div class="col" style="text-align: center;">
@@ -1373,10 +1376,12 @@
                                  <span v-html="session.parameterset.x_ticks_immune"></span>
                              </div>
                         </div>
+
+                        </div> <!--hide on mobile -->
                     </div>
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-md-4">
                 <!-- session card -->
                 <div class = "card">
                     <div class="card-header">
@@ -1547,7 +1552,7 @@
                     <div class="card-body">                      
                                         
                         <!-- subject list -->
-                        <table class="table table-hover table-condensed table-responsive-xl">                            
+                        <table class="table table-hover table-condensed table-responsive-md">                            
 
                             <!-- <caption style="caption-side:top;text-align: center;">Subjects</caption> -->
 
