@@ -18,6 +18,7 @@ urlpatterns = [
     #staff
     path('staffHome/',views.Staff_Home,name='staff_home'),
     path('session/<id>/',views.Staff_Session,name='staff_session'),
+    path('adminFunctions/',views.Admin_functions,name='admin_functions'),
 
     #subject
     path('subjectHome/',views.Home,name='home2'),
