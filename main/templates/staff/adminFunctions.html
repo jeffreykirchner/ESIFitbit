@@ -1,0 +1,91 @@
+{%extends "base.html"%}
+{% load crispy_forms_tags %}
+
+{%block head%}
+
+    <script type="text/javascript">
+    $(document).ready(function(){
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        axios.defaults.xsrfCookieName = "csrftoken";
+
+        var app = new Vue({
+        
+            delimiters: ['[[', ']]'],
+            el: '#root',        
+            data:{
+                sessions:[],
+                backFillSleepButtonText : 'Go',
+                backFillSleepSessionId:'',
+                backFillSleepResult:'',
+                helpTitle:"Admin Function Help",
+                helpText:``,
+            },
+
+            methods:{
+
+                //create new experient
+                backFillSleep:function(){                    
+                    app.$data.backFillSleepButtonText = '<i class="fas fa-spinner fa-spin"></i>';
+                    app.$data.backFillSleepResult="";
+
+                    axios.post('{{request.get_full_path}}', {
+                                    action :"backFillSleep" ,   
+                                    backFillSleepSessionId:app.$data.backFillSleepSessionId,                                                                                                                                                             
+                                })
+                                .then(function (response) {     
+                                    app.$data.backFillSleepButtonText ="Go";
+                                    app.$data.backFillSleepResult = response.data.errors;
+
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                                });                        
+                },
+            },
+
+            mounted: function(){
+                              
+            },
+        });
+
+    });
+
+    </script>
+    <style>
+        [v-cloak] {
+        display: none;
+        }
+    </style>
+{%endblock head%}
+
+{%block content%}
+<div class="row justify-content-lg-center" v-cloak>
+    <div class="col col-md-4">
+        <div class="card">                  
+            <div class="card-header">                
+                Back fill sleep data                                                                
+            </div>
+            <div class="card-body">   
+                
+                <div class="row">
+                    <div class="col-md">
+                        <div class="form-group">
+                            <label for="sessionID">Session Number</label>
+                            <input type="number" class="form-control" id="sessionID" aria-describedby="sessionID" placeholder="" v-model="backFillSleepSessionId">
+                        </div>
+                    </div>
+                </div>                   
+                                          
+            </div>
+            <div class="card-footer">                      
+                <button type="button" class="btn btn-outline-primary" v-on:click = "backFillSleep()">
+                    <span v-html="backFillSleepButtonText"></span>
+                </button>   
+                
+                [[backFillSleepResult]]
+            </div>                    
+        </div>                
+    </div>
+</div>    
+
+{%endblock content%}
