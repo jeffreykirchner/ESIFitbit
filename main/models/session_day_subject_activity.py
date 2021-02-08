@@ -39,6 +39,7 @@ class Session_day_subject_actvity(models.Model):
     fitbit_minutes_heart_cardio = models.IntegerField(default=0)               #todays heart rate cardio
     fitbit_minutes_heart_peak = models.IntegerField(default=0)                 #todays heart rate peak
     fitbit_heart_time_series =  models.CharField(max_length = 100000, default = '')  #today's heart rate time series
+    fitbit_immune_time_series =  models.CharField(max_length = 100000, default = '')  #today's sleep time series
 
     fitbit_on_wrist_minutes = models.IntegerField(default=0)         #minutes fit bit was one wrist (sum of heart time series) 
     fitbit_min_heart_rate_zone_bpm = models.IntegerField(default=0)  #minimum bmp a subject must have to register active zone minutes
@@ -359,6 +360,7 @@ class Session_day_subject_actvity(models.Model):
 
         fitbitError = False
 
+        self.fitbit_immune_time_series = self.session_subject.getFitbitSleep(self.session_day.date)
         immune_activity_minutes = self.session_subject.getFibitImmuneMinutes(self.session_day.date)
 
         if immune_activity_minutes !=-1:
@@ -378,14 +380,14 @@ class Session_day_subject_actvity(models.Model):
         if immune_activity_minutes >= 0:
             self.immune_activity_minutes = immune_activity_minutes
         else:
-            logger.info(f"immune_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")
+            logger.warning(f"immune_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")
             fitbitError=True
         
         #old calculation
         #self.heart_activity_minutes = heart_activity_minutes
 
         if heart_activity_minutes < 0:
-            logger.info(f"heart_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")
+            logger.warning(f"heart_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")
             fitbitError=True
 
         self.save()
