@@ -59,6 +59,7 @@ class Session(models.Model):
     class Meta:
         verbose_name = 'Experiment Session'
         verbose_name_plural = 'Experiment Sessions'
+        ordering = ['-start_date']
 
     #get the current session day
     def getCurrentSessionDay(self) :
