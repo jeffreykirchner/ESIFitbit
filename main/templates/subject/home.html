@@ -631,7 +631,7 @@
 
 {%block content%}
 <div class="row justify-content-lg-center" v-cloak> 
-    <div class="col col-lg-6">
+    <div class="col col-lg-6 mb-4">
         <div class="card">                  
             <div class="card-header">
                 <span >{{session_subject.contact_email}}</span>               
@@ -709,61 +709,61 @@
                     
                         <div v-if="toggleState==='heart'">
                             <div class="row mt-1">
-                                <div class="col" style="text-align: center;">Heart Health Score: <span style="font-weight: bold;" v-html = session_day_subject_actvity.heart_activity></span></div>
+                                <div class="col" style="text-align: center;">Today's heart health score: <span style="font-weight: bold;" v-html = session_day_subject_actvity.heart_activity></span></div>
                             </div>
                             <div class="row">
                                 <div class="col" style="text-align: center;">                             
                                     <div v-if="fitbitError">
-                                        Yesterday's Zone Minutes: <u><a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a></u>
+                                        Yesterday's zone minutes: <u><a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a></u>
                                     </div>
                                     <div v-else>
-                                        Yesterday's Zone Minutes: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.heart_activity_minutes></span>
+                                        Yesterday's zone minutes: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.heart_activity_minutes></span>
                                     </div>                            
                                 </div>
                             </div>
                             <div class="row mt-1">
                                 <div class="col" style="text-align: center;">
-                                    Minutes Required to:
+                                    Today's zone minutes required to:
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col" style="text-align: center;">
-                                    Maintain Score at <span v-html = session_day_subject_actvity.heart_activity></span>: <span v-html="session_day_subject_actvity.heart_maintenance_minutes"></span>
+                                    Maintain score at <span v-html = session_day_subject_actvity.heart_activity></span> for tomorrow: <span v-html="session_day_subject_actvity.heart_maintenance_minutes"></span>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col" style="text-align: center;">
-                                    Improve Score to <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_activity></span>: <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_minutes></span>
+                                    Improve score to <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_activity></span> for tomorrow: <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_minutes></span>
                                 </div>
                             </div>
                         </div>
                         <div v-else-if="toggleState==='immune'">
                             <div class="row mt-1">
-                                <div class="col" style="text-align: center;">Sleep Health Score: <span style="font-weight: bold;" v-html = session_day_subject_actvity.immune_activity></span></div>
+                                <div class="col" style="text-align: center;">Today's sleep health score: <span style="font-weight: bold;" v-html = session_day_subject_actvity.immune_activity></span></div>
                             </div>
                             <div class="row">
                                 <div class="col" style="text-align: center;">                             
                                     <div v-if="fitbitError">
-                                        Yesterday's Hours Sleeping: <u><a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a></u>
+                                        Yesterday's hours sleeping: <u><a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a></u>
                                     </div>
                                     <div v-else>
-                                        Yesterday's Hours Sleeping: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.immune_activity_hours></span>
+                                        Yesterday's hours sleeping: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.immune_activity_hours></span>
                                     </div>                            
                                 </div>
                             </div>
                             <div class="row mt-1">
                                 <div class="col" style="text-align: center;">
-                                    Hours Required to:
+                                    Today's hours required to:
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col" style="text-align: center;">
-                                    Maintain Score at <span v-html = session_day_subject_actvity.immune_activity></span>: <span v-html="session_day_subject_actvity.immune_maintenance_hours"></span>
+                                    Maintain score at <span v-html = session_day_subject_actvity.immune_activity></span> for tomorrow: <span v-html="session_day_subject_actvity.immune_maintenance_hours"></span>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col" style="text-align: center;">
-                                    Improve Score to <span v-html = session_day_subject_actvity.immune_improvment_hours.target_activity></span>: <span v-html="session_day_subject_actvity.immune_improvment_hours.target_hours"></span>
+                                    Improve score to <span v-html = session_day_subject_actvity.immune_improvment_hours.target_activity></span> for tomorrow: <span v-html="session_day_subject_actvity.immune_improvment_hours.target_hours"></span>
                                 </div>
                             </div>
                         </div>  
