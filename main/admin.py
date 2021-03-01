@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.db.models.functions import Lower
 
-from main.forms import Parameters_form,Consent_form_form
+from main.forms import Parameters_form, Consent_form_form, SessionFormAdmin
 
 from main.models import *
 
@@ -32,8 +32,19 @@ class consent_formsadmin(admin.ModelAdmin):
       actions = []
       list_display = ['name']
       
-      form = Consent_form_form
-
-      
+      form = Consent_form_form      
 
 admin.site.register(Consent_forms, consent_formsadmin)
+
+#session form
+class SessionAdmin(admin.ModelAdmin):
+
+      ordering = ['-start_date']
+
+      actions = []
+      list_display = ['title','start_date','soft_delete']
+      
+      form = SessionFormAdmin   
+
+admin.site.register(Session, SessionAdmin)
+
