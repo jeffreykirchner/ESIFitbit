@@ -70,6 +70,6 @@ def sendMassEmail(block_count,message_list):
             logger.info('There was an error sending email: ' + str(e)) 
             errorMessage = str(e)
     else:
-        errorMessage:"Message list empty, no emails sent."
+        errorMessage="Message list empty, no emails sent."
 
     return {"mailCount":mailCount,"errorMessage":errorMessage}

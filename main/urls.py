@@ -12,7 +12,7 @@ urlpatterns = [
     re_path(r'^admin/login/$', RedirectView.as_view(url=settings.LOGIN_URL, permanent=True, query_string=True)),    
 
     #account control
-    path('',views.Home,name='home'),                 #direct user by subject type
+    path('',views.Home,name='home'),                         #direct user by subject type
     path('accounts/', include('django.contrib.auth.urls')),  #django built in account registrations
        
     #staff

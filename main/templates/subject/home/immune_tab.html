@@ -1,0 +1,28 @@
+<div class="row mt-1">
+    <div class="col" style="text-align: center;">Today's sleep health score: <span style="font-weight: bold;" v-html = session_day_subject_actvity.immune_activity></span></div>
+</div>
+<div class="row">
+    <div class="col" style="text-align: center;">                             
+        <div v-if="fitbitError">
+            Yesterday's hours sleeping: <u><a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a></u>
+        </div>
+        <div v-else>
+            Yesterday's hours sleeping: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.immune_activity_hours></span>
+        </div>                            
+    </div>
+</div>
+<div class="row mt-1">
+    <div class="col" style="text-align: center;">
+        Today's hours required to:
+    </div>
+</div>
+<div class="row">
+    <div class="col" style="text-align: center;">
+        Maintain score at <span v-html = session_day_subject_actvity.immune_activity></span> for tomorrow: <span v-html="session_day_subject_actvity.immune_maintenance_hours"></span>
+    </div>
+</div>
+<div class="row">
+    <div class="col" style="text-align: center;">
+        Improve score to <span v-html = session_day_subject_actvity.immune_improvment_hours.target_activity></span> for tomorrow: <span v-html="session_day_subject_actvity.immune_improvment_hours.target_hours"></span>
+    </div>
+</div>

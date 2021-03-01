@@ -6,20 +6,19 @@ import pytz
 
 class Session_form(forms.ModelForm):
     title = forms.CharField(label='Title',
-                            widget=forms.TextInput(attrs={"v-model":"session.title"})) 
+                            widget=forms.TextInput(attrs={"v-model" : "session.title"})) 
     
     start_date = forms.DateField(label="Start Date",
-                               input_formats=['%m/%d/%Y'],
-                               error_messages={'invalid': 'Format: M/D/YYYY'},                                                                                                           
-                               widget = forms.DateTimeInput(attrs={"v-model":"session.start_date",
-                                                                   "v-bind:disabled" :"session.editable === false"}))
+                                 input_formats=['%m/%d/%Y'],
+                                 error_messages={'invalid' : 'Format: M/D/YYYY'},                                                                                                           
+                                 widget=forms.DateTimeInput(attrs={"v-model" : "session.start_date",
+                                                                   "v-bind:disabled" : "session.editable === false"}))
     
     treatment = forms.TypedChoiceField(label='Treatment', 
-                                         choices=Session.Treatment.choices,                   
-                                         widget=forms.Select(attrs={"v-model":"session.treatment"}))
+                                       choices=Session.Treatment.choices,                   
+                                       widget=forms.Select(attrs={"v-model" : "session.treatment"}))
     
 
     class Meta:
-        model=Session
-        exclude=['soft_delete','parameterset','started','end_date','invitations_sent',
-                 'invitation_text','invitation_text_subject','canceled','cancelation_text','cancelation_text_subject']
+        model = Session
+        fields = ('title', 'start_date', 'treatment')
