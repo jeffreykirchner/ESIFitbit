@@ -1,0 +1,54 @@
+<!-- session card -->
+<div class = "card">
+    <div class="card-header">
+        <span class="align-middle">Session</span>
+        
+        <span class="float-right">                            
+            <button class="btn btn-outline-primary" type="button" v-on:click = "showEditSession()">
+                Edit <i class="far fa-edit"></i>
+            </button>
+        </span>                                                                        
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-4 text-lg-right">
+                <u>{{session_form.title.label}}</u>:
+            </div>
+            <div class="col-lg-8">
+                <span v-html="session.title"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 text-lg-right">
+                <u>{{session_form.treatment.label}}</u>:
+            </div>
+            <div class="col-lg-8">
+                <span v-html="session.treatment_label"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 text-lg-right">
+                <u>{{session_form.start_date.label}}</u>:
+            </div>
+            <div class="col-lg-8 ">
+                <span v-html="session.start_date"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 text-lg-right">
+                <u>End Date</u>:
+            </div>
+            <div class="col-lg-8">
+                <span v-html="session.end_date"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 text-lg-right">
+                <u>Current Period</u>:
+            </div>
+            <div class="col-lg-8">
+                <span v-html="session.current_period"></span>
+            </div>
+        </div>
+    </div>
+</div>

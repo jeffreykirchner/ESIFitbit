@@ -1,0 +1,86 @@
+<!-- Control card -->
+<div class = "card">
+    <div class="card-header">
+        <span class="align-middle">Control</span>                                                                        
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col" style="text-align: right;">
+                <button class="btn btn-outline-success" type="button" v-on:click = "startSession()" v-bind:disabled = "session.started">
+                    <span v-html="startSessionButtonText"></span>
+                </button>
+            </div>    
+            <div class="col">
+                <div v-if="session.started">
+                    Session Started
+                </div>
+                <div v-else>
+                    Session Not Started
+                </div>
+            </div>                        
+        </div>
+        <div class="row mt-2">
+            <div class="col" style="text-align: right;">
+                <button class="btn btn-outline-danger" type="button" v-on:click = "showCancelSession()" v-bind:disabled = "session.started === false || session.canceled">
+                    Cancel Session <i class="fas fa-ban"></i>
+                </button>
+            </div>    
+            <div class="col">
+                <div v-if="session.canceled">
+                    Session Canceled
+                </div>
+                <div v-else>
+                    
+                </div>
+            </div>                        
+        </div>
+        {%if DEBUG%}
+        <div class="row mt-2"> 
+            <div class="col" style="text-align: right;">
+               
+                <button class="btn btn-outline-danger" type="button" v-on:click = "backFillSessionsDays()" v-bind:disabled = "session.started === false">
+                    <span v-html="backFillButtonText"></span>
+                </button>
+                
+            </div>
+            <div class="col">
+            </div> 
+        </div>
+        {%endif%}
+        <div class="row mt-2"> 
+            <div class="col" style="text-align: right;">                                
+                <button class="btn btn-outline-primary" type="button" v-on:click = "showSendInvitations()" v-bind:disabled = "session.started === false">
+                    Send Invitations <i class="far fa-envelope"></i>
+                </button>                                
+            </div>
+            <div class="col">
+                <div v-if="session.invitations_sent">
+                    Invitations Sent
+                </div>
+                <div v-else>
+                    Invitations Not Sent
+                </div>
+            </div> 
+        </div>    
+        <div class="row mt-2"> 
+            <div class="col" style="text-align: right;">                                
+                <button class="btn btn-outline-primary" type="button" v-on:click = "downloadData()" v-bind:disabled = "session.started === false">
+                   <span v-html="downloadDataButtonText"></span>
+                </button>                                
+            </div>
+            <div class="col">
+                
+            </div> 
+        </div> 
+        <div class="row mt-2"> 
+            <div class="col" style="text-align: right;">                                
+                <button class="btn btn-outline-primary" type="button" v-on:click = "downloadEarnings()" v-bind:disabled = "session.started === false">
+                   <span v-html="downloadEarningsButtonText"></span>
+                </button>                                
+            </div>
+            <div class="col">
+                <input class="form-control" type="date" id="earningsDownloadDate_id" v-model="earningsDownloadDate">
+            </div> 
+        </div>                                         
+    </div>
+</div>

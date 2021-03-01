@@ -1,0 +1,23 @@
+<!-- graph card -->
+<div class="card">
+    <div class="card-header">
+        <span class="align-middle">Subject Activity</span>
+
+        <span class="float-right">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-secondary active">
+                    <input type="radio" name="options" id="option1" autocomplete="off" checked v-on:click="updateToogleState('heart')"> <i class="far fa-heart"></i>
+                </label>
+                <label class="btn btn-secondary">
+                    <input type="radio" name="options" id="option2" autocomplete="off" v-on:click="updateToogleState('immune')"> <i class="fas fa-bed"></i>
+                </label>                    
+            </div>
+        </span>
+                                                        
+    </div>
+    <div class="card-body">
+        <div>
+            <canvas key="healthChart" id="healthChart" style="border-style: solid;border-width: 1px;"></canvas>
+        </div>                        
+    </div> 
+</div>
