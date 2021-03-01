@@ -1,0 +1,28 @@
+<div class="row mt-1">
+    <div class="col" style="text-align: center;">Today's heart health score: <span style="font-weight: bold;" v-html = session_day_subject_actvity.heart_activity></span></div>
+</div>
+<div class="row">
+    <div class="col" style="text-align: center;">                             
+        <div v-if="fitbitError">
+            Yesterday's zone minutes: <u><a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a></u>
+        </div>
+        <div v-else>
+            Yesterday's zone minutes: <span style="font-weight: bold;" v-html = session_day_subject_actvity_previous.heart_activity_minutes></span>
+        </div>                            
+    </div>
+</div>
+<div class="row mt-1">
+    <div class="col" style="text-align: center;">
+        Today's zone minutes required to:
+    </div>
+</div>
+<div class="row">
+    <div class="col" style="text-align: center;">
+        Maintain score at <span v-html = session_day_subject_actvity.heart_activity></span> for tomorrow: <span v-html="session_day_subject_actvity.heart_maintenance_minutes"></span>
+    </div>
+</div>
+<div class="row">
+    <div class="col" style="text-align: center;">
+        Improve score to <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_activity></span> for tomorrow: <span v-html = session_day_subject_actvity.heart_improvment_minutes.target_minutes></span>
+    </div>
+</div>
