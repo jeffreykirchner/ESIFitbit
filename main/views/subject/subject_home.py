@@ -33,15 +33,15 @@ def Subject_Home(request,id):
             data = json.loads(request.body.decode('utf-8'))
 
             if data["action"] == "getSessionDaySubject":
-                return getSessionDaySubject(data,session_subject,session_day)
+                return getSessionDaySubject(data, session_subject,session_day)
             elif data["action"] == "payMe":
-                return payMe(data,session_subject,session_day)
+                return payMe(data,session_subject, session_day)
             elif data["action"] == "acceptConsentForm":
-                return acceptConsentForm(data,session_subject)
+                return acceptConsentForm(data, session_subject)
             elif data["action"] == "submitQuestionnaire1":
-                return submitQuestionnaire1(data,session_subject)
+                return submitQuestionnaire1(data, session_subject)
             elif data["action"] == "submitQuestionnaire2":
-                return submitQuestionnaire2(data,session_subject)
+                return submitQuestionnaire2(data, session_subject)
            
         else:   
             logger.info("Session subject day, user not found: " + str(id))
@@ -86,29 +86,31 @@ def Subject_Home(request,id):
 
             return render(request,'subject/home.html',{"id":id,  
                                                     "status":"success",    
-                                                    "before_start_date":session.isBeforeStartDate(), 
-                                                    "session_canceled":session.canceled,
-                                                    "session_started":session.started,                                                   
-                                                    "start_date":session.getDateString(),    
-                                                    "session_complete":session.complete(),  
-                                                    "soft_delete":session_subject.soft_delete,
-                                                    "session_subject_questionnaire1_form_ids":session_subject_questionnaire1_form_ids,
-                                                    "session_subject_questionnaire1_form":session_subject_questionnaire1_form,
-                                                    "session_subject_questionnaire2_form_ids":session_subject_questionnaire2_form_ids,
-                                                    "session_subject_questionnaire2_form":session_subject_questionnaire2_form,  
-                                                    "heart_help_text":p.heartHelpText,
-                                                    "immune_help_text":p.immuneHelpText,
-                                                    "payment_help_text":p.paymentHelpText if not baseline_payment else p.paymentHelpTextBaseline,                       
-                                                    "session_subject":session_subject,
-                                                    "baseline_payment":baseline_payment,
-                                                    "baseline_heart":baseline_heart,
-                                                    "baseline_sleep":baseline_sleep,
-                                                    "session_treatment":session.treatment})
+                                                    "before_start_date" : session.isBeforeStartDate(), 
+                                                    "session_canceled" : session.canceled,
+                                                    "session_started" : session.started,                                                   
+                                                    "start_date" : session.getDateString(),    
+                                                    "session_complete" : session.complete(),  
+                                                    "soft_delete" : session_subject.soft_delete,
+                                                    "session_subject_questionnaire1_form_ids" : session_subject_questionnaire1_form_ids,
+                                                    "session_subject_questionnaire1_form" : session_subject_questionnaire1_form,
+                                                    "session_subject_questionnaire2_form_ids" : session_subject_questionnaire2_form_ids,
+                                                    "session_subject_questionnaire2_form" : session_subject_questionnaire2_form,  
+                                                    "heart_help_text" : p.heartHelpText,
+                                                    "immune_help_text" : p.immuneHelpText,
+                                                    "payment_help_text" : p.paymentHelpText if not baseline_payment else p.paymentHelpTextBaseline,                       
+                                                    "session_subject" : session_subject,
+                                                    "baseline_payment" : baseline_payment,
+                                                    "baseline_heart" : baseline_heart,
+                                                    "baseline_sleep" : baseline_sleep,
+                                                    "session_treatment" : session.treatment})
         else:
             logger.info("Error: subject Home, subject not found")
             return render(request,'subject/home.html',{"id":id,  
                                                        "contact_email":p.contactEmail,
                                                        "status":"fail",
+                                                       "session_subject_questionnaire1_form_ids":[],
+                                                       "session_subject_questionnaire2_form_ids":[],
                                                             })
 
 #take pre session questionnaire
@@ -205,10 +207,10 @@ def payMe(data,session_subject,session_day):
     #check that session is not complete    
     if not session_day:
         status = "fail"  
-        message = "Pay ErPayror: Session day not found"
+        message = "Pay Error: Session day not found"
         logger.warning(message) 
 
-    #check that session is not complete   
+    #check that session is not started   
     if status == "success": 
         if not session_day.session.started:
             status = "fail"  

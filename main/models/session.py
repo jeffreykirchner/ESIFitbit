@@ -36,7 +36,8 @@ class Session(models.Model):
     start_date = models.DateField(default=now)                                  #date of session start
     end_date = models.DateField(default=now)                                    #date of session end
 
-    started =  models.BooleanField(default=False)                               #starts session and filll in session 
+    started =  models.BooleanField(default=False)                               #starts session and filll in session
+    allow_delete =  models.BooleanField(default=True)                           #if true allow the session to be deleted
 
     canceled = models.BooleanField(default=False)                               #true if session needs to be canceled
     cancelation_text =  models.CharField(max_length = 10000,default = "")       #text sent to subjects if experiment is canceled
@@ -362,6 +363,7 @@ class Session(models.Model):
             "email_list":email_list,
             "current_period" : current_session_day.period_number if current_session_day else "---",
             "complete": self.complete(),
+            "allow_delete" : self.allow_delete,
         }
 
 #delete associated user model when profile is deleted
