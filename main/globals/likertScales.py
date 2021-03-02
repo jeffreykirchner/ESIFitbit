@@ -61,3 +61,14 @@ class Yes_No(models.TextChoices):
     DEFAULT = "", _('')
     TRUE = True, _('Yes')
     FALSE = False, _('No')
+
+class SexAtBirth(models.TextChoices):
+    DEFAULT = '', _('')
+    MALE = 'Male', _('Male')
+    FEMALE = 'Female', _('Female')
+
+class GenderIdentity(models.TextChoices):
+    DEFAULT = '', _('')
+    MAN = 'Man', _('Man')
+    WOMAN = 'Woman', _('Woman')
+    FILLIN = 'Describe', _('Self describe below')

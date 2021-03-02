@@ -15,6 +15,8 @@ class Session_day(models.Model):
     period_number = models.IntegerField()
     date = models.DateField(default=now)                            #date and time of session day
 
+    payments_sent = models.BooleanField(default=False)              #true once paypal payments are sent
+
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
 
