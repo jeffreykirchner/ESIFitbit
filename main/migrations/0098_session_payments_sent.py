@@ -10,9 +10,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='session',
-            name='payments_sent',
-            field=models.BooleanField(default=False),
-        ),
+        # migrations.AddField(
+        #     model_name='session',
+        #     name='payments_sent',
+        #     field=models.BooleanField(default=False),
+        # ),
     ]
