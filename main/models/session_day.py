@@ -15,12 +15,17 @@ class Session_day(models.Model):
     period_number = models.IntegerField()
     date = models.DateField(default=now)                            #date and time of session day
 
+    payments_sent = models.BooleanField(default=False)              #true once paypal payments are sent
+
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
 
     def __str__(self):
-        return str(self.id) + " " + str(self.date)
+        return (f'{self.session.title} : date + {self.date} id {self.id}')
     
+    def __title__(self):
+        return str(self.session.title)
+
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['session', 'period_number'], name='unique_SD')

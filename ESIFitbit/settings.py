@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'crispy_forms',
     'main',
-    "django_cron",
 ]
 
 MIDDLEWARE = [
