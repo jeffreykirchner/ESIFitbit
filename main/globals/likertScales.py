@@ -71,4 +71,4 @@ class GenderIdentity(models.TextChoices):
     DEFAULT = '', _('')
     MAN = 'Man', _('Man')
     WOMAN = 'Woman', _('Woman')
-    FILLIN = 'FillIn', _('Write in below')
+    FILLIN = 'Describe', _('Self describe below')

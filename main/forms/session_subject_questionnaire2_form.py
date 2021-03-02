@@ -53,7 +53,8 @@ class Session_subject_questionnaire2_form(forms.ModelForm):
 
     gender_identity_fillin = forms.CharField(label="",
                                              required=False,
-                                             widget=forms.Textarea(attrs={}))
+                                             widget=forms.TextInput(attrs={"size":"125",
+                                                                           "placeholder":"Self describe your gender identity"}))
 
 
 
@@ -62,3 +63,13 @@ class Session_subject_questionnaire2_form(forms.ModelForm):
         fields=('sleep_changed', 'sleep_changed_explaination', 'exercise_changed', 'exercise_changed_explaination', 
                 'health_concern', 'health_concern_explaination', 'holiday_break_explaination' , 'sex_at_birth', 'gender_identity',
                 'gender_identity_fillin')
+
+    
+    def clean_gender_identity_fillin(self):
+        gender_identity_fillin = self.data['gender_identity_fillin']
+
+        if self.data['gender_identity'] == 'Describe':
+            if gender_identity_fillin == '':
+                 raise forms.ValidationError('Field Required')
+
+        return gender_identity_fillin
