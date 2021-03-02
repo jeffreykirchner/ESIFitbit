@@ -10,13 +10,13 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='session',
-            name='payments_sent',
-        ),
-        migrations.AddField(
-            model_name='session_day',
-            name='payments_sent',
-            field=models.BooleanField(default=False),
-        ),
+        # migrations.RemoveField(
+        #     model_name='session',
+        #     name='payments_sent',
+        # ),
+        # migrations.AddField(
+        #     model_name='session_day',
+        #     name='payments_sent',
+        #     field=models.BooleanField(default=False),
+        # ),
     ]
