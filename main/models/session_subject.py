@@ -665,12 +665,14 @@ class Session_subject(models.Model):
                    'Accept-Language' :	'en_US'}    
 
         try:            
-            r = requests.get(url, headers=headers).json()
+            r = requests.get(url, headers=headers)
+
+            r = r.json()
 
             logger.info(f"Fitbit request: {url} ")
             logger.info(f"Fitbit request:{r}")
 
             return r
         except Exception  as e: 
-            logger.warning(f"getFitbitInfo2 error {e}")
+            logger.warning(f"getFitbitInfo2 error: {e} , response: {r}")
             return  "fail"
