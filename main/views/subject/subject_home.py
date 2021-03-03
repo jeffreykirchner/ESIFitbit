@@ -333,18 +333,19 @@ def getSessionDaySubject(data,session_subject,session_day):
     if not session_subject:
         status = "fail"
         logger.info("Get subject error: Session subject not found.")
+
     
-    #chec if session is already complete
-    if status == "success" and session_subject.session.complete():
+    #check if session is already complete
+    if session_subject and not session_subject.session.complete():
+        
+        #check fitbit is attached and store last sync date
+        if not session_subject.getFitBitAttached():
+            fitbitError=True
+            logger.info("Get subject error: The fitbit is not connected.")
+    else:
         status = "fail"
-        logger.info("Get subject error: The session is complete.")
+        logger.info("No fitbit data pulled: The session is complete.")
 
-    #check fitbit is attached and store last sync date
-    if not session_subject.getFitBitAttached():
-        fitbitError=True
-        logger.info("Get subject error: The fitbit is not connected.")
-
-    
     if status == "success":
        
         if not fitbitError and session_subject.fitbitSyncedToday():

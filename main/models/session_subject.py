@@ -581,9 +581,11 @@ class Session_subject(models.Model):
             check_in = sada.check_in_today
             pay_pal = sada.paypal_today
             earnings = f'${sada.getTodaysTotalEarnings():0.2f}'
-            heart_score = f'{sada.heart_activity:0.2f}'
-            immune_score = f'{sada.immune_activity:0.2f}'
-            heart_bpm = f'{sada.fitbit_min_heart_rate_zone_bpm}bpm'
+
+            if check_in:
+                heart_score = f'{sada.heart_activity:0.2f}'
+                heart_bpm = f'{sada.fitbit_min_heart_rate_zone_bpm}bpm'       
+                immune_score = f'{sada.immune_activity:0.2f}' 
         else:
             sada_yesterday = None
 
@@ -592,8 +594,10 @@ class Session_subject(models.Model):
 
             if sada_yesterday.heart_activity_minutes >= 0:
                 heart_time =  f'{int(sada_yesterday.heart_activity_minutes)}mins'
+                
             if sada_yesterday.immune_activity_minutes >= 0:
                 immune_time =  f'{math.floor(sada_yesterday.immune_activity_minutes/60)}hrs {sada_yesterday.immune_activity_minutes%60}mins'
+                
         elif sada:
             wrist_time = f'---| {sada.getFormatedWristMinutes()}'
 
