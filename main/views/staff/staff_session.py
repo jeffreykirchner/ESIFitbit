@@ -260,6 +260,10 @@ def updateSession(data,id):
     if not s.editable():
         form_data_dict["start_date"] = s.getDateString()
 
+        form_data_dict["consent_required"] = 1 if s.consent_required else 0
+        form_data_dict["questionnaire1_required"] = 1 if s.questionnaire1_required else 0
+        form_data_dict["questionnaire2_required"] = 1 if s.questionnaire2_required else 0
+
     form = Session_form(form_data_dict,instance=s)
 
     if form.is_valid():

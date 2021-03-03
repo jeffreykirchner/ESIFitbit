@@ -226,7 +226,7 @@ def payMe(data,session_subject,session_day):
     
     #check that questionnaire two is done before last payment
     if status == "success":
-        if p.questionnaire1Required and session_subject.getQuestionnaire1Required() :
+        if p.questionnaire1Required :
             status = "fail"  
             message = "Pay Error: Questionnaire 1 required"  
             logger.warning(message)
@@ -268,7 +268,7 @@ def payMe(data,session_subject,session_day):
     
     #check that questionnaire two is done before last payment
     if status == "success":
-        if p.questionnaire2Required and session_subject.getQuestionnaire2Required() :
+        if session_subject.getQuestionnaire2Required() :
             status = "fail"  
             message = "Pay Error: Questionnaire 2 required"  
             logger.warning(message)
@@ -392,28 +392,25 @@ def getSessionDaySubject(data,session_subject,session_day):
         session_date = session_day.getDateStr()
         session_last_day = session_day.lastDay()
 
-    consent_required = False
 
     #get consent form if needed
-    if p.consentFormRequired and session_subject.consent_required:
-        consent_required = True
+    if session_subject.consent_required:
         ps = session_subject.session.parameterset
         consent_form_text = ps.consent_form.body_text
     else:
-        consent_required = False
         consent_form_text=""
 
     if status == "fail":
-        return JsonResponse({"status":status,
-                             "fitbitError":fitbitError,
-                             "fitBitLastSynced":"---" if fitbitError else session_subject.getFitbitLastSyncStr(False),
-                             "fitbitSyncedToday":session_subject.fitbitSyncedToday(),
-                             "fitbit_link":session_subject.getFitBitLink("subject"),
-                             "soft_delete":session_subject.soft_delete,
-                             "questionnaire1_required":session_subject.getQuestionnaire1Required(),
-                             "questionnaire2_required":session_subject.getQuestionnaire2Required(),
-                             "consent_required":consent_required,
-                             "consent_form_text":consent_form_text,
+        return JsonResponse({"status" : status,
+                             "fitbitError" : fitbitError,
+                             "fitBitLastSynced" : "---" if fitbitError else session_subject.getFitbitLastSyncStr(False),
+                             "fitbitSyncedToday" : session_subject.fitbitSyncedToday(),
+                             "fitbit_link" : session_subject.getFitBitLink("subject"),
+                             "soft_delete" : session_subject.soft_delete,
+                             "questionnaire1_required" : session_subject.questionnaire1_required,
+                             "questionnaire2_required" : session_subject.getQuestionnaire2Required(),
+                             "consent_required" : session_subject.consent_required,
+                             "consent_form_text" : consent_form_text,
                              },safe=False)
     else:
         notification_title =""
@@ -444,26 +441,26 @@ def getSessionDaySubject(data,session_subject,session_day):
             if session_day_subject_actvity_previous_day.fitbit_on_wrist_minutes < ps.minimum_wrist_minutes :
                 fitBitTimeRequirementMet = False
 
-        return JsonResponse({"status":status,
-                        "fitbitError":fitbitError,
-                        "fitBitLastSynced":session_subject.getFitbitLastSyncStr(False),
-                        "fitbitSyncedToday":session_subject.fitbitSyncedToday(),
-                        "fitbit_link":session_subject.getFitBitLink("subject"),
-                        "fitBitTimeRequired": fitBitTimeRequired,
-                        "fitBitTimeRequirementMet": fitBitTimeRequirementMet,
-                        "session_date":session_date,
-                        "soft_delete":session_subject.soft_delete,
-                        "notification_title":notification_title,
-                        "notification_text":notification_text,
-                        "consent_required":consent_required,
-                        "questionnaire1_required":session_subject.getQuestionnaire1Required(),
-                        "questionnaire2_required":session_subject.getQuestionnaire2Required(),
-                        "consent_form_text":consent_form_text,
-                        "session_complete":session_subject.sessionComplete(),
-                        "session_canceled":session_subject.session.canceled,
-                        "session_last_day":session_last_day,
-                        "session_day_subject_actvity" : session_day_subject_actvity.json(),
-                        "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
-                        "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)                         
+        return JsonResponse({"status" : status,
+                            "fitbitError" : fitbitError,
+                            "fitBitLastSynced" : session_subject.getFitbitLastSyncStr(False),
+                            "fitbitSyncedToday" : session_subject.fitbitSyncedToday(),
+                            "fitbit_link" : session_subject.getFitBitLink("subject"),
+                            "fitBitTimeRequired" : fitBitTimeRequired,
+                            "fitBitTimeRequirementMet" : fitBitTimeRequirementMet,
+                            "session_date" : session_date,
+                            "soft_delete" : session_subject.soft_delete,
+                            "notification_title" : notification_title,
+                            "notification_text" : notification_text,
+                            "consent_required" : session_subject.consent_required,
+                            "questionnaire1_required" : session_subject.questionnaire1_required,
+                            "questionnaire2_required": session_subject.getQuestionnaire2Required(),
+                            "consent_form_text" : consent_form_text,
+                            "session_complete" : session_subject.sessionComplete(),
+                            "session_canceled" : session_subject.session.canceled,
+                            "session_last_day" : session_last_day,
+                            "session_day_subject_actvity" : session_day_subject_actvity.json(),
+                            "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
+                            "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)                         
                                 
      

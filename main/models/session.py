@@ -370,9 +370,9 @@ class Session(models.Model):
             "current_period" : current_session_day.period_number if current_session_day else "---",
             "complete": self.complete(),
             "allow_delete" : self.allow_delete,
-            "consent_required" : self.consent_required,
-            "questionnaire1_required" : self.questionnaire1_required,
-            "questionnaire2_required" : self.questionnaire2_required,
+            "consent_required" : 1 if self.consent_required else 0,
+            "questionnaire1_required" : 1 if self.questionnaire1_required else 0,
+            "questionnaire2_required" : 1 if self.questionnaire2_required else 0,
         }
 
 #delete associated user model when profile is deleted
