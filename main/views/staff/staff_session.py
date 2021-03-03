@@ -143,15 +143,23 @@ def addSubject(data,id):
 
 #create and return new session subject
 def getNewSubject(id):
+    '''
+    create a new subject and their first session day and return it
+    '''
     logger = logging.getLogger(__name__) 
     logger.info("Create new subject")
 
-    s=Session.objects.get(id=id)
+    s = Session.objects.get(id=id)
 
     ss = Session_subject()
-    ss.session=s
+    ss.session = s
     ss.display_color = getRandomHexColor()
-    ss.name="*** Name Here ***"
+    ss.name = "*** Name Here ***"
+
+    ss.consent_required = s.consent_required
+    ss.questionnaire1_required = s.questionnaire1_required
+    ss.questionnaire2_required = s.questionnaire2_required
+
     ss.save()
 
     sda = Session_day_subject_actvity()
@@ -162,6 +170,7 @@ def getNewSubject(id):
     sda.immune_activity_minutes = -1
     sda.heart_activity = s.parameterset.heart_activity_inital
     sda.immune_activity = s.parameterset.immune_activity_inital
+
     sda.save() 
 
     return ss

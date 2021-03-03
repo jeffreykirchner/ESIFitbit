@@ -27,7 +27,7 @@ class Session(models.Model):
     class Treatment(models.TextChoices):
         FOUR = "B", _('Baseline')
         ONE = 'I', _('Individual')
-        TWO = "IwC", _('Individual with chat')
+        TWO = "ILS", _('Individual - Lump Sum')
         THREE = "IwCpB", _('Individual with chat and bonus')        
 
     parameterset = models.ForeignKey(Parameterset,on_delete=models.CASCADE)
@@ -40,14 +40,18 @@ class Session(models.Model):
     allow_delete =  models.BooleanField(default=True)                           #if true allow the session to be deleted
 
     canceled = models.BooleanField(default=False)                               #true if session needs to be canceled
-    cancelation_text =  models.CharField(max_length = 10000,default = "")       #text sent to subjects if experiment is canceled
-    cancelation_text_subject = models.CharField(max_length = 1000,default = "") #email subject text for experiment cancelation
+    cancelation_text =  models.CharField(max_length=10000, default="")          #text sent to subjects if experiment is canceled
+    cancelation_text_subject = models.CharField(max_length=1000, default="")    #email subject text for experiment cancelation
 
-    invitations_sent = models.BooleanField(default=False)                       #true once invititations have been sent to subjects
-    invitation_text =  models.CharField(max_length = 10000,default = "")        #text sent to subjects in experiment invititation
-    invitation_text_subject = models.CharField(max_length = 1000,default = "")  #email subject text for experiment invititation
+    invitations_sent = models.BooleanField(default=False)                        #true once invititations have been sent to subjects
+    invitation_text =  models.CharField(max_length=10000, default="")            #text sent to subjects in experiment invititation
+    invitation_text_subject = models.CharField(max_length=1000, default="")      #email subject text for experiment invititation
 
     treatment = models.CharField( max_length=100, choices=Treatment.choices,default=Treatment.ONE)    
+
+    consent_required = models.BooleanField(default=True, verbose_name='Consent Form Signed')                 #true if subject has done consent form  
+    questionnaire1_required = models.BooleanField(default=True, verbose_name='Pre-questionnaire Complete')   #pre experiment questionnaire
+    questionnaire2_required = models.BooleanField(default=True, verbose_name='Post-questionnaire Complete')  #post experiment questionnaire
 
     soft_delete =  models.BooleanField(default=False)                            #hide session if true
 
@@ -334,7 +338,9 @@ class Session(models.Model):
 
     #return json object of class
     def json(self):
-
+        '''
+        return json object of model
+        '''
         email_list=""
         for s in self.session_subjects.filter(soft_delete=False):
             if email_list != "":
@@ -345,25 +351,28 @@ class Session(models.Model):
         current_session_day = self.getCurrentSessionDay()
 
         return{
-            "id":self.id,
-            "title":self.title,
-            "start_date":self.getDateString(),
-            "end_date":self.getEndDateString(),
-            "treatment":self.treatment,
-            "treatment_label":self.Treatment(self.treatment).label,
-            "parameterset":self.parameterset.json(),
-            "editable":self.editable(),
-            "started":self.started,
-            "canceled":self.canceled,
-            "invitations_sent":self.invitations_sent,
-            "invitation_text":self.invitation_text,
-            "invitation_text_subject":self.invitation_text_subject,
-            "cancelation_text":self.cancelation_text,
+            "id" : self.id,
+            "title" : self.title,
+            "start_date" : self.getDateString(),
+            "end_date" : self.getEndDateString(),
+            "treatment" : self.treatment,
+            "treatment_label" : self.Treatment(self.treatment).label,
+            "parameterset" : self.parameterset.json(),
+            "editable" : self.editable(),
+            "started" : self.started,
+            "canceled" : self.canceled,
+            "invitations_sent" : self.invitations_sent,
+            "invitation_text" : self.invitation_text,
+            "invitation_text_subject" : self.invitation_text_subject,
+            "cancelation_text" : self.cancelation_text,
             "cancelation_text_subject":self.cancelation_text_subject,
-            "email_list":email_list,
+            "email_list" : email_list,
             "current_period" : current_session_day.period_number if current_session_day else "---",
             "complete": self.complete(),
             "allow_delete" : self.allow_delete,
+            "consent_required" : self.consent_required,
+            "questionnaire1_required" : self.questionnaire1_required,
+            "questionnaire2_required" : self.questionnaire2_required,
         }
 
 #delete associated user model when profile is deleted
