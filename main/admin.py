@@ -48,3 +48,19 @@ class SessionAdmin(admin.ModelAdmin):
 
 admin.site.register(Session, SessionAdmin)
 
+class SessionDaysAdmin(admin.ModelAdmin):
+      def has_add_permission(self, request, obj=None):
+            return False
+      
+      def has_delete_permission(self, request, obj=None):
+            return False
+            
+      ordering = ['session__title','period_number']
+
+      list_display = ['__title__','id','date','period_number','payments_sent']
+
+      search_fields = ['session__title','id','period_number','date','payments_sent']
+
+      readonly_fields = ('period_number','date','payments_sent','session')
+admin.site.register(Session_day,SessionDaysAdmin)
+

@@ -35,5 +35,8 @@ urlpatterns = [
    
     #fitbit
     path('fitBit/',views.fitBit,name='fitBit'),
+
+    #crong
+    path('runCrons/', views.RunCronsView.as_view(), name='runCrons')
     
 ]

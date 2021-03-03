@@ -370,21 +370,21 @@ class Session_subject(models.Model):
             return False
 
     #get questionnaire 1 required status
-    def getQuestionnaire1Required(self):
-        p = Parameters.objects.first()
+    # def getQuestionnaire1Required(self):
+    #     p = Parameters.objects.first()
 
-        if not p.questionnaire1Required:
-            return False
+    #     if not p.questionnaire1Required:
+    #         return False
         
-        return self.questionnaire1_required
+    #     return self.questionnaire1_required
     
     #get questionnaire 2 required status
     def getQuestionnaire2Required(self):
         p = Parameters.objects.first()
 
         #check that questionnaire 2 is enabled
-        if not p.questionnaire2Required:
-            return False
+        # if not p.questionnaire2Required:
+        #     return False
 
         #check that today is the last day of sessoin
         if todaysDate().date() != self.session.end_date:
