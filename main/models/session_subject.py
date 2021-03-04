@@ -380,7 +380,7 @@ class Session_subject(models.Model):
     
     #get questionnaire 2 required status
     def getQuestionnaire2Required(self):
-        p = Parameters.objects.first()
+        #p = Parameters.objects.first()
 
         #check that questionnaire 2 is enabled
         # if not p.questionnaire2Required:
