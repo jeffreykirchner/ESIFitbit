@@ -219,14 +219,14 @@ def payMe(data,session_subject,session_day):
 
     #check for consent form
     if status == "success":
-        if p.consentFormRequired and session_subject.consent_required:
+        if session_subject.consent_required:
             status = "fail"   
             message = "Pay Error: Consent required" 
             logger.warning(message)
     
-    #check that questionnaire two is done before last payment
+    #check that questionnaire one is done before payment
     if status == "success":
-        if p.questionnaire1Required :
+        if session_subject.questionnaire1_required:
             status = "fail"  
             message = "Pay Error: Questionnaire 1 required"  
             logger.warning(message)
