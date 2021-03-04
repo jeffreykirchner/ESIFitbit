@@ -11,7 +11,7 @@ from main.globals import todaysDate
 from datetime import datetime,timedelta
 import pytz
 
-def Subject_Home(request,id):
+def Subject_Home(request, id):
     logger = logging.getLogger(__name__) 
    
     
@@ -25,7 +25,7 @@ def Subject_Home(request,id):
     if session_subject:
         session_day = session_subject.session.getCurrentSessionDay()
 
-    logger.info(f'Subject_Home {session_subject} {session_day}')
+    logger.info(f'Subject_Home name:{session_subject} session day:{session_day} {request.method}')
 
     if request.method == 'POST':     
 
@@ -80,7 +80,7 @@ def Subject_Home(request,id):
             if session_day and session_day.getCurrentHeartPay() == 0:
                 baseline_payment = True
 
-            logger.info(f'{baseline_payment} {baseline_heart} {baseline_sleep}')
+            #logger.info(f'{baseline_payment} {baseline_heart} {baseline_sleep}')
 
             session = session_subject.session
 
@@ -192,7 +192,7 @@ def acceptConsentForm(data,session_subject):
 def payMe(data,session_subject,session_day):
     logger = logging.getLogger(__name__) 
     if session_day:
-        logger.info(f"Pay subject: subject {session_subject.id} session day {session_day.id} date {session_day.date}")
+        logger.info(f"Pay subject: subject {session_subject.name} id {session_subject.id} session day {session_day.id} date {session_day.date}")
     else:
         logger.info(f"Pay subject: subject {session_subject.id} session_day none")
     logger.info(data)
