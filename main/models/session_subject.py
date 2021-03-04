@@ -24,8 +24,8 @@ class Session_subject(models.Model):
     name = models.CharField(max_length = 300,default = 'Subject Name', verbose_name='Subject Name')                     #subject name 
     contact_email = models.CharField(max_length = 300,default = 'Subject Email',verbose_name = 'Subject Email')         #contact email address
     student_id = models.CharField(max_length = 300,default = 'Student ID Number',verbose_name = 'Student ID Number')    #student ID number
-    gmail_address = models.CharField(max_length = 300,default = 'Gmail Address',verbose_name = 'Gmail Address')         #gmail address asigned to subject for experiment 
-    gmail_password = models.CharField(max_length = 300,default = 'Gmail Password',verbose_name = 'Gmail Password')      #password for above 
+    # gmail_address = models.CharField(max_length = 300,default = 'Gmail Address',verbose_name = 'Gmail Address')         #gmail address asigned to subject for experiment 
+    # gmail_password = models.CharField(max_length = 300,default = 'Gmail Password',verbose_name = 'Gmail Password')      #password for above 
     
     consent_required = models.BooleanField(default=True,verbose_name = 'Consent Form Signed')          #true if subject has done consent form  
     consent_signature = models.CharField(max_length = 300,default = '',verbose_name = 'Consent Form Signature')
@@ -536,8 +536,8 @@ class Session_subject(models.Model):
             "name":self.name,
             "contact_email":self.contact_email,
             "student_id":self.student_id,
-            "gmail_address":self.gmail_address,
-            "gmail_password":self.gmail_password,
+            # "gmail_address":self.gmail_address,
+            # "gmail_password":self.gmail_password,
             "login_url": p.siteURL +'subjectHome/' + str(self.login_key),
             "fitBit_Link" : self.getFitBitLink(request_type),
             "fitBit_Attached" : fitBit_Attached,
