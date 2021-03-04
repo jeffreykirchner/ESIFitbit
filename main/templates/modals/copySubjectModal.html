@@ -1,0 +1,51 @@
+{% load crispy_forms_tags %}
+<!-- consent modal -->  
+<div class="modal" id="copySubjectModal" tabindex="-1" role="dialog" aria-labelledby="copySubjectModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="consentModalTitle">Copy subjects completed sessions</h5>
+            
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover table-condensed table-responsive-lg">                            
+
+                    <caption style="caption-side:top;text-align: center;">Available : [[subjectsAvailableToCopy.length]]</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                Name
+                            </th>       
+                            <th scope="col" class="text-center">
+                                Session
+                            </th>                                               
+                            <th scope="col" class="text-center">
+                                Control
+                            </th>
+                        </tr>
+                    </thead>
+        
+                    <tbody id="copySubjectList">                                                  
+                        <tr v-for="(s,index) in subjectsAvailableToCopy" v-bind:key="s.id">                                                                          
+                            
+                            <td class="text-left">
+                               [[s.name]]
+                            </td>                           
+                            <td class="text-center">
+                               [[s.session_title]]
+                            </td>                     
+                            <td class="text-center">
+                                <button v-bind:id="'copySubject' + s.id" type="button" class="btn btn-outline-primary btn-sm"
+                                        v-on:click = "sendCopySubject(s.id)" title="Copy subject from another session" v-bind:disabled = "subjectsAvailableToCopyWorking">
+                                    Copy <i class="far fa-copy"></i>
+                                </button>                                 
+                            </td>                            
+                        </tr>                                                    
+                    </tbody>
+                    
+                </table>   
+                
+            </div>
+        </div>
+    </div>
+</div>

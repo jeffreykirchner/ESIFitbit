@@ -59,6 +59,8 @@ var app = new Vue({
         cancelModal:false,                //if modal is canceled reload old values
         currentSubject:{},                //current subject being edited
         currentSubjectIndex:-1,           //index of current subject being edited
+        subjectsAvailableToCopy:[],       //list of all session that can be copied from another session
+        subjectsAvailableToCopyWorking:false,  //working on adding copying a subject
         addSubjectButtonText:'Add Subject <i class="fas fa-plus"></i>',
         showFitbitStatusButtonText:'Check fitbit <i class="far fa-check-circle"></i>',
         backFillButtonText:'Back Fill Data For Testing',
@@ -331,6 +333,38 @@ var app = new Vue({
                         }); 
         },
 
+        //get list of valid subjects to copy
+        getSubjectsAvailableToCopy:function(){                    
+            app.subjectsAvailableToCopyWorking = true;
+            axios.post('/session/{{id}}/', {
+                    action :"getSubjectsAvailableToCopy" ,                                                                                                                                                                
+                })
+                .then(function (response) {     
+                    app.$data.subjectsAvailableToCopy = response.data.subjectsAvailableToCopy;           
+                    app.subjectsAvailableToCopyWorking = false;                    
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });                        
+        },
+        
+        //copy subject
+        sendCopySubject:function(id){                    
+            app.subjectsAvailableToCopyWorking = true;
+            axios.post('/session/{{id}}/', {
+                    action : "sendCopySubject",
+                    subject_id : id,                                                                                                                                                                
+                })
+                .then(function (response) {     
+                    app.$data.subjectsAvailableToCopy = response.data.subjectsAvailableToCopy;          
+                    app.updateSubjects(response); 
+                    app.subjectsAvailableToCopyWorking = false;                    
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });                        
+        },
+
         //send cancelations
         sendCancelations:function(){
             if(!confirm("Cancel Session?"))
@@ -542,9 +576,7 @@ var app = new Vue({
 
         },
 
-        uploadParameterset:function(){
-
-            
+        uploadParameterset:function(){  
 
             let formData = new FormData();
             formData.append('file', app.$data.upload_file);
@@ -750,7 +782,18 @@ var app = new Vue({
 
         hideUploadParameters:function(){
         },
+                    
+        //show edit parameters modal
+        showCopySubject:function(){
+            app.getSubjectsAvailableToCopy();
+            $('#copySubjectModal').modal('show');                   
+        },
         
+        //hide cancel session
+        hideCopySubject:function(){
+           
+        },
+
         displayErrors:function(errors){
             for(var e in errors)
             {
@@ -1052,5 +1095,6 @@ var app = new Vue({
         $('#sendCancelationsModalCenter').on("hidden.bs.modal", this.hideCancelSession);  
         $('#editSubjectModal').on("hidden.bs.modal", this.hideEditSubject);  
         $('#hideUploadParameters').on("hidden.bs.modal", this.hideEditSubject); 
+        $('#copySubjectModal').on("hidden.bs.modal", this.hideCopySubject); 
     },
 });

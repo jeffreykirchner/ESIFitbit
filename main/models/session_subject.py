@@ -20,8 +20,8 @@ class Session_subject(models.Model):
 
     id_number = models.IntegerField(null=True,verbose_name = 'ID Number in Session')                   #local id number in session
 
-    login_key = models.UUIDField(default=uuid.uuid4, editable=False,verbose_name = 'Login Key')                         #log in key used to ID subject for URL login
-    name = models.CharField(max_length = 300,default = 'Subject Name', verbose_name = 'Subject Name')                   #subject name 
+    login_key = models.UUIDField(default=uuid.uuid4, verbose_name='Login Key',unique=True)                              #log in key used to ID subject for URL login
+    name = models.CharField(max_length = 300,default = 'Subject Name', verbose_name='Subject Name')                     #subject name 
     contact_email = models.CharField(max_length = 300,default = 'Subject Email',verbose_name = 'Subject Email')         #contact email address
     student_id = models.CharField(max_length = 300,default = 'Student ID Number',verbose_name = 'Student ID Number')    #student ID number
     gmail_address = models.CharField(max_length = 300,default = 'Gmail Address',verbose_name = 'Gmail Address')         #gmail address asigned to subject for experiment 
@@ -40,7 +40,7 @@ class Session_subject(models.Model):
     fitBitRefreshToken = models.CharField(max_length=1000, default="",verbose_name = 'FitBit Refresh Token')
     fitBitUserId = models.CharField(max_length=100, default="",verbose_name = 'FitBit User ID')  
     fitBitLastSynced =  models.DateTimeField(default=None,null=True,verbose_name = 'FitBit Last Synced')
-    fitBitTimeZone = models.CharField(max_length=1000, default="",verbose_name = 'FitBit Access Token')
+    fitBitTimeZone = models.CharField(max_length=1000, default="",verbose_name = 'FitBit Time Zone')
 
     soft_delete =  models.BooleanField(default=False)                                                 #hide subject if true
 

@@ -2,6 +2,7 @@
 when view is requested check for cron jobs
 '''
 import logging
+import json
 
 from django.views.generic import View
 from django.http import JsonResponse
@@ -24,7 +25,7 @@ class RunCronsView(View):
 
         response = []
 
-        response.append(self.do_paypal())
+        # response.append(self.do_paypal())
         response.append(self.do_calc_daily_payments())
 
         logger.info(response)
@@ -45,7 +46,7 @@ class RunCronsView(View):
                                                  .filter(payments_sent = False) \
                                                  .filter(session__treatment = "I")
 
-        result = {"Do Paypal Cron" : yesterdays_sessions}
+        result = {"Do Paypal Cron" : json.dumps(list(yesterdays_sessions))}
 
         return result
     
