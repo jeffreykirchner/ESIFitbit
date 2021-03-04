@@ -58,13 +58,19 @@ def createSession(data):
 
     #create session
     s = Session()
+
     s.parameterset = ps
-    s.invitation_text=p.invitationText
-    s.invitation_text_subject=p.invitationTextSubject
-    s.cancelation_text=p.cancelationText
-    s.cancelation_text_subject=p.cancelationTextSubject
+    s.invitation_text = p.invitationText
+    s.invitation_text_subject = p.invitationTextSubject
+    s.cancelation_text = p.cancelationText
+    s.cancelation_text_subject = p.cancelationTextSubject
+    s.consent_required = p.consentFormRequired
+    s.questionnaire1_required = p.questionnaire1Required
+    s.questionnaire2_required = p.questionnaire2Required
+
     s.start_date = todaysDate().date()
     s.calcEndDate()
+    
     s.save()    
 
     #setup first session day

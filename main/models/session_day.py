@@ -21,8 +21,11 @@ class Session_day(models.Model):
     updated= models.DateTimeField(auto_now= True)
 
     def __str__(self):
-        return str(self.id) + " " + str(self.date)
+        return (f'{self.session.title} : date + {self.date} id {self.id}')
     
+    def __title__(self):
+        return str(self.session.title)
+
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['session', 'period_number'], name='unique_SD')

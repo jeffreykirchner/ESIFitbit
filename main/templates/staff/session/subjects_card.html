@@ -14,6 +14,9 @@
             <button class="btn btn-outline-primary" type="button" v-bind:disabled = "session.started" v-on:click ="showUploadParameters('subjects')" title="Upload a list of subjects from the Recruiter.">
                 Upload  <i class="fas fa-upload"></i>
             </button>
+            <button class="btn btn-outline-success" type="button" v-on:click = "showCopySubject()" v-bind:disabled = "session.started" title="Copy subject from another session.">
+                Copy Subject <i class="far fa-copy"></i>
+            </button>
             <button class="btn btn-outline-success" type="button" v-on:click = "addSubject()" v-bind:disabled = "session.started" title="Add new subject to the session.">
                 <span v-html="addSubjectButtonText"></span>
             </button>
@@ -26,45 +29,46 @@
         <table class="table table-hover table-condensed table-responsive-lg">                            
 
             <!-- <caption style="caption-side:top;text-align: center;">Subjects</caption> -->
-
             <thead>
-                <th scope="col">
-                    Name
-                </th> 
-                <th scope="col" style="text-align: center;">
-                    Color
-                </th>
-                <th scope="col" style="text-align: center;">
-                    Login<br>Link                    
-                </th>
-                <th scope="col" style="text-align: center;">
-                    Consent<br>Pre/Post Survey                  
-                </th>                                
-                <th scope="col" style="text-align: center;">
-                    Check In, PayPal<br>Today               
-                </th>
-                <th scope="col" style="text-align: center;">
-                    Today's<br>Earnings                    
-                </th>
-                <th scope="col" style="text-align: center;">
-                    Heart<br>Score                    
-                </th>
-                <th scope="col" style="text-align: center;">
-                    Sleep<br>Score                    
-                </th>
-                <th scope="col" style="text-align: center;">
-                    Wrist Time<br>
-                    YDA|2DAY                     
-                </th>
-                <th scope="col" style="text-align: center;">
-                    Last Fitbit<br>Phone Sync                  
-                </th>
-                <th scope="col" style="text-align: center;">
-                    FitBit                                     
-                </th>                                                      
-                <th scope="col"  style="text-align: center;">
-                    Control
-                </th>
+                <tr>
+                    <th scope="col">
+                        Name
+                    </th> 
+                    <th scope="col" style="text-align: center;">
+                        Color
+                    </th>
+                    <th scope="col" style="text-align: center;">
+                        Login<br>Link                    
+                    </th>
+                    <th scope="col" style="text-align: center;">
+                        Consent<br>Pre/Post Survey                  
+                    </th>                                
+                    <th scope="col" style="text-align: center;">
+                        Check In, PayPal<br>Today               
+                    </th>
+                    <th scope="col" style="text-align: center;">
+                        Today's<br>Earnings                    
+                    </th>
+                    <th scope="col" style="text-align: center;">
+                        Heart<br>Score                    
+                    </th>
+                    <th scope="col" style="text-align: center;">
+                        Sleep<br>Score                    
+                    </th>
+                    <th scope="col" style="text-align: center;">
+                        Wrist Time<br>
+                        YDA|2DAY                     
+                    </th>
+                    <th scope="col" style="text-align: center;">
+                        Last Fitbit<br>Phone Sync                  
+                    </th>
+                    <th scope="col" style="text-align: center;">
+                        FitBit                                     
+                    </th>                                                      
+                    <th scope="col"  style="text-align: center;">
+                        Control
+                    </th>
+                </tr>
             </thead>
 
             <tbody id="subjectList">                                                  

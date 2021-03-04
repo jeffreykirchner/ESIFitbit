@@ -1,16 +1,21 @@
+from datetime import datetime, timedelta
+from copy import copy
+
+import json
+import uuid
+import logging
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-import json
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-import logging
 from django.db.models.functions import Lower
-from datetime import datetime,timedelta
-from main.globals.randomHexColor import getRandomHexColor
-from main.globals.todaysDate import todaysDate
 
-from main.forms import Parameterset_form,Session_form,Subject_form,Import_parameters_form
-from main.models import Session,Parameterset,Session_subject,Session_day_subject_actvity,Parameters
+from main.globals import getRandomHexColor
+from main.globals import todaysDate
+
+from main.forms import Parameterset_form, Session_form, Subject_form, Import_parameters_form
+from main.models import Session,Parameterset, Session_subject, Session_day_subject_actvity, Parameters
 
 @login_required
 def Staff_Session(request,id):
@@ -37,37 +42,41 @@ def Staff_Session(request,id):
             data = json.loads(request.body.decode('utf-8'))
 
             if data["action"] == "getSession":
-                return getSession(data,id)
+                return getSession(data, id)
             elif data["action"] == "deleteSubject":
-                return deleteSubject(data,id)
+                return deleteSubject(data, id)
             elif data["action"] == "addSubject":
-                return addSubject(data,id)
+                return addSubject(data, id)
             elif data["action"] == "updateParameters":
-                return updateParameters(data,id)
+                return updateParameters(data, id)
             elif data["action"] == "updateSession":
-                return updateSession(data,id)
+                return updateSession(data, id)
             elif data["action"] == "updateSubject":
-                return updateSubject(data,id)
+                return updateSubject(data, id)
             elif data["action"] ==  "showFitbitStatus":
-                return showFitbitStatus(data,id)
+                return showFitbitStatus(data, id)
             elif data["action"] ==  "importParameters":
-                return importParameters(data,id)
+                return importParameters(data, id)
             elif data["action"] == "backFillSessionDays":
-                return backFillSessionDays(data,id)
+                return backFillSessionDays(data, id)
             elif data["action"] == "startSession":
-                return startSession(data,id)
+                return startSession(data, id)
             elif data["action"] == "sendInvitations":
-                return sendInvitations(data,id)
+                return sendInvitations(data, id)
             elif data["action"] == "downloadData":
-                return downloadData(data,id)
+                return downloadData(data, id)
             elif data["action"] == "sendCancelations":
-                return sendCancelations(data,id)
+                return sendCancelations(data, id)
             elif data["action"] == "refreshSubjectTable":
-                return refreshSubjectTable(data,id)
+                return refreshSubjectTable(data, id)
             elif data["action"] == "downloadEarnings":
-                return downloadEarnings(data,id)
+                return downloadEarnings(data, id)
             elif data["action"] == "downloadParameterset":
-                return downloadParameterset(data,id)
+                return downloadParameterset(data, id)
+            elif data["action"] == "getSubjectsAvailableToCopy":
+                return getSubjectsAvailableToCopy(id)
+            elif data["action"] == "sendCopySubject":
+                return takeCopySubject(data, id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -143,15 +152,23 @@ def addSubject(data,id):
 
 #create and return new session subject
 def getNewSubject(id):
+    '''
+    create a new subject and their first session day and return it
+    '''
     logger = logging.getLogger(__name__) 
     logger.info("Create new subject")
 
-    s=Session.objects.get(id=id)
+    s = Session.objects.get(id=id)
 
     ss = Session_subject()
-    ss.session=s
+    ss.session = s
     ss.display_color = getRandomHexColor()
-    ss.name="*** Name Here ***"
+    ss.name = "*** Name Here ***"
+
+    ss.consent_required = s.consent_required
+    ss.questionnaire1_required = s.questionnaire1_required
+    ss.questionnaire2_required = s.questionnaire2_required
+
     ss.save()
 
     sda = Session_day_subject_actvity()
@@ -162,6 +179,7 @@ def getNewSubject(id):
     sda.immune_activity_minutes = -1
     sda.heart_activity = s.parameterset.heart_activity_inital
     sda.immune_activity = s.parameterset.immune_activity_inital
+
     sda.save() 
 
     return ss
@@ -250,6 +268,10 @@ def updateSession(data,id):
 
     if not s.editable():
         form_data_dict["start_date"] = s.getDateString()
+
+        form_data_dict["consent_required"] = 1 if s.consent_required else 0
+        form_data_dict["questionnaire1_required"] = 1 if s.questionnaire1_required else 0
+        form_data_dict["questionnaire2_required"] = 1 if s.questionnaire2_required else 0
 
     form = Session_form(form_data_dict,instance=s)
 
@@ -564,3 +586,63 @@ def uploadUserList(v,id):
     return JsonResponse({"session_subjects" : getSubjectListJSON(id,False),
                          "message":message,
                                 },safe=False)
+
+#return a list of subjects are available for copy
+def getSubjectsAvailableToCopy(id):
+    logger = logging.getLogger(__name__) 
+    logger.info("Get subjects avilable for copy")
+
+    return JsonResponse({"subjectsAvailableToCopy" : getSubjectsAvailableToCopyJSON(id),} ,safe=False)
+
+#return a list of subjects in json format that can be copied into this one
+def getSubjectsAvailableToCopyJSON(id):
+    logger = logging.getLogger(__name__) 
+
+    #list of emails in session
+    email_list = Session_subject.objects.filter(session__id = id) \
+                                        .values_list('contact_email', flat=True)
+    
+    logger.info(f"Subjects available for copy: exclude emails {email_list}")
+
+    ss = Session_subject.objects.exclude(session__soft_delete = True) \
+                                .filter(session__end_date__lt = todaysDate()) \
+                                .exclude(soft_delete = True) \
+                                .exclude(contact_email__in = email_list) \
+                                .values('id','name','session__id','session__title') \
+                                .order_by('session__title','name')
+
+    logger.info(f'Subjects available for copy: {ss}')
+    
+    return  [{"id" : i["id"],
+              "name" : i["name"],
+              "session_id" : i["session__id"],
+              "session_title" : i["session__title"] } for i in ss]
+
+#copy the specified subject into this session
+def takeCopySubject(data, id):
+
+    s=Session.objects.get(id=id)
+    ss_new = getNewSubject(id)
+    ss_old = Session_subject.objects.get(id = data["subject_id"])
+
+    ss_new.name = copy(ss_old.name)
+    ss_new.contact_email = copy(ss_old.contact_email)
+    ss_new.student_id = copy(ss_old.student_id)
+
+    ss_new.login_key = copy(ss_old.login_key)
+    ss_new.fitBitAccessToken = copy(ss_old.fitBitAccessToken)
+    ss_new.fitBitRefreshToken = copy(ss_old.fitBitRefreshToken)
+    ss_new.fitBitUserId = copy(ss_old.fitBitUserId)
+    ss_new.fitBitLastSynced =  copy(ss_old.fitBitLastSynced)
+    ss_new.fitBitTimeZone = copy(ss_old.fitBitTimeZone)
+
+    ss_old.login_key = uuid.uuid4()
+    ss_old.fitBitAccessToken = ""
+    ss_old.fitBitRefreshToken = ""
+    ss_old.fitBitUserId = ""
+
+    ss_old.save()
+    ss_new.save()
+
+    return JsonResponse({"subjectsAvailableToCopy" : getSubjectsAvailableToCopyJSON(id),
+                          "session_subjects": getSubjectListJSON(id,False), } ,safe=False)

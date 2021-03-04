@@ -27,7 +27,7 @@ class subjectCompleteTestCase(TestCase):
 
         start_date = todaysDate()-timedelta(days=4)
 
-        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}]}
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}]}
 
         r = json.loads(updateSession(data,session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
@@ -89,7 +89,7 @@ class subjectLastDayTestCase(TestCase):
 
         start_date = todaysDate()-timedelta(days=3)
 
-        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}]}
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}]}
 
         r = json.loads(updateSession(data,session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
@@ -160,7 +160,7 @@ class subjectAfterStartTestCase(TestCase):
 
         start_date = todaysDate()
 
-        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}]}
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}]}
 
         r = json.loads(updateSession(data,session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
@@ -268,9 +268,9 @@ class subjectBeforeStartTestCase(TestCase):
         #set sessoin start to tomorrow
         session = Session.objects.first()
 
-        start_date = todaysDate()+timedelta(days=1)
+        start_date = todaysDate() + timedelta(days=1)
 
-        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}]}
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}]}
 
         r = json.loads(updateSession(data,session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
@@ -316,7 +316,7 @@ class subjectBeforeStartTestCase(TestCase):
 
         #check for consent
         r = json.loads(payMe({},session_subject,session_day).content.decode("UTF-8"))
-        self.assertIn("Consent required",r['message'])
+        self.assertIn("Consent required", r['message'])
         session_day_subject_actvity = session_subject.Session_day_subject_actvities.filter(session_day__period_number = 1).first()
         self.assertFalse(session_day_subject_actvity.paypal_today)
 

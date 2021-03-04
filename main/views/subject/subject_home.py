@@ -11,7 +11,7 @@ from main.globals import todaysDate
 from datetime import datetime,timedelta
 import pytz
 
-def Subject_Home(request,id):
+def Subject_Home(request, id):
     logger = logging.getLogger(__name__) 
    
     
@@ -25,7 +25,7 @@ def Subject_Home(request,id):
     if session_subject:
         session_day = session_subject.session.getCurrentSessionDay()
 
-    logger.info(f'Subject_Home {session_subject} {session_day}')
+    logger.info(f'Subject_Home name:{session_subject} session day:{session_day} {request.method}')
 
     if request.method == 'POST':     
 
@@ -80,7 +80,7 @@ def Subject_Home(request,id):
             if session_day and session_day.getCurrentHeartPay() == 0:
                 baseline_payment = True
 
-            logger.info(f'{baseline_payment} {baseline_heart} {baseline_sleep}')
+            #logger.info(f'{baseline_payment} {baseline_heart} {baseline_sleep}')
 
             session = session_subject.session
 
@@ -192,7 +192,7 @@ def acceptConsentForm(data,session_subject):
 def payMe(data,session_subject,session_day):
     logger = logging.getLogger(__name__) 
     if session_day:
-        logger.info(f"Pay subject: subject {session_subject.id} session day {session_day.id} date {session_day.date}")
+        logger.info(f"Pay subject: subject {session_subject.name} id {session_subject.id} session day {session_day.id} date {session_day.date}")
     else:
         logger.info(f"Pay subject: subject {session_subject.id} session_day none")
     logger.info(data)
@@ -219,14 +219,14 @@ def payMe(data,session_subject,session_day):
 
     #check for consent form
     if status == "success":
-        if p.consentFormRequired and session_subject.consent_required:
+        if session_subject.consent_required:
             status = "fail"   
             message = "Pay Error: Consent required" 
             logger.warning(message)
     
-    #check that questionnaire two is done before last payment
+    #check that questionnaire one is done before payment
     if status == "success":
-        if p.questionnaire1Required and session_subject.getQuestionnaire1Required() :
+        if session_subject.questionnaire1_required:
             status = "fail"  
             message = "Pay Error: Questionnaire 1 required"  
             logger.warning(message)
@@ -268,7 +268,7 @@ def payMe(data,session_subject,session_day):
     
     #check that questionnaire two is done before last payment
     if status == "success":
-        if p.questionnaire2Required and session_subject.getQuestionnaire2Required() :
+        if session_subject.getQuestionnaire2Required() :
             status = "fail"  
             message = "Pay Error: Questionnaire 2 required"  
             logger.warning(message)
@@ -333,18 +333,19 @@ def getSessionDaySubject(data,session_subject,session_day):
     if not session_subject:
         status = "fail"
         logger.info("Get subject error: Session subject not found.")
+
     
-    #chec if session is already complete
-    if status == "success" and session_subject.session.complete():
+    #check if session is already complete
+    if session_subject and not session_subject.session.complete():
+        
+        #check fitbit is attached and store last sync date
+        if not session_subject.getFitBitAttached():
+            fitbitError=True
+            logger.info("Get subject error: The fitbit is not connected.")
+    else:
         status = "fail"
-        logger.info("Get subject error: The session is complete.")
+        logger.info("No fitbit data pulled: The session is complete.")
 
-    #check fitbit is attached and store last sync date
-    if not session_subject.getFitBitAttached():
-        fitbitError=True
-        logger.info("Get subject error: The fitbit is not connected.")
-
-    
     if status == "success":
        
         if not fitbitError and session_subject.fitbitSyncedToday():
@@ -392,28 +393,25 @@ def getSessionDaySubject(data,session_subject,session_day):
         session_date = session_day.getDateStr()
         session_last_day = session_day.lastDay()
 
-    consent_required = False
 
     #get consent form if needed
-    if p.consentFormRequired and session_subject.consent_required:
-        consent_required = True
+    if session_subject.consent_required:
         ps = session_subject.session.parameterset
         consent_form_text = ps.consent_form.body_text
     else:
-        consent_required = False
         consent_form_text=""
 
     if status == "fail":
-        return JsonResponse({"status":status,
-                             "fitbitError":fitbitError,
-                             "fitBitLastSynced":"---" if fitbitError else session_subject.getFitbitLastSyncStr(False),
-                             "fitbitSyncedToday":session_subject.fitbitSyncedToday(),
-                             "fitbit_link":session_subject.getFitBitLink("subject"),
-                             "soft_delete":session_subject.soft_delete,
-                             "questionnaire1_required":session_subject.getQuestionnaire1Required(),
-                             "questionnaire2_required":session_subject.getQuestionnaire2Required(),
-                             "consent_required":consent_required,
-                             "consent_form_text":consent_form_text,
+        return JsonResponse({"status" : status,
+                             "fitbitError" : fitbitError,
+                             "fitBitLastSynced" : "---" if fitbitError else session_subject.getFitbitLastSyncStr(False),
+                             "fitbitSyncedToday" : session_subject.fitbitSyncedToday(),
+                             "fitbit_link" : session_subject.getFitBitLink("subject"),
+                             "soft_delete" : session_subject.soft_delete,
+                             "questionnaire1_required" : session_subject.questionnaire1_required,
+                             "questionnaire2_required" : session_subject.getQuestionnaire2Required(),
+                             "consent_required" : session_subject.consent_required,
+                             "consent_form_text" : consent_form_text,
                              },safe=False)
     else:
         notification_title =""
@@ -444,26 +442,26 @@ def getSessionDaySubject(data,session_subject,session_day):
             if session_day_subject_actvity_previous_day.fitbit_on_wrist_minutes < ps.minimum_wrist_minutes :
                 fitBitTimeRequirementMet = False
 
-        return JsonResponse({"status":status,
-                        "fitbitError":fitbitError,
-                        "fitBitLastSynced":session_subject.getFitbitLastSyncStr(False),
-                        "fitbitSyncedToday":session_subject.fitbitSyncedToday(),
-                        "fitbit_link":session_subject.getFitBitLink("subject"),
-                        "fitBitTimeRequired": fitBitTimeRequired,
-                        "fitBitTimeRequirementMet": fitBitTimeRequirementMet,
-                        "session_date":session_date,
-                        "soft_delete":session_subject.soft_delete,
-                        "notification_title":notification_title,
-                        "notification_text":notification_text,
-                        "consent_required":consent_required,
-                        "questionnaire1_required":session_subject.getQuestionnaire1Required(),
-                        "questionnaire2_required":session_subject.getQuestionnaire2Required(),
-                        "consent_form_text":consent_form_text,
-                        "session_complete":session_subject.sessionComplete(),
-                        "session_canceled":session_subject.session.canceled,
-                        "session_last_day":session_last_day,
-                        "session_day_subject_actvity" : session_day_subject_actvity.json(),
-                        "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
-                        "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)                         
+        return JsonResponse({"status" : status,
+                            "fitbitError" : fitbitError,
+                            "fitBitLastSynced" : session_subject.getFitbitLastSyncStr(False),
+                            "fitbitSyncedToday" : session_subject.fitbitSyncedToday(),
+                            "fitbit_link" : session_subject.getFitBitLink("subject"),
+                            "fitBitTimeRequired" : fitBitTimeRequired,
+                            "fitBitTimeRequirementMet" : fitBitTimeRequirementMet,
+                            "session_date" : session_date,
+                            "soft_delete" : session_subject.soft_delete,
+                            "notification_title" : notification_title,
+                            "notification_text" : notification_text,
+                            "consent_required" : session_subject.consent_required,
+                            "questionnaire1_required" : session_subject.questionnaire1_required,
+                            "questionnaire2_required": session_subject.getQuestionnaire2Required(),
+                            "consent_form_text" : consent_form_text,
+                            "session_complete" : session_subject.sessionComplete(),
+                            "session_canceled" : session_subject.session.canceled,
+                            "session_last_day" : session_last_day,
+                            "session_day_subject_actvity" : session_day_subject_actvity.json(),
+                            "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
+                            "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)                         
                                 
      

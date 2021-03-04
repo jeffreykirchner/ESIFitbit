@@ -20,12 +20,12 @@ class Session_subject(models.Model):
 
     id_number = models.IntegerField(null=True,verbose_name = 'ID Number in Session')                   #local id number in session
 
-    login_key = models.UUIDField(default=uuid.uuid4, editable=False,verbose_name = 'Login Key')                         #log in key used to ID subject for URL login
-    name = models.CharField(max_length = 300,default = 'Subject Name', verbose_name = 'Subject Name')                   #subject name 
+    login_key = models.UUIDField(default=uuid.uuid4, verbose_name='Login Key',unique=True)                              #log in key used to ID subject for URL login
+    name = models.CharField(max_length = 300,default = 'Subject Name', verbose_name='Subject Name')                     #subject name 
     contact_email = models.CharField(max_length = 300,default = 'Subject Email',verbose_name = 'Subject Email')         #contact email address
     student_id = models.CharField(max_length = 300,default = 'Student ID Number',verbose_name = 'Student ID Number')    #student ID number
-    gmail_address = models.CharField(max_length = 300,default = 'Gmail Address',verbose_name = 'Gmail Address')         #gmail address asigned to subject for experiment 
-    gmail_password = models.CharField(max_length = 300,default = 'Gmail Password',verbose_name = 'Gmail Password')      #password for above 
+    # gmail_address = models.CharField(max_length = 300,default = 'Gmail Address',verbose_name = 'Gmail Address')         #gmail address asigned to subject for experiment 
+    # gmail_password = models.CharField(max_length = 300,default = 'Gmail Password',verbose_name = 'Gmail Password')      #password for above 
     
     consent_required = models.BooleanField(default=True,verbose_name = 'Consent Form Signed')          #true if subject has done consent form  
     consent_signature = models.CharField(max_length = 300,default = '',verbose_name = 'Consent Form Signature')
@@ -40,7 +40,7 @@ class Session_subject(models.Model):
     fitBitRefreshToken = models.CharField(max_length=1000, default="",verbose_name = 'FitBit Refresh Token')
     fitBitUserId = models.CharField(max_length=100, default="",verbose_name = 'FitBit User ID')  
     fitBitLastSynced =  models.DateTimeField(default=None,null=True,verbose_name = 'FitBit Last Synced')
-    fitBitTimeZone = models.CharField(max_length=1000, default="",verbose_name = 'FitBit Access Token')
+    fitBitTimeZone = models.CharField(max_length=1000, default="",verbose_name = 'FitBit Time Zone')
 
     soft_delete =  models.BooleanField(default=False)                                                 #hide subject if true
 
@@ -370,21 +370,21 @@ class Session_subject(models.Model):
             return False
 
     #get questionnaire 1 required status
-    def getQuestionnaire1Required(self):
-        p = Parameters.objects.first()
+    # def getQuestionnaire1Required(self):
+    #     p = Parameters.objects.first()
 
-        if not p.questionnaire1Required:
-            return False
+    #     if not p.questionnaire1Required:
+    #         return False
         
-        return self.questionnaire1_required
+    #     return self.questionnaire1_required
     
     #get questionnaire 2 required status
     def getQuestionnaire2Required(self):
-        p = Parameters.objects.first()
+        #p = Parameters.objects.first()
 
         #check that questionnaire 2 is enabled
-        if not p.questionnaire2Required:
-            return False
+        # if not p.questionnaire2Required:
+        #     return False
 
         #check that today is the last day of sessoin
         if todaysDate().date() != self.session.end_date:
@@ -536,8 +536,8 @@ class Session_subject(models.Model):
             "name":self.name,
             "contact_email":self.contact_email,
             "student_id":self.student_id,
-            "gmail_address":self.gmail_address,
-            "gmail_password":self.gmail_password,
+            # "gmail_address":self.gmail_address,
+            # "gmail_password":self.gmail_password,
             "login_url": p.siteURL +'subjectHome/' + str(self.login_key),
             "fitBit_Link" : self.getFitBitLink(request_type),
             "fitBit_Attached" : fitBit_Attached,
@@ -581,9 +581,11 @@ class Session_subject(models.Model):
             check_in = sada.check_in_today
             pay_pal = sada.paypal_today
             earnings = f'${sada.getTodaysTotalEarnings():0.2f}'
-            heart_score = f'{sada.heart_activity:0.2f}'
-            immune_score = f'{sada.immune_activity:0.2f}'
-            heart_bpm = f'{sada.fitbit_min_heart_rate_zone_bpm}bpm'
+
+            if check_in:
+                heart_score = f'{sada.heart_activity:0.2f}'
+                heart_bpm = f'{sada.fitbit_min_heart_rate_zone_bpm}bpm'       
+                immune_score = f'{sada.immune_activity:0.2f}' 
         else:
             sada_yesterday = None
 
@@ -592,8 +594,10 @@ class Session_subject(models.Model):
 
             if sada_yesterday.heart_activity_minutes >= 0:
                 heart_time =  f'{int(sada_yesterday.heart_activity_minutes)}mins'
+                
             if sada_yesterday.immune_activity_minutes >= 0:
                 immune_time =  f'{math.floor(sada_yesterday.immune_activity_minutes/60)}hrs {sada_yesterday.immune_activity_minutes%60}mins'
+                
         elif sada:
             wrist_time = f'---| {sada.getFormatedWristMinutes()}'
 
@@ -661,12 +665,14 @@ class Session_subject(models.Model):
                    'Accept-Language' :	'en_US'}    
 
         try:            
-            r = requests.get(url, headers=headers).json()
+            r = requests.get(url, headers=headers)
+
+            r = r.json()
 
             logger.info(f"Fitbit request: {url} ")
             logger.info(f"Fitbit request:{r}")
 
             return r
         except Exception  as e: 
-            logger.warning(f"getFitbitInfo2 error {e}")
+            logger.warning(f"getFitbitInfo2 error: {e} , response: {r}")
             return  "fail"
