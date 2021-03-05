@@ -1,87 +1,95 @@
-from django import forms
-from main.models import Parameters
-from django.contrib.auth.models import User
-from django.forms import ModelChoiceField
+'''
+form for parameters model
+'''
 import pytz
 
-class UserModelChoiceField(ModelChoiceField):
-    def label_from_instance(self, obj):
-         return obj.get_full_name()
+from django import forms
+
+from main.models import Parameters
 
 class Parameters_form(forms.ModelForm):
+    '''
+    form for parameters model
+    '''
     contactEmail = forms.CharField(label='Contact Email Address',
-                                         widget=forms.TextInput(attrs={"size":"125"})) 
-    
+                                   widget=forms.TextInput(attrs={"size":"125"}))
+
     maxDailyEarnings = forms.CharField(label='Max Daily Earnings ($)',
                                        widget=forms.NumberInput(attrs={}))
-    
+
     siteURL = forms.CharField(label='Site URL',
-                                         widget=forms.TextInput(attrs={"size":"125"}))
+                              widget=forms.TextInput(attrs={"size":"125"}))
 
     testEmailAccount = forms.CharField(label='Test Email Account',
                                          widget=forms.TextInput(attrs={"size":"125"}))
 
     invitationTextSubject = forms.CharField(label='Welcome Email, Subject',
-                                         widget=forms.TextInput(attrs={"size":"125"}))
+                                            widget=forms.TextInput(attrs={"size":"125"}))
 
     invitationText = forms.CharField(label='Welcome Email, Text',
                                      widget=forms.Textarea(attrs={"rows":"15", "cols":"125"}))
 
 
     cancelationTextSubject = forms.CharField(label='Cancelation Email, Subject',
-                                        widget=forms.TextInput(attrs={"size":"125"}))
+                                             widget=forms.TextInput(attrs={"size":"125"}))
 
     cancelationText = forms.CharField(label='Cancelation Email, Text',
-                                     widget=forms.Textarea(attrs={"rows":"15", "cols":"125"}))
-    
+                                      widget=forms.Textarea(attrs={"rows":"15", "cols":"125"}))
+
+    paypal_email_subject = forms.CharField(label='PayPal mass pay email subject',
+                                           widget=forms.TextInput(attrs={"size":"125"}))
+
+    paypal_email_body = forms.CharField(label='PayPal mass pay email body: <subject_name>, <text>',
+                                        widget=forms.TextInput(attrs={"size":"125"}))
+
     consentFormRequired = forms.ChoiceField(label='Consent Form Required',
-                                        choices=((True, 'Yes'), (False,'No' )),                 
-                                        widget=forms.Select)
+                                            choices=((True, 'Yes'), (False,'No' )),
+                                            widget=forms.Select)
 
     questionnaire1Required = forms.ChoiceField(label='Pre-Study Questionnaire',
-                                        choices=((True, 'Yes'), (False,'No' )),                 
-                                        widget=forms.Select)
+                                               choices=((True, 'Yes'), (False,'No' )),
+                                               widget=forms.Select)
 
     questionnaire2Required = forms.ChoiceField(label='Post-Study Questionnaire',
-                                        choices=((True, 'Yes'), (False,'No' )),                 
-                                        widget=forms.Select)
+                                               choices=((True, 'Yes'), (False,'No' )),
+                                               widget=forms.Select)
 
     experimentTimeZone = forms.ChoiceField(label="Study Timezone",
-                                        choices=[(tz, tz) for tz in pytz.all_timezones])
-    
+                                           choices=[(tz, tz) for tz in pytz.all_timezones])
+
     trackerDataOnly = forms.ChoiceField(label='Only Fitness Tracker Data',
-                                        choices=((True, 'Yes'), (False,'No' )),                 
+                                        choices=((True, 'Yes'), (False,'No' )),
                                         widget=forms.Select)
 
     heartHelpText = forms.CharField(label='Heart Help Text',
-                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
+                                    widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
 
     immuneHelpText = forms.CharField(label='Immune Help Text',
                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
 
     paymentHelpText = forms.CharField(label='Non-Basline Payment Help Text',
-                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
+                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
 
     paymentHelpTextBaseline = forms.CharField(label='Basline Payment Help Text',
-                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"})) 
+                                              widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
 
     manualHelpText = forms.CharField(label='Session Help Text',
                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
 
     staffHomeHelpText = forms.CharField(label='Session List Help Text',
-                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))  
+                                        widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
 
     blockChangeSubject = forms.CharField(label='Notification of block change, subject',
                                          widget=forms.TextInput(attrs={"size":"125"}))
 
     blockChangeText = forms.CharField(label='Notification of block change, text',
-                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"})) 
+                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
 
     blockPreChangeSubject = forms.CharField(label='Advanced notification of block change, subject',
-                                         widget=forms.TextInput(attrs={"size":"125"}))
+                                            widget=forms.TextInput(attrs={"size":"125"}))
 
     blockPreChangeText = forms.CharField(label='Advanced notification of block change, text',
-                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))                                                             
+                                         widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
 
     class Meta:
         model=Parameters
