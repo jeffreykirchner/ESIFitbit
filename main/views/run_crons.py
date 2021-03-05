@@ -4,7 +4,6 @@ when view is requested check for cron jobs
 from datetime import timedelta
 
 import logging
-import json
 
 from django.views.generic import View
 from django.http import JsonResponse
@@ -55,10 +54,10 @@ def do_paypal():
 
     # build ppms request
     #
+
     result_list = []
 
     for session_d in yesterdays_sessions:
-
         payments_list = []
 
         for subject_activity in session_d.Session_day_subject_actvities_SD.all() \
@@ -71,11 +70,13 @@ def do_paypal():
                     "email" : subject_activity.session_subject.contact_email,
                     "amount" : subject_activity.payment_today,
                     "note" : f'{subject_activity.session_subject.name}, {parm.paypal_email_body}',
-                    "memo" : f'SD_ID: {session_d.id}, U_ID: {subject_activity.session_subject.id}'       
+                    "memo" : f'SD_ID: {session_d.id}, U_ID: {subject_activity.session_subject.id}'
                 })
-        
+
         if len(payments_list) > 0:
             result_list.append(do_ppms(payments_list, session_d.id, parm.paypal_email_subject))
+
+    yesterdays_sessions.update(payments_sent = True)
 
     result = {"Do Paypal Cron": result_list}
 
