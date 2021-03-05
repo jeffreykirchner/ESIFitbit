@@ -1,20 +1,27 @@
-from django.db import models
-import logging
-import traceback
-from django.utils.timezone import now
-from . import Session_day,Session_subject,Parameters
+'''
+subject's daily activity
+'''
+from datetime import datetime, timedelta
+
+import pytz
 import uuid
 import main
 import math
-from datetime import datetime,timedelta
-import pytz
-
+import logging
+import traceback
 from enum import Enum
 
-#one day from session 
+from django.db import models
+from django.utils.timezone import now
+
+from . import Session_day,Session_subject,Parameters
+
 class Session_day_subject_actvity(models.Model):
-    session_day = models.ForeignKey(Session_day,on_delete=models.CASCADE,related_name="Session_day_subject_actvities_SD")
-    session_subject = models.ForeignKey(Session_subject,on_delete=models.CASCADE,related_name="Session_day_subject_actvities")
+    '''
+    subject's daily activity
+    '''
+    session_day = models.ForeignKey(Session_day, on_delete=models.CASCADE, related_name="Session_day_subject_actvities_SD")
+    session_subject = models.ForeignKey(Session_subject, on_delete=models.CASCADE, related_name="Session_day_subject_actvities")
 
     heart_activity_minutes = models.IntegerField(default=0)       #todays heart activity minutes
     immune_activity_minutes = models.IntegerField(default=0)      #todays immune activity minutes
