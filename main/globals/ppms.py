@@ -31,7 +31,7 @@ def do_ppms(payments_list, payment_id, email_subject):
                          "memo" : payment["memo"]})
 
     data = {}
-    data["info"] = {"payment_id" : payment_id, #, random.randrange(0, 99999999)
+    data["info"] = {"payment_id" : f'{settings.PPMS_USER_NAME}_{payment_id}', #, random.randrange(0, 99999999)
                     "email_subject" : email_subject}
 
     data["items"] = payments
