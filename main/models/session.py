@@ -248,7 +248,7 @@ class Session(models.Model):
         writer = csv.writer(csv_response)
 
         writer.writerow(["Subject Data"])
-        writer.writerow(["Session","Period","Block","Date","Subject ID", "Subject Code","Heart Activity Minutes",
+        writer.writerow(["Session","Period","Block","Date","Subject ID", "Email","Heart Activity Minutes",
                          "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
                          "Fitbit Data Pulled", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today",
                          "Minutes Sedentary","Minutes Lightly Active","Minutes Fairly Active","Minutes Very Active","Steps","Calories",
@@ -263,12 +263,12 @@ class Session(models.Model):
         writer.writerow([])
         writer.writerow(["Pre Questionnaire"])
 
-        writer.writerow(['Session','Subject ID','Subject Code','Consent Signature','Sleep Hours','Sleep Likert','Sleep Explanation','Exercise Minutes',
-                         'Exercise Likert','Exercise Explanation','Health Importance Likert',
-                         'Health Importance Explanation','Health Importance Actions','Health Satisfaction Likert',
-                         'Sleep Variation Likert','Sleep Variation Explanation',
-                         'Exercise Variation Likert','Exercise Variation Explanation','Full Name','Address Line 1','Address Line 2',
-                         'City','State','Zip Code','Birthdate','Attended'])
+        writer.writerow(['Session','Subject ID', 'Subject Code', 'Email', 'Consent Signature', 'Sleep Hours', 'Sleep Likert', 'Sleep Explanation','Exercise Minutes',
+                         'Exercise Likert', 'Exercise Explanation', 'Health Importance Likert',
+                         'Health Importance Explanation', 'Health Importance Actions', 'Health Satisfaction Likert',
+                         'Sleep Variation Likert', 'Sleep Variation Explanation',
+                         'Exercise Variation Likert', 'Exercise Variation Explanation', 'Full Name', 'Address Line 1', 'Address Line 2',
+                         'City', 'State', 'Zip Code', 'Birthdate', 'Attended'])
 
         ss_list = self.session_subjects.order_by('id_number')
         
@@ -279,7 +279,7 @@ class Session(models.Model):
         writer.writerow([])
         writer.writerow(["Post Questionnaire"])
 
-        writer.writerow(['Session','Subject ID', 'Subject Code',
+        writer.writerow(['Session','Subject ID', 'Subject Code', 'Email', 
                          'Sleep Change Post', 'Sleep Change Post Explanation',
                          'Exercise Change Post', 'Exercise Changed Post Explanation',
                          'Health Concern Post', 'Health Concern Post Explanation',

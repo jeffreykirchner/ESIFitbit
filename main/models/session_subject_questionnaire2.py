@@ -58,7 +58,7 @@ class Session_subject_questionnaire2(models.Model):
     #get csv data for data file
     def getCSVResponse(self,writer):
 
-         writer.writerow([self.session_subject.session.title, self.session_subject.id_number, self.session_subject.login_key,
+         writer.writerow([self.session_subject.session.title, self.session_subject.id_number, self.session_subject.login_key, self.session_subject.contact_email,
                          self.sleep_changed, self.sleep_changed_explaination, self.exercise_changed,
                          self.exercise_changed_explaination, self.health_concern, self.health_concern_explaination,
                          self.holiday_break_explaination, self.sex_at_birth, self.gender_identity, self.gender_identity_fillin])
