@@ -74,7 +74,7 @@ def do_paypal():
                 })
 
         if len(payments_list) > 0:
-            result_list.append(do_ppms(payments_list, session_d.id, parm.paypal_email_subject))
+            result_list.append(do_ppms(payments_list, f'Fitbit_{session_d.id}', parm.paypal_email_subject))
 
     yesterdays_sessions.update(payments_sent = True)
 
