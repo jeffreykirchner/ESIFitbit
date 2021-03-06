@@ -88,14 +88,14 @@ class Session_subject_questionnaire1(models.Model):
         #                  'Sleep Variation Likert','Sleep Variation Explanation',
         #                  'Exercise Variation Likert','Exercise Variation Explanation'
 
-        writer.writerow([self.session_subject.session.title,self.session_subject.id_number,self.session_subject.login_key,
-                         self.session_subject.consent_signature, self.sleep_hours,self.sleep_importance,self.sleep_explanation,
-                         self.exercise_minutes,self.exercise_importance,self.exercise_explanation,
-                         self.health_importance,self.health_importance_explanation,self.health_importance_actions,
-                         self.health_satisfaction,self.sleep_variation,self.sleep_variation_explanation,
-                         self.exercise_variation,self.exercise_variation_explanation,self.address_full_name,
-                         self.address_line_1,self.address_line_2,self.address_city,self.address_state,self.address_zip_code,
-                         self.birthdate,not self.session_subject.soft_delete])
+        writer.writerow([self.session_subject.session.title, self.session_subject.id_number, self.session_subject.login_key, self.session_subject.contact_email,
+                         self.session_subject.consent_signature, self.sleep_hours, self.sleep_importance, self.sleep_explanation,
+                         self.exercise_minutes, self.exercise_importance, self.exercise_explanation,
+                         self.health_importance, self.health_importance_explanation, self.health_importance_actions,
+                         self.health_satisfaction, self.sleep_variation, self.sleep_variation_explanation,
+                         self.exercise_variation, self.exercise_variation_explanation, self.address_full_name,
+                         self.address_line_1, self.address_line_2, self.address_city, self.address_state, self.address_zip_code,
+                         self.birthdate, not self.session_subject.soft_delete])
 
     def json(self):
         return{

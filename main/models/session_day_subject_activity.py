@@ -427,14 +427,14 @@ class Session_day_subject_actvity(models.Model):
         # ["Session","Period","Block","Date","Subject ID", "Subject Code","Heart Activity Minutes",
         #                  "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
         #                  "Check In Today", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today"]
-        writer.writerow([f'{self.session_day.session.title}',self.session_day.period_number,self.session_day.session.parameterset.getBlock(self.session_day.period_number),
-                         self.session_day.getDateStr(),self.session_subject.id_number,self.session_subject.login_key,self.heart_activity_minutes,
-                         self.immune_activity_minutes,self.heart_activity,self.immune_activity,self.check_in_today,
-                         self.paypal_today,self.session_day.session.parameterset.fixed_pay_per_day,self.getTodaysHeartEarnings(),
-                         self.getTodaysImmuneEarnings(),self.payment_today,self.fitbit_minutes_sedentary,self.fitbit_minutes_lightly_active,
-                         self.fitbit_minutes_fairly_active,self.fitbit_minutes_very_active,self.fitbit_steps,self.fitbit_calories,
-                         self.fitbit_minutes_heart_out_of_range,self.fitbit_minutes_heart_fat_burn,self.fitbit_minutes_heart_cardio,
-                         self.fitbit_minutes_heart_peak,self.fitbit_min_heart_rate_zone_bpm,self.fitbit_on_wrist_minutes,last_login_str])
+        writer.writerow([f'{self.session_day.session.title}', self.session_day.period_number, self.session_day.session.parameterset.getBlock(self.session_day.period_number),
+                         self.session_day.getDateStr(),self.session_subject.id_number, self.session_subject.contact_email, self.heart_activity_minutes,
+                         self.immune_activity_minutes,self.heart_activity, self.immune_activity, self.check_in_today,
+                         self.paypal_today, self.session_day.session.parameterset.fixed_pay_per_day, self.getTodaysHeartEarnings(),
+                         self.getTodaysImmuneEarnings(), self.payment_today, self.fitbit_minutes_sedentary, self.fitbit_minutes_lightly_active,
+                         self.fitbit_minutes_fairly_active, self.fitbit_minutes_very_active, self.fitbit_steps, self.fitbit_calories,
+                         self.fitbit_minutes_heart_out_of_range, self.fitbit_minutes_heart_fat_burn, self.fitbit_minutes_heart_cardio,
+                         self.fitbit_minutes_heart_peak, self.fitbit_min_heart_rate_zone_bpm, self.fitbit_on_wrist_minutes, last_login_str])
 
     #return json object of class
     def json(self):
