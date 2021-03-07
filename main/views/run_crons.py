@@ -8,7 +8,7 @@ import logging
 from django.views.generic import View
 from django.http import JsonResponse
 
-from main.globals import todaysDate, do_ppms
+from main.globals import todaysDate, do_ppms, todays_time
 from main.views import Session_day
 from main.models import Parameters
 
@@ -38,9 +38,14 @@ def do_paypal():
     check for Induvidual treatments that need to be paid and send paypal payment.
     '''
 
+    target_time = todaysDate().replace(hour=0, minute=5).time()
+
+    if todays_time() <= target_time:
+        return {"Do Paypal Cron" : "Payment time not reached"}
+
     parm = Parameters.objects.first()
 
-    logger = logging.getLogger(__name__)
+    #logger = logging.getLogger(__name__)
 
     yesterdays_date = todaysDate() - timedelta(days=1)
 
