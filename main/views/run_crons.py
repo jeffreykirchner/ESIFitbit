@@ -79,13 +79,15 @@ def do_paypal():
                 })
 
         if len(payments_list) > 0:
-            result_list.append(do_ppms(payments_list, session_d.id, parm.paypal_email_subject))
+            result = do_ppms(payments_list, session_d.id, parm.paypal_email_subject)
+            session_d.payments_result_message = result["error_message"]
+            session_d.save()
+
+            result_list.append(result)
 
     yesterdays_sessions.update(payments_sent = True)
 
-    result = {"Do Paypal Cron": result_list}
-
-    return result
+    return {"Do Paypal Cron": result_list}
 
 
 def do_calc_daily_payments():

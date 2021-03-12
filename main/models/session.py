@@ -1,30 +1,36 @@
-from django.db import models
+'''
+session model
+'''
+
+from datetime import datetime, timedelta
+
 import logging
-import traceback
-from django.utils.timezone import now
-from . import Parameterset
-
-from django.dispatch import receiver
-from django.db.models.signals import post_delete
-import main
-import pytz
-
-from main.globals import todaysDate
-
-from main.models import Parameters
-
-from django.http import HttpResponse
 import csv
 
-from datetime import datetime,timedelta
-
-from enum import Enum
+from django.db import models
+from django.dispatch import receiver
+from django.db.models.signals import post_delete
+from django.utils.timezone import now
+from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
-   
+from django.core.exceptions import ObjectDoesNotExist
+
+import main
+
+from main.models import Parameterset
+from main.models import Parameters
+from main.globals import todaysDate
+
 #experiment sessoin
 class Session(models.Model):
+    '''
+    session model
+    '''
 
     class Treatment(models.TextChoices):
+        '''
+        treatment types for session
+        '''
         FOUR = "B", _('Baseline')
         ONE = 'I', _('Individual')
         TWO = "ILS", _('Individual - Lump Sum')
@@ -67,14 +73,28 @@ class Session(models.Model):
         ordering = ['-start_date']
 
     #get the current session day
-    def getCurrentSessionDay(self) :
-        logger = logging.getLogger(__name__)
+    def getCurrentSessionDay(self):
+        #logger = logging.getLogger(__name__)
 
-        d_today = todaysDate()
+        d_today = todaysDate().date()
 
         #logger.info(f"getCurrentSessionDay {d_today}")
 
         return self.session_days.filter(date = d_today).first()
+    
+    def getYesterdaysSessionDay(self):
+        #logger = logging.getLogger(__name__)
+
+        d_yesterday = todaysDate() - timedelta(days=1)
+
+        #logger.info(f"getCurrentSessionDay {d_today}")
+
+        try:
+            return self.session_days.get(date = d_yesterday.date())
+        except ObjectDoesNotExist:
+            return None
+        
+        return None
     
     #return true if today is before the start date
     def isBeforeStartDate(self):
@@ -349,6 +369,7 @@ class Session(models.Model):
             email_list += s.contact_email
 
         current_session_day = self.getCurrentSessionDay()
+        yesterday_session_day = self.getYesterdaysSessionDay()
 
         return{
             "id" : self.id,
@@ -373,6 +394,7 @@ class Session(models.Model):
             "consent_required" : 1 if self.consent_required else 0,
             "questionnaire1_required" : 1 if self.questionnaire1_required else 0,
             "questionnaire2_required" : 1 if self.questionnaire2_required else 0,
+            "payments_sent_yestery" : yesterday_session_day.payments_result_message if yesterday_session_day else "---",
         }
 
 #delete associated user model when profile is deleted

@@ -1,21 +1,30 @@
-from django.db import models
+'''
+session day model
+'''
+
 import logging
-import traceback
+
+from django.db import models
 from django.utils.timezone import now
-from . import Session
-import uuid
 
 import main
-from enum import Enum
+
+from . import Session
+
+
 
 #subject in session
 class Session_day(models.Model):
+    '''
+    session day model
+    '''
     session = models.ForeignKey(Session,on_delete=models.CASCADE,related_name="session_days")
     
     period_number = models.IntegerField()
     date = models.DateField(default=now)                            #date and time of session day
 
-    payments_sent = models.BooleanField(default=False)              #true once paypal payments are sent
+    payments_sent = models.BooleanField(default=False)                                #true once paypal payments are sent
+    payments_result_message = models.CharField(max_length=200, default="No Payment")  #display message about payment status
 
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
@@ -28,7 +37,8 @@ class Session_day(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['session', 'period_number'], name='unique_SD')
+            models.UniqueConstraint(fields=['session', 'period_number'], name='unique_SD_period_number'),
+            models.UniqueConstraint(fields=['session', 'date'], name='unique_SD_date')
         ]
         verbose_name = 'Session Day'
         verbose_name_plural = 'Session Days'
@@ -100,5 +110,7 @@ class Session_day(models.Model):
     #return json object of class
     def json(self):
         return{
-            "id":self.id          
+            "id":self.id,
+            "payments_sent" : self.payments_sent,
+            "payments_result_message" : self.payments_result_message,
         }
