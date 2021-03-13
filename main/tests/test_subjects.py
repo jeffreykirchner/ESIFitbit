@@ -1,4 +1,6 @@
-
+'''
+tests for subject screen
+'''
 from datetime import datetime,timedelta
 
 import logging
@@ -15,6 +17,9 @@ from main.views.subject.subject_home import payMe
 
 #test past last day of experiment
 class subjectCompleteTestCase(TestCase):
+    '''
+    tests for subject screen
+    '''
     fixtures = ['parameters.json']
 
     session = None      #test session
