@@ -1,18 +1,18 @@
-from django.db import models
-import logging
-import traceback
-from django.utils.timezone import now
+'''
+parameter set model
+'''
 import math
 
+from django.db import models
 from django.db.utils import IntegrityError
 
 import main
 
-from django.core import serializers
-
 #experiment session parameters
 class Parameterset(models.Model):
-
+    '''
+    parameter set model
+    '''
     consent_form = models.ForeignKey('main.Consent_forms',on_delete=models.CASCADE,null=True,blank=True)
 
     #heartActivityToday = heartActivityTodayT-1 * (1 - (1 - heartActivityTodayT-1) * (heart_parameter_1 / heart_parameter_2  - heartTimeT-1 / (heartTimeT-1 + heart_parameter_3))
@@ -77,12 +77,14 @@ class Parameterset(models.Model):
         verbose_name = 'Study Parameter Set'
         verbose_name_plural = 'Study Parameter Sets'
 
-    def get_heart_activity(heart_activity,heart_actvity_minutes):
-        return 0
+    # def get_heart_activity(heart_activity, heart_actvity_minutes):
+    #     return 0
 
     #load values from dictionary
-    def setup_from_dict(self,d):
-        
+    def setup_from_dict(self, d):
+        '''
+        setup up from a file
+        '''
         message = "Parameters loaded successfully."
 
         try:
@@ -134,8 +136,8 @@ class Parameterset(models.Model):
 
             self.save()
 
-        except IntegrityError as e:       
-            message = f"Failed to load parameter set: {e}"
+        except IntegrityError as err:       
+            message = f"Failed to load parameter set: {err}"
             #logger.info(message)
         
         return message
