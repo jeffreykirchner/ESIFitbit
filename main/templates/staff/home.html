@@ -121,7 +121,7 @@
 
 {%block content%}
 <div class="row justify-content-lg-center">
-    <div class="col col-lg-8">
+    <div class="col col-lg-10">
         <div class="card">                  
             <div class="card-header">
                 
@@ -154,6 +154,9 @@
                             Current Period
                         </th>
                         <th style="text-align: center;">
+                            Yesterday's Auto Payments
+                        </th>
+                        <th style="text-align: center;">
                             Treatment
                         </th>                                                      
                         <th style="text-align: center;">
@@ -177,6 +180,9 @@
                                     <span v-html="s.current_period"></span> 
                                 </div>                                                             
                             </td>
+                            <td style="text-align: center;">                                        
+                                <span v-html="s.payments_sent_yestery"></span>                                       
+                            </td> 
                             <td style="text-align: center;">                                        
                                 <span v-html="s.treatment_label"></span>                                       
                             </td>                               

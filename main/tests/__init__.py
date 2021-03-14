@@ -1,1 +1,1 @@
-from .subjectTests import *
+from .test_subjects import *

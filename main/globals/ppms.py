@@ -59,8 +59,8 @@ def do_ppms(payments_list, payment_id, email_subject):
         for payment in req.json():
             error_message += f'<div>{payment["data"]["email"]}: {payment["detail"]}</div>'
     else:        
+        error_message = "Payments complete"
         # for payment in req.json():
         #     result += f'<div>{payment["email"]}: ${float(payment["amount"]):0.2f}</div>'
-        pass
     
     return {"result" : req.json(), "error_message" : error_message}

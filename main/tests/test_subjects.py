@@ -1,11 +1,15 @@
+'''
+tests for subject screen
+'''
+from datetime import datetime,timedelta
+
+import logging
+import json
 
 from django.test import TestCase
-import logging
 
 from main.models import Session,Session_day_subject_actvity
 from main.globals.todaysDate import todaysDate
-from datetime import datetime,timedelta
-import json
 
 from main.views.staff.staff_home import createSession
 from main.views.staff.staff_session import updateSession,addSubject,startSession,sendCancelations
@@ -13,6 +17,9 @@ from main.views.subject.subject_home import payMe
 
 #test past last day of experiment
 class subjectCompleteTestCase(TestCase):
+    '''
+    tests for subject screen
+    '''
     fixtures = ['parameters.json']
 
     session = None      #test session
@@ -227,6 +234,12 @@ class subjectAfterStartTestCase(TestCase):
 
         #before start
         session_subject = self.session.session_subjects.all().first()
+
+
+        session_day = self.session.session_days.get(period_number = 1)
+        session_day.date = todaysDate() - timedelta(days=1)
+        session_day.save()
+
         session_day = self.session.session_days.get(period_number = 2)
         session_day.date = todaysDate().date()
         session_day.save()
