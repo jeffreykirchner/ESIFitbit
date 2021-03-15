@@ -194,8 +194,10 @@ class Parameterset(models.Model):
 
         self.save()
 
-    #return the current maximum payment for heart activty
-    def getHeartPay(self,period):
+    def getHeartPay(self, period):
+        '''
+        return the maximum heart payment given period
+        '''
 
         if period<=self.block_1_day_count+1:
             return self.block_1_heart_pay
