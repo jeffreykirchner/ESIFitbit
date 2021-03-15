@@ -22,6 +22,8 @@ jobs:
         python-version: '3.8'
 
     - name: Build using AppService-Build
+      env:
+        SECRET_KEY: super_duper_secret_key
       uses: azure/appservice-build@v2
       with:
         platform: python
