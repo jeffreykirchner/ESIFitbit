@@ -32,4 +32,4 @@ jobs:
       with:
         app-name: 'chapman-experiments-1'
         slot-name: 'dev'
-        publish-profile: ${{ secrets.AZURE_PUBLISHING_PROFILE }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_b75030d9e10f417094e36c12ceb6a8f3 }}
