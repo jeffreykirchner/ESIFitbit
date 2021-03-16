@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Python app to Azure Web App - chapman-experiments-1(dev-tmp)
+name: Build and deploy Python app to Azure Web App - chapman-experiments-1(dev)
 
 on:
   push:
@@ -12,19 +12,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
-    # Service containers to run with `container-job`
-    services:
-      # Label used to access the service container
-      redis:
-        # Docker Hub image
-        image: redis
-        # Set health checks to wait until redis has started
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
     - uses: actions/checkout@master
@@ -59,5 +46,5 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: 'chapman-experiments-1'
-        slot-name: 'dev-tmp'
+        slot-name: 'dev'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_02ade9264c374c1399cd07f3069b56f9 }}
