@@ -5,7 +5,6 @@ from django.conf.urls import include,url
 from django.conf import settings
 from . import views
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import TemplateView
 
 urlpatterns = [
     #admin site
