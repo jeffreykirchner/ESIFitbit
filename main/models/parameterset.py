@@ -80,7 +80,6 @@ class Parameterset(models.Model):
     # def get_heart_activity(heart_activity, heart_actvity_minutes):
     #     return 0
 
-    #load values from dictionary
     def setup_from_dict(self, data):
         '''
         setup up from a file
@@ -142,59 +141,63 @@ class Parameterset(models.Model):
 
         return message
 
-    #copy another parameter set into this one
-    def setup(self,ps):
+    def setup(self, data):
+        '''
+        copy another parameterset into this one
+        '''
         self.save()
 
-        self.consent_form = ps.consent_form
+        self.consent_form = data.consent_form
 
-        self.heart_activity_inital = ps.heart_activity_inital
-        self.heart_parameter_1 = ps.heart_parameter_1
-        self.heart_parameter_2 = ps.heart_parameter_2
-        self.heart_parameter_3 = ps.heart_parameter_3
+        self.heart_activity_inital = data.heart_activity_inital
+        self.heart_parameter_1 = data.heart_parameter_1
+        self.heart_parameter_2 = data.heart_parameter_2
+        self.heart_parameter_3 = data.heart_parameter_3
 
-        self.immune_activity_inital = ps.immune_activity_inital
-        self.immune_parameter_1 = ps.immune_parameter_1
-        self.immune_parameter_2 = ps.immune_parameter_2
-        self.immune_parameter_3 = ps.immune_parameter_3
+        self.immune_activity_inital = data.immune_activity_inital
+        self.immune_parameter_1 = data.immune_parameter_1
+        self.immune_parameter_2 = data.immune_parameter_2
+        self.immune_parameter_3 = data.immune_parameter_3
 
-        self.block_1_heart_pay = ps.block_1_heart_pay
-        self.block_2_heart_pay = ps.block_2_heart_pay
-        self.block_3_heart_pay = ps.block_3_heart_pay
+        self.block_1_heart_pay = data.block_1_heart_pay
+        self.block_2_heart_pay = data.block_2_heart_pay
+        self.block_3_heart_pay = data.block_3_heart_pay
 
-        self.block_1_immune_pay = ps.block_1_immune_pay
-        self.block_2_immune_pay = ps.block_2_immune_pay
-        self.block_3_immune_pay = ps.block_3_immune_pay
+        self.block_1_immune_pay = data.block_1_immune_pay
+        self.block_2_immune_pay = data.block_2_immune_pay
+        self.block_3_immune_pay = data.block_3_immune_pay
 
-        self.block_1_day_count = ps.block_1_day_count
-        self.block_2_day_count = ps.block_2_day_count
-        self.block_3_day_count = ps.block_3_day_count
+        self.block_1_day_count = data.block_1_day_count
+        self.block_2_day_count = data.block_2_day_count
+        self.block_3_day_count = data.block_3_day_count
 
-        self.fixed_pay_per_day = ps.fixed_pay_per_day
-        self.minimum_wrist_minutes = ps.minimum_wrist_minutes
+        self.fixed_pay_per_day = data.fixed_pay_per_day
+        self.minimum_wrist_minutes = data.minimum_wrist_minutes
 
-        self.treatment_3_heart_bonus = ps.treatment_3_heart_bonus
-        self.treatment_3_immune_bonus = ps.treatment_3_immune_bonus
-        self.treatment_3_bonus_target_count = ps.treatment_3_bonus_target_count
+        self.treatment_3_heart_bonus = data.treatment_3_heart_bonus
+        self.treatment_3_immune_bonus = data.treatment_3_immune_bonus
+        self.treatment_3_bonus_target_count = data.treatment_3_bonus_target_count
 
-        self.y_min_heart = ps.y_min_heart
-        self.y_max_heart = ps.y_max_heart
-        self.y_ticks_heart = ps.y_ticks_heart
-        self.x_min_heart = ps.x_min_heart
-        self.x_max_heart = ps.x_max_heart
-        self.x_ticks_heart = ps.x_ticks_heart
+        self.y_min_heart = data.y_min_heart
+        self.y_max_heart = data.y_max_heart
+        self.y_ticks_heart = data.y_ticks_heart
+        self.x_min_heart = data.x_min_heart
+        self.x_max_heart = data.x_max_heart
+        self.x_ticks_heart = data.x_ticks_heart
 
-        self.y_min_immune = ps.y_min_immune
-        self.y_max_immune = ps.y_max_immune
-        self.y_ticks_immune = ps.y_ticks_immune
-        self.x_min_immune = ps.x_min_immune
-        self.x_max_immune = ps.x_max_immune
-        self.x_ticks_immune = ps.x_ticks_immune
+        self.y_min_immune = data.y_min_immune
+        self.y_max_immune = data.y_max_immune
+        self.y_ticks_immune = data.y_ticks_immune
+        self.x_min_immune = data.x_min_immune
+        self.x_max_immune = data.x_max_immune
+        self.x_ticks_immune = data.x_ticks_immune
 
         self.save()
 
-    #return the current maximum payment for heart activty
-    def getHeartPay(self,period):
+    def getHeartPay(self, period):
+        '''
+        return the maximum heart payment given period
+        '''
 
         if period<=self.block_1_day_count+1:
             return self.block_1_heart_pay
