@@ -218,9 +218,9 @@ class Parameterset(models.Model):
 
     #get period's time block
     def getBlock(self,period):
-        if period<=self.block_1_day_count+1:
+        if period <= self.block_1_day_count+1:
             return 1
-        elif period<=self.block_2_day_count+self.block_1_day_count+1:
+        elif period<=self.block_2_day_count + self.block_1_day_count+1:
             return 2
         else:
             return 3

@@ -11,6 +11,7 @@ var app = new Vue({
                     start_date:"",
                     end_date:"",
                     started:false,
+                    instruction_set:{id:0,title:""},
                     invitations_sent:false,
                     invitation_text:"",
                     invitation_text_subject:"",

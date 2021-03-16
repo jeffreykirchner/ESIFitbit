@@ -22,7 +22,7 @@ urlpatterns = [
 
     #subject
     path('subjectHome/',views.Home,name='home2'),
-    path('subjectHome/<uuid:id>/',csrf_exempt(views.Subject_Home),name='subject_home'),
+    path('subjectHome/<uuid:id_>/',csrf_exempt(views.Subject_Home),name='subject_home'),
 
     #icons
     path('favicon.ico',RedirectView.as_view(url='/static/favicon.ico'),name='favicon'),

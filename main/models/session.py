@@ -18,10 +18,9 @@ from django.core.exceptions import ObjectDoesNotExist
 import main
 
 from main.models import Parameterset
+from main.models import InstructionSet
 from main.models import Parameters
-from main.globals import todaysDate
-
-#experiment sessoin
+from main.globals import todaysDate, TimeBlock
 class Session(models.Model):
     '''
     session model
@@ -31,12 +30,14 @@ class Session(models.Model):
         '''
         treatment types for session
         '''
-        FOUR = "B", _('Baseline')
+        BASE = 'Base', _('Baseline')
         ONE = 'I', _('Individual')
-        TWO = "ILS", _('Individual - Lump Sum')
-        THREE = "IwCpB", _('Individual with chat and bonus')        
+        A = 'A', _('Treatment A')
+        B = 'B', _('Treatment B')
+        C = 'C', _('Treatment C')       
 
-    parameterset = models.ForeignKey(Parameterset,on_delete=models.CASCADE)
+    parameterset = models.ForeignKey(Parameterset, on_delete=models.CASCADE)
+    instruction_set = models.ForeignKey(InstructionSet, null=True, blank=True, on_delete=models.CASCADE)
 
     title = models.CharField(max_length = 300,default="*** New Session ***")    #title of session
     start_date = models.DateField(default=now)                                  #date of session start
@@ -356,6 +357,31 @@ class Session(models.Model):
 
         return csv_response
 
+    def get_instruction_text(self, page_type):
+        '''
+        get the page_type of instruction given the current period
+        '''
+
+        #no instruction set attached
+        if not self.instruction_set:
+            return ""
+
+        session_day = self.getCurrentSessionDay()
+        current_block = 1
+
+        if session_day:
+            current_block = self.parameterset.getBlock(session_day.period_number)
+        
+        if current_block == 1:
+            current_block = TimeBlock.ONE
+        elif current_block == 2:
+            current_block = TimeBlock.TWO
+        else:
+            current_block = TimeBlock.THREE
+
+        return self.instruction_set.get_page_text(current_block, page_type)
+
+
     #return json object of class
     def json(self):
         '''
@@ -377,6 +403,7 @@ class Session(models.Model):
             "start_date" : self.getDateString(),
             "end_date" : self.getEndDateString(),
             "treatment" : self.treatment,
+            "instruction_set" : self.instruction_set.json() if self.instruction_set else {},
             "treatment_label" : self.Treatment(self.treatment).label,
             "parameterset" : self.parameterset.json(),
             "editable" : self.editable(),

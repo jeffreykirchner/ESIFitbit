@@ -1,23 +1,30 @@
+'''
+form for session model
+'''
 from django import forms
-from main.models import Session
-from django.contrib.auth.models import User
-from django.forms import ModelChoiceField
-import pytz
+from main.models import Session, InstructionSet
 
-class Session_form(forms.ModelForm):
+class SessionForm(forms.ModelForm):
+    '''
+    form for session model
+    '''
     title = forms.CharField(label='Title',
-                            widget=forms.TextInput(attrs={"v-model" : "session.title"})) 
-    
+                            widget=forms.TextInput(attrs={"v-model" : "session.title"}))
+
     start_date = forms.DateField(label="Start Date",
                                  input_formats=['%m/%d/%Y'],
-                                 error_messages={'invalid' : 'Format: M/D/YYYY'},                                                                                                           
+                                 error_messages={'invalid' : 'Format: M/D/YYYY'},
                                  widget=forms.DateTimeInput(attrs={"v-model" : "session.start_date",
                                                                    "v-bind:disabled" : "session.editable === false"}))
-    
-    treatment = forms.TypedChoiceField(label='Treatment', 
-                                       choices=Session.Treatment.choices,                   
+
+    treatment = forms.TypedChoiceField(label='Treatment',
+                                       choices=Session.Treatment.choices,
                                        widget=forms.Select(attrs={"v-model" : "session.treatment"}))
-    
+
+    instruction_set = forms.ModelChoiceField(label='Instruction Set',
+                                             queryset=InstructionSet.objects.all(),
+                                             widget=forms.Select(attrs={"v-model" : "session.instruction_set.id"}))
+
     consent_required = forms.ChoiceField(label='Enable Consent Form',
                                          choices=((1, 'Yes'), (0,'No')),
                                          widget=forms.Select(attrs={"v-model" : "session.consent_required",
@@ -31,9 +38,10 @@ class Session_form(forms.ModelForm):
     questionnaire2_required = forms.ChoiceField(label='Enable Post-Questionnaire',
                                                 choices=((1, 'Yes'), (0,'No')),
                                                 widget=forms.Select(attrs={"v-model" : "session.questionnaire2_required",
-                                                                           "v-bind:disabled" : "session.editable === false"}))                                     
-    
+                                                                           "v-bind:disabled" : "session.editable === false"}))
+
 
     class Meta:
         model = Session
-        fields = ('title', 'start_date', 'treatment','consent_required','questionnaire1_required','questionnaire2_required')
+        fields = ('title', 'start_date', 'treatment', 'consent_required',
+                  'questionnaire1_required', 'questionnaire2_required', 'instruction_set')
