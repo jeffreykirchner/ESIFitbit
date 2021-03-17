@@ -18,8 +18,8 @@ class Migration(migrations.Migration):
             model_name='session_day',
             constraint=models.UniqueConstraint(fields=('session', 'period_number'), name='unique_SD_period_number'),
         ),
-        migrations.AddConstraint(
-            model_name='session_day',
-            constraint=models.UniqueConstraint(fields=('session', 'date'), name='unique_SD_date'),
-        ),
+        # migrations.AddConstraint(
+        #     model_name='session_day',
+        #     constraint=models.UniqueConstraint(fields=('session', 'date'), name='unique_SD_date'),
+        # ),
     ]
