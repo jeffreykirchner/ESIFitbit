@@ -43,5 +43,5 @@ class SessionForm(forms.ModelForm):
 
     class Meta:
         model = Session
-        fields = ('title', 'start_date', 'treatment', 'consent_required',
-                  'questionnaire1_required', 'questionnaire2_required', 'instruction_set')
+        fields = ('title', 'start_date', 'treatment', 'instruction_set', 'consent_required',
+                  'questionnaire1_required', 'questionnaire2_required',)

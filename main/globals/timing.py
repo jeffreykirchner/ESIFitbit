@@ -20,3 +20,9 @@ class PageType(models.TextChoices):
     SLEEP = "SLEEP", _('SLEEP')
     PAY = "PAY", _('PAY')
 
+class NoticeType(models.TextChoices):
+    '''
+    Time block change notice types
+    '''
+    ADVANCE = 'ADVANCE', _('ADVANCE')
+    START = "START", _('START')

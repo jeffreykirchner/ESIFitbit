@@ -8,7 +8,7 @@ from django.db.models import Q
 
 import main.models
 
-from main.globals import TimeBlock, PageType
+from main.globals import TimeBlock, PageType, NoticeType
 
 
 class InstructionSet(models.Model):
@@ -43,6 +43,13 @@ class InstructionSet(models.Model):
             for p_t in PageType.choices:
                 new_page = main.models.InstructionSetPage(instruction_set=self, time_block=t_b[0], page_type=p_t[0])
                 new_page.save()
+        
+        #add notice pages
+        for t_b in TimeBlock.choices:
+            if t_b[0] != "ONE":
+                for n_t in NoticeType.choices:
+                    new_notice = main.models.InstructionSetNotice(instruction_set=self, time_block=t_b[0], notice_type=n_t[0])
+                    new_notice.save()
     
     def get_page_text(self, time_block, page_type):
         '''
@@ -52,6 +59,24 @@ class InstructionSet(models.Model):
         logger.info(f'get_page_text {time_block} {page_type}')
 
         return self.instruction_set_pages.get(Q(time_block = time_block) & Q(page_type = page_type)).text
+    
+    def get_notice_text(self, time_block, notice_type):
+        '''
+        get specified notice text
+        '''
+        logger = logging.getLogger(__name__)
+        logger.info(f'get_notice_text {time_block} {notice_type}')
+
+        return self.instruction_set_notices.get(Q(time_block = time_block) & Q(notice_type = notice_type)).text
+    
+    def get_notice_title(self, time_block, notice_type):
+        '''
+        get specified notice title
+        '''
+        logger = logging.getLogger(__name__)
+        logger.info(f'get_notice_title {time_block} {notice_type}')
+
+        return self.instruction_set_notices.get(Q(time_block = time_block) & Q(notice_type = notice_type)).title
 
     def copy_pages(self, i_set):
         '''
@@ -61,6 +86,11 @@ class InstructionSet(models.Model):
         for page in self.instruction_set_pages.all():
             page.text = i_set.get_page_text(page.time_block, page.page_type)
             page.save()
+        
+        for notice in self.instruction_set_notices.all():
+            notice.text = i_set.get_notice_text(notice.time_block, notice.notice_type)
+            notice.title = i_set.get_notice_title(notice.time_block, notice.notice_type)
+            notice.save()
     
     def json(self):
         '''

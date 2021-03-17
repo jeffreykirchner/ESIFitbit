@@ -389,7 +389,7 @@ def getSessionDaySubject(data,session_subject,session_day):
 
             #get object again after calculation
             session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
-            session_day_subject_actvity_previous = session_day_subject_actvity.getPreviousActivityDay()
+            # session_day_subject_actvity_previous = session_day_subject_actvity.getPreviousActivityDay()
 
 
     session_date = "--/--/----"
@@ -426,20 +426,23 @@ def getSessionDaySubject(data,session_subject,session_day):
         ps = session_day.session.parameterset
         p_number = session_day.period_number
 
+        notification_title = session_day.session.get_notice_title(p_number)
+        notification_text = session_day.session.get_notice_text(p_number)
+
         #check today is first day of new time block
-        if ps.getBlockChangeToday(p_number):
-            notification_title = p.blockChangeSubject
-            notification_text = p.blockChangeText
-            notification_text = notification_text.replace("[heart pay]",f'{ps.getHeartPay(p_number)/100:0.2f}')
-            notification_text = notification_text.replace("[immune pay]",f'{ps.getImmunePay(p_number)/100:0.2f}')
-            notification_text = notification_text.replace("[fixed pay]",f'{ps.fixed_pay_per_day:0.2f}')
-        elif ps.getBlockChangeInTwoDays(p_number):
-            #notify subjects that payments will change in two days
-            notification_title = p.blockPreChangeSubject
-            notification_text = p.blockPreChangeText
-            notification_text = notification_text.replace("[heart pay]",f'{ps.getHeartPay(p_number+2)/100:0.2f}')
-            notification_text = notification_text.replace("[immune pay]",f'{ps.getImmunePay(p_number+2)/100:0.2f}')
-            notification_text = notification_text.replace("[fixed pay]",f'{ps.fixed_pay_per_day:0.2f}')
+        # if ps.getBlockChangeToday(p_number):
+        #     notification_title = p.blockChangeSubject
+        #     notification_text = p.blockChangeText
+        #     notification_text = notification_text.replace("[heart pay]",f'{ps.getHeartPay(p_number)/100:0.2f}')
+        #     notification_text = notification_text.replace("[immune pay]",f'{ps.getImmunePay(p_number)/100:0.2f}')
+        #     notification_text = notification_text.replace("[fixed pay]",f'{ps.fixed_pay_per_day:0.2f}')
+        # elif ps.getBlockChangeInTwoDays(p_number):
+        #     #notify subjects that payments will change in two days
+        #     notification_title = p.blockPreChangeSubject
+        #     notification_text = p.blockPreChangeText
+        #     notification_text = notification_text.replace("[heart pay]",f'{ps.getHeartPay(p_number+2)/100:0.2f}')
+        #     notification_text = notification_text.replace("[immune pay]",f'{ps.getImmunePay(p_number+2)/100:0.2f}')
+        #     notification_text = notification_text.replace("[fixed pay]",f'{ps.fixed_pay_per_day:0.2f}')
 
         fitBitTimeRequirementMet = True
         fitBitTimeRequired = ps.getFormatedWristMinutes()

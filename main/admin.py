@@ -4,7 +4,7 @@ from django.db.models.functions import Lower
 from django.utils.translation import ngettext
 from django.contrib import messages
 
-from main.forms import Parameters_form, Consent_form_form, SessionFormAdmin, InstructionSetPageForm
+from main.forms import Parameters_form, Consent_form_form, SessionFormAdmin, InstructionSetPageForm, InstructionSetNoticeForm
 
 from main.models import *
 
@@ -36,7 +36,7 @@ class consent_formsadmin(admin.ModelAdmin):
 
       actions = []
       list_display = ['name']
-      
+
       form = Consent_form_form      
 
 admin.site.register(Consent_forms, consent_formsadmin)
@@ -67,6 +67,7 @@ class SessionDaysAdmin(admin.ModelAdmin):
       search_fields = ['session__title','id','period_number','date','payments_sent']
 
       readonly_fields = ('period_number','date','payments_sent','session')
+
 admin.site.register(Session_day,SessionDaysAdmin)
 
 #instruction set page
@@ -82,6 +83,19 @@ class InstructionSetPageInline(admin.TabularInline):
 
       form = InstructionSetPageForm
       model = InstructionSetPage
+
+class InstructionSetNoticeInline(admin.TabularInline):
+      '''
+      instruction set notice admin screen
+      '''
+      def has_delete_permission(self, request, obj=None):
+            return False
+      
+      def has_add_permission(self, request, obj=None):
+            return False
+
+      form = InstructionSetNoticeForm
+      model = InstructionSetNotice
 
 #Instruction set
 class InstructionSetAdmin(admin.ModelAdmin):
@@ -123,7 +137,7 @@ class InstructionSetAdmin(admin.ModelAdmin):
       duplicate_set.short_description = "Duplicate Instruction Set"
 
       inlines = [
-        InstructionSetPageInline,
+        InstructionSetPageInline, InstructionSetNoticeInline, 
       ]
       actions = [setup_pages, duplicate_set]
 

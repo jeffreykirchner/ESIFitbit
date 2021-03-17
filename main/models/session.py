@@ -20,7 +20,7 @@ import main
 from main.models import Parameterset
 from main.models import InstructionSet
 from main.models import Parameters
-from main.globals import todaysDate, TimeBlock
+from main.globals import todaysDate, TimeBlock, NoticeType
 class Session(models.Model):
     '''
     session model
@@ -357,6 +357,41 @@ class Session(models.Model):
 
         return csv_response
 
+    def get_current_block(self):
+        '''
+        get the current time block
+        '''
+
+        session_day = self.getCurrentSessionDay()
+        current_block = 1
+
+        if session_day:
+            current_block = self.parameterset.getBlock(session_day.period_number)
+        
+        if current_block == 1:
+            return TimeBlock.ONE
+        
+        if current_block == 2:
+            return TimeBlock.TWO
+        
+        return TimeBlock.THREE
+    
+    def get_next_block(self, p_number):
+        '''
+        get the next time block
+        '''
+
+        current_block = self.parameterset.getBlock(p_number)
+        
+        if current_block == 1:
+            return TimeBlock.ONE
+        
+        if current_block == 2:
+            return TimeBlock.TWO
+        
+        return TimeBlock.THREE
+        
+
     def get_instruction_text(self, page_type):
         '''
         get the page_type of instruction given the current period
@@ -366,21 +401,51 @@ class Session(models.Model):
         if not self.instruction_set:
             return ""
 
-        session_day = self.getCurrentSessionDay()
-        current_block = 1
+        return self.instruction_set.get_page_text(self.get_current_block(), page_type)
 
-        if session_day:
-            current_block = self.parameterset.getBlock(session_day.period_number)
-        
-        if current_block == 1:
-            current_block = TimeBlock.ONE
-        elif current_block == 2:
-            current_block = TimeBlock.TWO
+    def get_notice_text(self, p_number):
+        '''
+        get current notice text
+        '''
+
+        if not self.instruction_set:
+            return ""        
+
+        if self.parameterset.getBlockChangeToday(p_number):
+            notice_type = NoticeType.START
+            time_block = self.get_current_block()
+        elif self.parameterset.getBlockChangeInTwoDays(p_number):
+            notice_type = NoticeType.ADVANCE
+            time_block = self.get_next_block(p_number + 2)
         else:
-            current_block = TimeBlock.THREE
+            return ""
 
-        return self.instruction_set.get_page_text(current_block, page_type)
+        notice_text = self.instruction_set.get_notice_text(time_block, notice_type)
+       
+        notice_text = notice_text.replace("[heart pay]",f'{self.parameterset.getHeartPay(p_number)/100:0.2f}')
+        notice_text = notice_text.replace("[immune pay]",f'{self.parameterset.getImmunePay(p_number)/100:0.2f}')
+        notice_text = notice_text.replace("[fixed pay]",f'{self.parameterset.fixed_pay_per_day:0.2f}')
 
+        return notice_text
+    
+    def get_notice_title(self, p_number):
+        '''
+        get current notice title
+        '''
+
+        if not self.instruction_set:
+            return ""
+
+        if self.parameterset.getBlockChangeToday(p_number):
+            notice_type = NoticeType.START
+            time_block = self.get_current_block()
+        elif self.parameterset.getBlockChangeInTwoDays(p_number):
+            notice_type = NoticeType.ADVANCE
+            time_block = self.get_next_block(p_number + 2)
+        else:
+            return ""
+
+        return self.instruction_set.get_notice_title(time_block, notice_type)
 
     #return json object of class
     def json(self):
