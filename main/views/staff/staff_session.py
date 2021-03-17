@@ -286,6 +286,8 @@ def updateSession(data,id):
             sd.save()
 
             s.calcEndDate()
+        
+        #logger.info(s.instruction_set)
 
         #check if session is base line
        

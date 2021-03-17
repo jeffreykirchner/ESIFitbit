@@ -9,14 +9,14 @@ import json
 from django.test import TestCase
 
 from main.models import Session, Session_day_subject_actvity
-from main.globals.todaysDate import todaysDate
+from main.globals import todaysDate, PageType, TimeBlock, NoticeType
 
 from main.views.staff.staff_home import createSession
 from main.views.staff.staff_session import updateSession, addSubject, startSession, sendCancelations
 from main.views.subject.subject_home import payMe
 
 #test past last day of experiment
-class subjectCompleteTestCase(TestCase):
+class SubjectCompleteTestCase(TestCase):
     '''
     tests for subject screen
     '''
@@ -81,7 +81,7 @@ class subjectCompleteTestCase(TestCase):
         # self.assertFalse(session_day_subject_actvity.paypal_today)   
 
 #test last day of experiment
-class subjectLastDayTestCase(TestCase):
+class SubjectLastDayTestCase(TestCase):
     fixtures = ['parameters.json', 'instruction_set.json']
 
     session = None      #test session
@@ -149,10 +149,8 @@ class subjectLastDayTestCase(TestCase):
         session_day_subject_actvity = session_subject.Session_day_subject_actvities.filter(session_day__period_number = 4).first()
         self.assertTrue(session_day_subject_actvity.paypal_today) 
 
-    
-
 #test subject after experiment has started
-class subjectAfterStartTestCase(TestCase):
+class SubjectAfterStartTestCase(TestCase):
     fixtures = ['parameters.json' , 'instruction_set.json']
 
     session = None      #test session
@@ -268,7 +266,7 @@ class subjectAfterStartTestCase(TestCase):
         self.assertTrue(session_day_subject_actvity.paypal_today)
 
 #test subject before experiment starts
-class subjectBeforeStartTestCase(TestCase):
+class SubjectBeforeStartTestCase(TestCase):
     fixtures = ['parameters.json', 'instruction_set.json']
 
     session = None      #test session
@@ -354,4 +352,331 @@ class subjectBeforeStartTestCase(TestCase):
         r = json.loads(payMe({},session_subject,session_day).content.decode("UTF-8"))
         self.assertIn("Could not find session_day_subject_actvity",r['message'])
 
+class SubjectInstructions(TestCase):
+    '''
+    test correct instructions and notices are shown
+    '''
+    fixtures = ['parameters.json', 'instruction_set.json']
 
+    session = None
+
+    def setUp(self):
+        logger = logging.getLogger(__name__)
+
+        createSession({})
+
+        #set sessoin start to tomorrow
+        self.session = Session.objects.first()
+
+        start_date = todaysDate()
+
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}, {'name': 'instruction_set', 'value': '2'}]}
+
+        result = json.loads(updateSession(data, self.session.id).content.decode("UTF-8"))
+        self.assertEqual(result['status'],"success")
+
+        addSubject({},self.session.id)
+        addSubject({},self.session.id)
+        addSubject({},self.session.id)
+        addSubject({},self.session.id)
+        addSubject({},self.session.id)
+        addSubject({},self.session.id)
+
+        self.session = Session.objects.get(id = self.session.id)
+    
+    def test_three_x_three_one(self):
+        '''
+        test experiment with a 3 x 3 x 3 time block one
+        '''
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+        instruction_set = session.instruction_set
+
+        #logger.info(self.session.instruction_set)
+
+        session.parameterset.block_1_day_count = 3
+        session.parameterset.block_2_day_count = 3
+        session.parameterset.block_3_day_count = 3
+
+        session.parameterset.save()
+        session.calcEndDate()
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        logger.info(f"Session start date {session.start_date} end date {session.end_date}")
+
+        #block one instructions
+        heart_help_text = session.get_instruction_text(PageType.HEART)
+        immune_help_text = session.get_instruction_text(PageType.SLEEP)
+        payment_help_text = session.get_instruction_text(PageType.PAY)
+
+        self.assertEqual(heart_help_text, instruction_set.get_page_text(TimeBlock.ONE, PageType.HEART))
+        self.assertEqual(immune_help_text, instruction_set.get_page_text(TimeBlock.ONE, PageType.SLEEP))
+        self.assertEqual(payment_help_text, instruction_set.get_page_text(TimeBlock.ONE, PageType.PAY))
+
+        #check for payment change notice
+        p_number = session.getCurrentSessionDay().period_number
+
+        notification_title = session.get_notice_title(p_number)
+        notification_text = session.get_notice_text(p_number)
+
+        self.assertEqual(notification_title, "")
+        self.assertEqual(notification_text, "")
+
+    def test_three_x_three_two(self):
+        '''
+        test experiment with a 3 x 3 x 3 time block two
+        '''
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+        instruction_set = session.instruction_set
+
+        #logger.info(self.session.instruction_set)
+
+        session.parameterset.block_1_day_count = 3
+        session.parameterset.block_2_day_count = 3
+        session.parameterset.block_3_day_count = 3
+
+        session.parameterset.save()
+
+        start_date = todaysDate() - timedelta(4)
+
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}, {'name': 'instruction_set', 'value': '2'}]}
+
+        result = json.loads(updateSession(data, self.session.id).content.decode("UTF-8"))
+        self.assertEqual(result['status'],"success")
+
+        session = Session.objects.get(id = session.id)
+        session.calcEndDate()
+        session = Session.objects.get(id = session.id)
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        logger.info(f"Session start date {session.start_date} end date {session.end_date}")
+
+        heart_help_text = session.get_instruction_text(PageType.HEART)
+        immune_help_text = session.get_instruction_text(PageType.SLEEP)
+        payment_help_text = session.get_instruction_text(PageType.PAY)
+
+        self.assertEqual(heart_help_text, instruction_set.get_page_text(TimeBlock.TWO, PageType.HEART))
+        self.assertEqual(immune_help_text, instruction_set.get_page_text(TimeBlock.TWO, PageType.SLEEP))
+        self.assertEqual(payment_help_text, instruction_set.get_page_text(TimeBlock.TWO, PageType.PAY))
+
+        #check for payment change notice
+        p_number = session.getCurrentSessionDay().period_number
+
+        notification_title = session.get_notice_title(p_number)
+        notification_text = session.get_notice_text(p_number)
+
+        self.assertEqual(notification_title, instruction_set.get_notice_title(TimeBlock.TWO, NoticeType.START))
+        self.assertEqual(notification_text, instruction_set.get_notice_text(TimeBlock.TWO, NoticeType.START))
+   
+    def test_three_x_three_three(self):
+        '''
+        test experiment with a 3 x 3 x 3 time block three
+        '''
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+        instruction_set = session.instruction_set
+
+        #logger.info(self.session.instruction_set)
+
+        session.parameterset.block_1_day_count = 3
+        session.parameterset.block_2_day_count = 3
+        session.parameterset.block_3_day_count = 3
+
+        session.parameterset.save()
+
+        start_date = todaysDate() - timedelta(7)
+
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}, {'name': 'instruction_set', 'value': '2'}]}
+
+        result = json.loads(updateSession(data, self.session.id).content.decode("UTF-8"))
+        self.assertEqual(result['status'],"success")
+
+        session = Session.objects.get(id = session.id)
+        session.calcEndDate()
+        session = Session.objects.get(id = session.id)
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        logger.info(f"Session start date {session.start_date} end date {session.end_date}")
+
+        heart_help_text = session.get_instruction_text(PageType.HEART)
+        immune_help_text = session.get_instruction_text(PageType.SLEEP)
+        payment_help_text = session.get_instruction_text(PageType.PAY)
+
+        self.assertEqual(heart_help_text, instruction_set.get_page_text(TimeBlock.THREE, PageType.HEART))
+        self.assertEqual(immune_help_text, instruction_set.get_page_text(TimeBlock.THREE, PageType.SLEEP))
+        self.assertEqual(payment_help_text, instruction_set.get_page_text(TimeBlock.THREE, PageType.PAY))
+
+        #check for payment change notice
+        p_number = session.getCurrentSessionDay().period_number
+
+        notification_title = session.get_notice_title(p_number)
+        notification_text = session.get_notice_text(p_number)
+
+        self.assertEqual(notification_title, instruction_set.get_notice_title(TimeBlock.THREE, NoticeType.START))
+        self.assertEqual(notification_text, instruction_set.get_notice_text(TimeBlock.THREE, NoticeType.START))
+
+    def test_three_x_three_one_advance(self):
+        '''
+        test experiment with a 3 x 3 x 3 time block two advanced notice
+        '''
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+        instruction_set = session.instruction_set
+
+        #logger.info(self.session.instruction_set)
+
+        session.parameterset.block_1_day_count = 3
+        session.parameterset.block_2_day_count = 3
+        session.parameterset.block_3_day_count = 3
+
+        session.parameterset.save()
+
+        start_date = todaysDate() - timedelta(2)
+
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}, {'name': 'instruction_set', 'value': '2'}]}
+
+        result = json.loads(updateSession(data, self.session.id).content.decode("UTF-8"))
+        self.assertEqual(result['status'],"success")
+
+        session = Session.objects.get(id = session.id)
+        session.calcEndDate()
+        session = Session.objects.get(id = session.id)
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        logger.info(f"Session start date {session.start_date} end date {session.end_date}")
+
+        heart_help_text = session.get_instruction_text(PageType.HEART)
+        immune_help_text = session.get_instruction_text(PageType.SLEEP)
+        payment_help_text = session.get_instruction_text(PageType.PAY)
+
+        self.assertEqual(heart_help_text, instruction_set.get_page_text(TimeBlock.ONE, PageType.HEART))
+        self.assertEqual(immune_help_text, instruction_set.get_page_text(TimeBlock.ONE, PageType.SLEEP))
+        self.assertEqual(payment_help_text, instruction_set.get_page_text(TimeBlock.ONE, PageType.PAY))
+
+        #check for payment change notice
+        p_number = session.getCurrentSessionDay().period_number
+
+        notification_title = session.get_notice_title(p_number)
+        notification_text = session.get_notice_text(p_number)
+
+        self.assertEqual(notification_title, instruction_set.get_notice_title(TimeBlock.TWO, NoticeType.ADVANCE))
+        self.assertEqual(notification_text, instruction_set.get_notice_text(TimeBlock.TWO, NoticeType.ADVANCE))
+
+    def test_three_x_three_two_advance(self):
+        '''
+        test experiment with a 3 x 3 x 3 time block three advanced notice
+        '''
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+        instruction_set = session.instruction_set
+
+        #logger.info(self.session.instruction_set)
+
+        session.parameterset.block_1_day_count = 3
+        session.parameterset.block_2_day_count = 3
+        session.parameterset.block_3_day_count = 3
+
+        session.parameterset.save()
+
+        start_date = todaysDate() - timedelta(5)
+
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}, {'name': 'instruction_set', 'value': '2'}]}
+
+        result = json.loads(updateSession(data, self.session.id).content.decode("UTF-8"))
+        self.assertEqual(result['status'],"success")
+
+        session = Session.objects.get(id = session.id)
+        session.calcEndDate()
+        session = Session.objects.get(id = session.id)
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        logger.info(f"Session start date {session.start_date} end date {session.end_date}")
+
+        heart_help_text = session.get_instruction_text(PageType.HEART)
+        immune_help_text = session.get_instruction_text(PageType.SLEEP)
+        payment_help_text = session.get_instruction_text(PageType.PAY)
+
+        self.assertEqual(heart_help_text, instruction_set.get_page_text(TimeBlock.TWO, PageType.HEART))
+        self.assertEqual(immune_help_text, instruction_set.get_page_text(TimeBlock.TWO, PageType.SLEEP))
+        self.assertEqual(payment_help_text, instruction_set.get_page_text(TimeBlock.TWO, PageType.PAY))
+
+        #check for payment change notice
+        p_number = session.getCurrentSessionDay().period_number
+
+        notification_title = session.get_notice_title(p_number)
+        notification_text = session.get_notice_text(p_number)
+
+        self.assertEqual(notification_title, instruction_set.get_notice_title(TimeBlock.THREE, NoticeType.ADVANCE))
+        self.assertEqual(notification_text, instruction_set.get_notice_text(TimeBlock.THREE, NoticeType.ADVANCE))
+
+    def test_fourteen_x_zero_advance(self):
+        '''
+        test experiment with a 14 x 0 x 0 time block one advanced notice
+        '''
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+        instruction_set = session.instruction_set
+
+        #logger.info(self.session.instruction_set)
+
+        session.parameterset.block_1_day_count = 14
+        session.parameterset.block_2_day_count = 0
+        session.parameterset.block_3_day_count = 0
+
+        session.parameterset.save()
+
+        start_date = todaysDate() - timedelta(13)
+
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}, {'name': 'instruction_set', 'value': '2'}]}
+
+        result = json.loads(updateSession(data, self.session.id).content.decode("UTF-8"))
+        self.assertEqual(result['status'],"success")
+
+        session = Session.objects.get(id = session.id)
+        session.calcEndDate()
+        session = Session.objects.get(id = session.id)
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        logger.info(f"Session start date {session.start_date} end date {session.end_date}")
+
+        heart_help_text = session.get_instruction_text(PageType.HEART)
+        immune_help_text = session.get_instruction_text(PageType.SLEEP)
+        payment_help_text = session.get_instruction_text(PageType.PAY)
+
+        self.assertEqual(heart_help_text, instruction_set.get_page_text(TimeBlock.ONE, PageType.HEART))
+        self.assertEqual(immune_help_text, instruction_set.get_page_text(TimeBlock.ONE, PageType.SLEEP))
+        self.assertEqual(payment_help_text, instruction_set.get_page_text(TimeBlock.ONE, PageType.PAY))
+
+        #check for payment change notice
+        p_number = session.getCurrentSessionDay().period_number
+
+        notification_title = session.get_notice_title(p_number)
+        notification_text = session.get_notice_text(p_number)
+
+        self.assertEqual(notification_title, "")
+        self.assertEqual(notification_text, "")

@@ -362,6 +362,8 @@ class Session(models.Model):
         get the current time block
         '''
 
+        logger = logging.getLogger(__name__)
+
         session_day = self.getCurrentSessionDay()
         current_block = 1
 
