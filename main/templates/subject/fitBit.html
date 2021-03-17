@@ -17,7 +17,7 @@
             {{fitBit_error}}<br>
           {%else%}
             Your Fitbit has been connected.<br>
-            <a href="{% url 'subject_home' id=session_subject.login_key %}">Return to the study.</a>
+            <a href="{% url 'subject_home' id_=session_subject.login_key %}">Return to the study.</a>
           {%endif%}
         </center>
        

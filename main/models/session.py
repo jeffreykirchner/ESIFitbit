@@ -18,10 +18,9 @@ from django.core.exceptions import ObjectDoesNotExist
 import main
 
 from main.models import Parameterset
+from main.models import InstructionSet
 from main.models import Parameters
-from main.globals import todaysDate
-
-#experiment sessoin
+from main.globals import todaysDate, TimeBlock, NoticeType
 class Session(models.Model):
     '''
     session model
@@ -31,12 +30,14 @@ class Session(models.Model):
         '''
         treatment types for session
         '''
-        FOUR = "B", _('Baseline')
+        BASE = 'Base', _('Baseline')
         ONE = 'I', _('Individual')
-        TWO = "ILS", _('Individual - Lump Sum')
-        THREE = "IwCpB", _('Individual with chat and bonus')        
+        A = 'A', _('Treatment A')
+        B = 'B', _('Treatment B')
+        C = 'C', _('Treatment C')       
 
-    parameterset = models.ForeignKey(Parameterset,on_delete=models.CASCADE)
+    parameterset = models.ForeignKey(Parameterset, on_delete=models.CASCADE)
+    instruction_set = models.ForeignKey(InstructionSet, null=True, blank=True, on_delete=models.CASCADE)
 
     title = models.CharField(max_length = 300,default="*** New Session ***")    #title of session
     start_date = models.DateField(default=now)                                  #date of session start
@@ -356,6 +357,98 @@ class Session(models.Model):
 
         return csv_response
 
+    def get_current_block(self):
+        '''
+        get the current time block
+        '''
+
+        logger = logging.getLogger(__name__)
+
+        session_day = self.getCurrentSessionDay()
+        current_block = 1
+
+        if session_day:
+            current_block = self.parameterset.getBlock(session_day.period_number)
+        
+        if current_block == 1:
+            return TimeBlock.ONE
+        
+        if current_block == 2:
+            return TimeBlock.TWO
+        
+        return TimeBlock.THREE
+    
+    def get_next_block(self, p_number):
+        '''
+        get the next time block
+        '''
+
+        current_block = self.parameterset.getBlock(p_number)
+        
+        if current_block == 1:
+            return TimeBlock.ONE
+        
+        if current_block == 2:
+            return TimeBlock.TWO
+        
+        return TimeBlock.THREE
+        
+
+    def get_instruction_text(self, page_type):
+        '''
+        get the page_type of instruction given the current period
+        '''
+
+        #no instruction set attached
+        if not self.instruction_set:
+            return ""
+
+        return self.instruction_set.get_page_text(self.get_current_block(), page_type)
+
+    def get_notice_text(self, p_number):
+        '''
+        get current notice text
+        '''
+
+        if not self.instruction_set:
+            return ""        
+
+        if self.parameterset.getBlockChangeToday(p_number):
+            notice_type = NoticeType.START
+            time_block = self.get_current_block()
+        elif self.parameterset.getBlockChangeInTwoDays(p_number):
+            notice_type = NoticeType.ADVANCE
+            time_block = self.get_next_block(p_number + 2)
+        else:
+            return ""
+
+        notice_text = self.instruction_set.get_notice_text(time_block, notice_type)
+       
+        notice_text = notice_text.replace("[heart pay]",f'{self.parameterset.getHeartPay(p_number)/100:0.2f}')
+        notice_text = notice_text.replace("[immune pay]",f'{self.parameterset.getImmunePay(p_number)/100:0.2f}')
+        notice_text = notice_text.replace("[fixed pay]",f'{self.parameterset.fixed_pay_per_day:0.2f}')
+
+        return notice_text
+    
+    def get_notice_title(self, p_number):
+        '''
+        get current notice title
+        '''
+
+        if not self.instruction_set:
+            return ""
+
+        if self.parameterset.getBlockChangeToday(p_number):
+            notice_type = NoticeType.START
+            time_block = self.get_current_block()
+        elif self.parameterset.getBlockChangeInTwoDays(p_number):
+            notice_type = NoticeType.ADVANCE
+            time_block = self.get_next_block(p_number + 2)
+        else:
+            return ""
+
+        return self.instruction_set.get_notice_title(time_block, notice_type)
+
     #return json object of class
     def json(self):
         '''
@@ -377,6 +470,7 @@ class Session(models.Model):
             "start_date" : self.getDateString(),
             "end_date" : self.getEndDateString(),
             "treatment" : self.treatment,
+            "instruction_set" : self.instruction_set.json() if self.instruction_set else {},
             "treatment_label" : self.Treatment(self.treatment).label,
             "parameterset" : self.parameterset.json(),
             "editable" : self.editable(),

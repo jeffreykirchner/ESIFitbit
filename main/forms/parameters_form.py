@@ -61,35 +61,11 @@ class Parameters_form(forms.ModelForm):
                                         choices=((True, 'Yes'), (False,'No' )),
                                         widget=forms.Select)
 
-    heartHelpText = forms.CharField(label='Heart Help Text',
-                                    widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
-
-    immuneHelpText = forms.CharField(label='Immune Help Text',
-                                     widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
-
-    paymentHelpText = forms.CharField(label='Non-Basline Payment Help Text',
-                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
-
-    paymentHelpTextBaseline = forms.CharField(label='Basline Payment Help Text',
-                                              widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
-
     manualHelpText = forms.CharField(label='Session Help Text',
                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
 
     staffHomeHelpText = forms.CharField(label='Session List Help Text',
                                         widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
-
-    blockChangeSubject = forms.CharField(label='Notification of block change, subject',
-                                         widget=forms.TextInput(attrs={"size":"125"}))
-
-    blockChangeText = forms.CharField(label='Notification of block change, text',
-                                      widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
-
-    blockPreChangeSubject = forms.CharField(label='Advanced notification of block change, subject',
-                                            widget=forms.TextInput(attrs={"size":"125"}))
-
-    blockPreChangeText = forms.CharField(label='Advanced notification of block change, text',
-                                         widget=forms.Textarea(attrs={"rows":"25", "cols":"125"}))
 
     class Meta:
         model=Parameters
