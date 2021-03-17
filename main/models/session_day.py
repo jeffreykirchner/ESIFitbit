@@ -38,7 +38,7 @@ class Session_day(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['session', 'period_number'], name='unique_SD_period_number'),
-            models.UniqueConstraint(fields=['session', 'date'], name='unique_SD_date')
+            #models.UniqueConstraint(fields=['session', 'date'], name='unique_SD_date')
         ]
         verbose_name = 'Session Day'
         verbose_name_plural = 'Session Days'
