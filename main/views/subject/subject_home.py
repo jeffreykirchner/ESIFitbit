@@ -1,24 +1,30 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+'''
+subject view
+'''
+
 import json
-from django.contrib.auth.models import User
-from django.http import JsonResponse
 import logging
-from main.models import Session_subject,Session_day_subject_actvity,Session_day,Parameters
-from main.models import Parameters,Session_subject_questionnaire1,Session_subject_questionnaire2
+
+from django.shortcuts import render
+from django.http import JsonResponse
+
+from main.models import Session_subject, Session_day_subject_actvity, Parameters
+from main.models import Session_subject_questionnaire1,Session_subject_questionnaire2
 from main.forms import Session_subject_questionnaire1_form,Session_subject_questionnaire2_form
-from main.globals import todaysDate
-from datetime import datetime,timedelta
-import pytz
+from main.globals import todaysDate, PageType
 
-def Subject_Home(request, id):
-    logger = logging.getLogger(__name__) 
-   
-    
+
+def Subject_Home(request, id_):
+    '''
+    subject view
+    '''
+    logger = logging.getLogger(__name__)
+
+
     # logger.info("some info")
-    #u=request.user  
+    #u=request.user
 
-    session_subject = Session_subject.objects.filter(login_key = id).first()
+    session_subject = Session_subject.objects.filter(login_key = id_).first()
 
     session_day = None
 
@@ -27,7 +33,7 @@ def Subject_Home(request, id):
 
     logger.info(f'Subject_Home name:{session_subject} session day:{session_day} {request.method}')
 
-    if request.method == 'POST':     
+    if request.method == 'POST':
 
         if session_subject:
             data = json.loads(request.body.decode('utf-8'))
@@ -42,14 +48,14 @@ def Subject_Home(request, id):
                 return submitQuestionnaire1(data, session_subject)
             elif data["action"] == "submitQuestionnaire2":
                 return submitQuestionnaire2(data, session_subject)
-           
-        else:   
-            logger.info("Session subject day, user not found: " + str(id))
-            return JsonResponse({"response" :  "fail"},safe=False)       
-    else:      
+
+        else:
+            logger.info(f'Session subject day, user not found: {id_}')
+            return JsonResponse({"response" :  "fail"},safe=False)
+    else:
         p = Parameters.objects.first()
 
-        if session_subject:           
+        if session_subject:
 
             #questionnaire 1 setup
             session_subject_questionnaire1_form = Session_subject_questionnaire1_form()
@@ -76,7 +82,7 @@ def Subject_Home(request, id):
                 baseline_payment = True
                 baseline_heart = True
                 baseline_sleep = True
-            
+
             if session_day and session_day.getCurrentHeartPay() == 0:
                 baseline_payment = True
 
@@ -84,29 +90,29 @@ def Subject_Home(request, id):
 
             session = session_subject.session
 
-            return render(request,'subject/home.html',{"id":id,  
-                                                    "status":"success",    
-                                                    "before_start_date" : session.isBeforeStartDate(), 
-                                                    "session_canceled" : session.canceled,
-                                                    "session_started" : session.started,                                                   
-                                                    "start_date" : session.getDateString(),    
-                                                    "session_complete" : session.complete(),  
-                                                    "soft_delete" : session_subject.soft_delete,
-                                                    "session_subject_questionnaire1_form_ids" : session_subject_questionnaire1_form_ids,
-                                                    "session_subject_questionnaire1_form" : session_subject_questionnaire1_form,
-                                                    "session_subject_questionnaire2_form_ids" : session_subject_questionnaire2_form_ids,
-                                                    "session_subject_questionnaire2_form" : session_subject_questionnaire2_form,  
-                                                    "heart_help_text" : p.heartHelpText,
-                                                    "immune_help_text" : p.immuneHelpText,
-                                                    "payment_help_text" : p.paymentHelpText if not baseline_payment else p.paymentHelpTextBaseline,                       
-                                                    "session_subject" : session_subject,
-                                                    "baseline_payment" : baseline_payment,
-                                                    "baseline_heart" : baseline_heart,
-                                                    "baseline_sleep" : baseline_sleep,
-                                                    "session_treatment" : session.treatment})
+            return render(request,'subject/home.html',{"id":id_,
+                                                       "status":"success",
+                                                       "before_start_date" : session.isBeforeStartDate(),
+                                                       "session_canceled" : session.canceled,
+                                                       "session_started" : session.started,
+                                                       "start_date" : session.getDateString(),
+                                                       "session_complete" : session.complete(),
+                                                       "soft_delete" : session_subject.soft_delete,
+                                                       "session_subject_questionnaire1_form_ids" : session_subject_questionnaire1_form_ids,
+                                                       "session_subject_questionnaire1_form" : session_subject_questionnaire1_form,
+                                                       "session_subject_questionnaire2_form_ids" : session_subject_questionnaire2_form_ids,
+                                                       "session_subject_questionnaire2_form" : session_subject_questionnaire2_form,
+                                                       "heart_help_text" : session.get_instruction_text(PageType.HEART),
+                                                       "immune_help_text" : session.get_instruction_text(PageType.SLEEP),
+                                                       "payment_help_text" : session.get_instruction_text(PageType.PAY),
+                                                       "session_subject" : session_subject,
+                                                       "baseline_payment" : baseline_payment,
+                                                       "baseline_heart" : baseline_heart,
+                                                       "baseline_sleep" : baseline_sleep,
+                                                       "session_treatment" : session.treatment})
         else:
             logger.info("Error: subject Home, subject not found")
-            return render(request,'subject/home.html',{"id":id,  
+            return render(request,'subject/home.html',{"id":id_,
                                                        "contact_email":p.contactEmail,
                                                        "status":"fail",
                                                        "session_subject_questionnaire1_form_ids":[],
@@ -115,69 +121,69 @@ def Subject_Home(request, id):
 
 #take pre session questionnaire
 def submitQuestionnaire1(data,session_subject):
-    logger = logging.getLogger(__name__) 
+    logger = logging.getLogger(__name__)
     logger.info("submitQuestionnaire1")
     logger.info(data)
 
     form_data_dict = {}
 
-    for field in data["formData"]:            
+    for field in data["formData"]:
         form_data_dict[field["name"]] = field["value"]
 
     q = Session_subject_questionnaire1()
-    q.session_subject = session_subject    
+    q.session_subject = session_subject
 
     form = Session_subject_questionnaire1_form(form_data_dict,instance=q)
 
     if form.is_valid():
-        #print("valid form")                
-        form.save()         
-        q.save()  
-        
+        #print("valid form")
+        form.save()
+        q.save()
+
         session_subject.questionnaire1_required=False
         session_subject.save()
-            
+
         return JsonResponse({"status":"success",
-                             "questionnaire1_required":session_subject.questionnaire1_required,},safe=False)                         
-                                
+                             "questionnaire1_required":session_subject.questionnaire1_required,},safe=False)
+
     else:
         logger.warning("Invalid questionnaire1 form")
         return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
 
 #take post session questionnaire
 def submitQuestionnaire2(data,session_subject):
-    logger = logging.getLogger(__name__) 
+    logger = logging.getLogger(__name__)
     logger.info("submitQuestionnaire2")
     logger.info(data)
 
     form_data_dict = {}
 
-    for field in data["formData"]:            
+    for field in data["formData"]:
         form_data_dict[field["name"]] = field["value"]
 
     q = Session_subject_questionnaire2()
-    q.session_subject = session_subject    
+    q.session_subject = session_subject
 
     form = Session_subject_questionnaire2_form(form_data_dict,instance=q)
 
     if form.is_valid():
-        #print("valid form")                
-        form.save()         
-        q.save()  
-        
+        #print("valid form")
+        form.save()
+        q.save()
+
         session_subject.questionnaire2_required=False
         session_subject.save()
-            
+
         return JsonResponse({"status":"success",
-                             "questionnaire2_required":session_subject.questionnaire2_required,},safe=False)                         
-                                
+                             "questionnaire2_required":session_subject.questionnaire2_required,},safe=False)
+
     else:
         logger.warning("Invalid questionnaire2 form")
         return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
 
 #subject accepts consent form
 def acceptConsentForm(data,session_subject):
-    logger = logging.getLogger(__name__) 
+    logger = logging.getLogger(__name__)
     logger.info("acceptConsentForm")
     logger.info(data)
 
@@ -190,7 +196,7 @@ def acceptConsentForm(data,session_subject):
 
 #pay subject for today
 def payMe(data,session_subject,session_day):
-    logger = logging.getLogger(__name__) 
+    logger = logging.getLogger(__name__)
     if session_day:
         logger.info(f"Pay subject: subject {session_subject.name} id {session_subject.id} session day {session_day.id} date {session_day.date}")
     else:
@@ -204,60 +210,60 @@ def payMe(data,session_subject,session_day):
     status = "success"
     message = ""
 
-    #check that session is not complete    
+    #check that session is not complete
     if not session_day:
-        status = "fail"  
+        status = "fail"
         message = "Pay Error: Session day not found"
-        logger.warning(message) 
+        logger.warning(message)
 
-    #check that session is not started   
-    if status == "success": 
+    #check that session is not started
+    if status == "success":
         if not session_day.session.started:
-            status = "fail"  
+            status = "fail"
             message = "Pay Error: Session not started"
-            logger.warning(message) 
+            logger.warning(message)
 
     #check for consent form
     if status == "success":
         if session_subject.consent_required:
-            status = "fail"   
-            message = "Pay Error: Consent required" 
+            status = "fail"
+            message = "Pay Error: Consent required"
             logger.warning(message)
-    
+
     #check that questionnaire one is done before payment
     if status == "success":
         if session_subject.questionnaire1_required:
-            status = "fail"  
-            message = "Pay Error: Questionnaire 1 required"  
+            status = "fail"
+            message = "Pay Error: Questionnaire 1 required"
             logger.warning(message)
 
     #check that session day activity exists
     if status == "success":
         if not session_day_subject_actvity:
-            status = "fail" 
-            message = "Pay Error: Could not find session_day_subject_actvity"   
+            status = "fail"
+            message = "Pay Error: Could not find session_day_subject_actvity"
             logger.warning(message)
 
     #check that it is the day of the specified session day
     if status == "success":
         if session_day_subject_actvity.session_day.date != todaysDate().date():
-            status = "fail"  
-            message = "Pay Error: Session_day.date does not match today's date"  
-            logger.warning(message)   
+            status = "fail"
+            message = "Pay Error: Session_day.date does not match today's date"
+            logger.warning(message)
 
     #check that session is not complete
     if status == "success":
         if session_day.session.complete():
-            status = "fail"  
+            status = "fail"
             message = "Pay Error: Session is already complete"
-            logger.warning(message) 
+            logger.warning(message)
 
     #check that session is not canceled
     if status == "success":
         if session_day.session.canceled:
-            status = "fail"   
+            status = "fail"
             message =  "Pay Error: Session is canceled"
-            logger.warning(message)      
+            logger.warning(message)
 
     #check that subject has not already been paid
     if status == "success":
@@ -265,19 +271,19 @@ def payMe(data,session_subject,session_day):
             status="fail"
             message = "Pay Error: Double payment attempt"
             logger.warning(message)
-    
+
     #check that questionnaire two is done before last payment
     if status == "success":
         if session_subject.getQuestionnaire2Required() :
-            status = "fail"  
-            message = "Pay Error: Questionnaire 2 required"  
+            status = "fail"
+            message = "Pay Error: Questionnaire 2 required"
             logger.warning(message)
-    
+
     #check that subject has not be removed from session
     if status == "success":
         if session_subject.soft_delete:
             status = "fail"
-            message = "Pay Error: Subject was removed from session"  
+            message = "Pay Error: Subject was removed from session"
             logger.warning(message)
 
     #check that subject has had the required wrist time
@@ -288,19 +294,19 @@ def payMe(data,session_subject,session_day):
             # logger.info(f'{pd.fitbit_on_wrist_minutes} {session_day.period_number} {session_day.session.parameterset.minimum_wrist_minutes}')
             if pd.fitbit_on_wrist_minutes < session_day.session.parameterset.minimum_wrist_minutes:
                 status = "fail"
-                message = "Pay Error: Wrist time too low."  
+                message = "Pay Error: Wrist time too low."
                 logger.warning(message)
-    
+
     if status == "success":
         try:
             session_day_subject_actvity.paypal_today=True
             session_day_subject_actvity.storeTodaysTotalEarnings()
             session_day_subject_actvity.save()
-        except Exception  as e: 
+        except Exception  as e:
             logger.info(e)
             status = "fail"
-    
-    if status == "success": 
+
+    if status == "success":
         logger.info("Do PayPal")
         #add paypal code here
         pass
@@ -312,7 +318,7 @@ def payMe(data,session_subject,session_day):
 
 #get session subject day
 def getSessionDaySubject(data,session_subject,session_day):
-    logger = logging.getLogger(__name__) 
+    logger = logging.getLogger(__name__)
     logger.info("Session subject day")
     logger.info(data)
 
@@ -334,10 +340,10 @@ def getSessionDaySubject(data,session_subject,session_day):
         status = "fail"
         logger.info("Get subject error: Session subject not found.")
 
-    
+
     #check if session is already complete
     if session_subject and not session_subject.session.complete():
-        
+
         #check fitbit is attached and store last sync date
         if not session_subject.getFitBitAttached():
             fitbitError=True
@@ -347,7 +353,7 @@ def getSessionDaySubject(data,session_subject,session_day):
         logger.info("No fitbit data pulled: The session is complete.")
 
     if status == "success":
-       
+
         if not fitbitError and session_subject.fitbitSyncedToday():
             #check if subject missed past days
             session_subject.fitBitCatchUp()
@@ -355,7 +361,7 @@ def getSessionDaySubject(data,session_subject,session_day):
         session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
 
         if session_day_subject_actvity:
-            
+
             session_day_subject_actvity_previous_day = session_day_subject_actvity.getPreviousActivityDay()
 
             if not fitbitError:
@@ -366,15 +372,15 @@ def getSessionDaySubject(data,session_subject,session_day):
             session_day_subject_actvity.updateLast_login()
 
         if session_day_subject_actvity_previous_day:
-           
-            
+
+
             if not fitbitError:
                 #mark subject checkin as true
                 if session_subject.fitbitSyncedToday():
                     session_day_subject_actvity.check_in_today=True
                     session_day_subject_actvity.save()
 
-                #pull data from fitbit            
+                #pull data from fitbit
                 session_day_subject_actvity_previous_day.pullFitbitActvities()
                 session_day_subject_actvity_previous_day.pullFibitBitHeartRate(True)
 
@@ -383,13 +389,13 @@ def getSessionDaySubject(data,session_subject,session_day):
 
             #get object again after calculation
             session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
-            session_day_subject_actvity_previous = session_day_subject_actvity.getPreviousActivityDay()
+            # session_day_subject_actvity_previous = session_day_subject_actvity.getPreviousActivityDay()
 
-    
+
     session_date = "--/--/----"
     session_last_day = False
-        
-    if session_day:       
+
+    if session_day:
         session_date = session_day.getDateStr()
         session_last_day = session_day.lastDay()
 
@@ -420,25 +426,28 @@ def getSessionDaySubject(data,session_subject,session_day):
         ps = session_day.session.parameterset
         p_number = session_day.period_number
 
+        notification_title = session_day.session.get_notice_title(p_number)
+        notification_text = session_day.session.get_notice_text(p_number)
+
         #check today is first day of new time block
-        if ps.getBlockChangeToday(p_number):
-            notification_title = p.blockChangeSubject
-            notification_text = p.blockChangeText
-            notification_text = notification_text.replace("[heart pay]",f'{ps.getHeartPay(p_number)/100:0.2f}')
-            notification_text = notification_text.replace("[immune pay]",f'{ps.getImmunePay(p_number)/100:0.2f}')
-            notification_text = notification_text.replace("[fixed pay]",f'{ps.fixed_pay_per_day:0.2f}')
-        elif ps.getBlockChangeInTwoDays(p_number):
-            #notify subjects that payments will change in two days
-            notification_title = p.blockPreChangeSubject
-            notification_text = p.blockPreChangeText
-            notification_text = notification_text.replace("[heart pay]",f'{ps.getHeartPay(p_number+2)/100:0.2f}')
-            notification_text = notification_text.replace("[immune pay]",f'{ps.getImmunePay(p_number+2)/100:0.2f}')
-            notification_text = notification_text.replace("[fixed pay]",f'{ps.fixed_pay_per_day:0.2f}')
+        # if ps.getBlockChangeToday(p_number):
+        #     notification_title = p.blockChangeSubject
+        #     notification_text = p.blockChangeText
+        #     notification_text = notification_text.replace("[heart pay]",f'{ps.getHeartPay(p_number)/100:0.2f}')
+        #     notification_text = notification_text.replace("[immune pay]",f'{ps.getImmunePay(p_number)/100:0.2f}')
+        #     notification_text = notification_text.replace("[fixed pay]",f'{ps.fixed_pay_per_day:0.2f}')
+        # elif ps.getBlockChangeInTwoDays(p_number):
+        #     #notify subjects that payments will change in two days
+        #     notification_title = p.blockPreChangeSubject
+        #     notification_text = p.blockPreChangeText
+        #     notification_text = notification_text.replace("[heart pay]",f'{ps.getHeartPay(p_number+2)/100:0.2f}')
+        #     notification_text = notification_text.replace("[immune pay]",f'{ps.getImmunePay(p_number+2)/100:0.2f}')
+        #     notification_text = notification_text.replace("[fixed pay]",f'{ps.fixed_pay_per_day:0.2f}')
 
         fitBitTimeRequirementMet = True
         fitBitTimeRequired = ps.getFormatedWristMinutes()
 
-        if p_number>1:            
+        if p_number>1:
             if session_day_subject_actvity_previous_day.fitbit_on_wrist_minutes < ps.minimum_wrist_minutes :
                 fitBitTimeRequirementMet = False
 
@@ -462,6 +471,5 @@ def getSessionDaySubject(data,session_subject,session_day):
                             "session_last_day" : session_last_day,
                             "session_day_subject_actvity" : session_day_subject_actvity.json(),
                             "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
-                            "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)                         
-                                
-     
+                            "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)
+

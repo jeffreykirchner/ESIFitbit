@@ -14,7 +14,7 @@ from django.db.models.functions import Lower
 from main.globals import getRandomHexColor
 from main.globals import todaysDate
 
-from main.forms import Parameterset_form, Session_form, Subject_form, Import_parameters_form
+from main.forms import Parameterset_form, SessionForm, Subject_form, Import_parameters_form
 from main.models import Session,Parameterset, Session_subject, Session_day_subject_actvity, Parameters
 
 @login_required
@@ -82,7 +82,7 @@ def Staff_Session(request,id):
     else:      
         
         parameterset_form = Parameterset_form()
-        session_form = Session_form()
+        session_form = SessionForm()
         subject_form = Subject_form()
         import_parameters_form = Import_parameters_form()
         p = Parameters.objects.first()
@@ -93,13 +93,13 @@ def Staff_Session(request,id):
         for i in subject_form:
             subject_form_ids.append(i.html_name)
         
-        return render(request,'staff/session.html',{'id': id,
-                                                    'parameterset_form':parameterset_form,
-                                                    'session_form':session_form,
-                                                    'subject_form':subject_form,
-                                                    'help_text': p.manualHelpText,
-                                                    'import_parameters_form':import_parameters_form,
-                                                    'subject_form_ids':subject_form_ids,
+        return render(request,'staff/session.html',{'id' : id,
+                                                    'parameterset_form' : parameterset_form,
+                                                    'session_form' : session_form,
+                                                    'subject_form' : subject_form,
+                                                    'help_text' : p.manualHelpText,
+                                                    'import_parameters_form' : import_parameters_form,
+                                                    'subject_form_ids' : subject_form_ids,
                                                     'yesterdays_date' : yesterdays_date.date().strftime("%Y-%m-%d")})     
 
 #get list of experiment sessions
@@ -273,7 +273,7 @@ def updateSession(data,id):
         form_data_dict["questionnaire1_required"] = 1 if s.questionnaire1_required else 0
         form_data_dict["questionnaire2_required"] = 1 if s.questionnaire2_required else 0
 
-    form = Session_form(form_data_dict,instance=s)
+    form = SessionForm(form_data_dict, instance=s)
 
     if form.is_valid():
         #print("valid form")                
@@ -286,10 +286,12 @@ def updateSession(data,id):
             sd.save()
 
             s.calcEndDate()
+        
+        #logger.info(s.instruction_set)
 
         #check if session is base line
        
-        if s.treatment=="B":
+        if s.treatment=="BASE":
             s.parameterset.block_1_heart_pay = 0
             s.parameterset.block_2_heart_pay = 0
             s.parameterset.block_3_heart_pay = 0
@@ -301,7 +303,7 @@ def updateSession(data,id):
             s.parameterset.save()
 
 
-        return JsonResponse({"status":"success","session" : getSessionJSON(id),},safe=False)                         
+        return JsonResponse({"status" : "success", "session" : getSessionJSON(id),}, safe=False)                         
                                 
     else:
         logger.info("Invalid session form")
