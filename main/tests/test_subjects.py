@@ -8,11 +8,11 @@ import json
 
 from django.test import TestCase
 
-from main.models import Session,Session_day_subject_actvity
+from main.models import Session, Session_day_subject_actvity
 from main.globals.todaysDate import todaysDate
 
 from main.views.staff.staff_home import createSession
-from main.views.staff.staff_session import updateSession,addSubject,startSession,sendCancelations
+from main.views.staff.staff_session import updateSession, addSubject, startSession, sendCancelations
 from main.views.subject.subject_home import payMe
 
 #test past last day of experiment
@@ -20,7 +20,7 @@ class subjectCompleteTestCase(TestCase):
     '''
     tests for subject screen
     '''
-    fixtures = ['parameters.json']
+    fixtures = ['parameters.json', 'instruction_set.json']
 
     session = None      #test session
 
@@ -34,7 +34,7 @@ class subjectCompleteTestCase(TestCase):
 
         start_date = todaysDate()-timedelta(days=4)
 
-        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}]}
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'}]}
 
         r = json.loads(updateSession(data,session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
@@ -82,7 +82,7 @@ class subjectCompleteTestCase(TestCase):
 
 #test last day of experiment
 class subjectLastDayTestCase(TestCase):
-    fixtures = ['parameters.json']
+    fixtures = ['parameters.json', 'instruction_set.json']
 
     session = None      #test session
 
@@ -96,7 +96,7 @@ class subjectLastDayTestCase(TestCase):
 
         start_date = todaysDate()-timedelta(days=3)
 
-        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}]}
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'}]}
 
         r = json.loads(updateSession(data,session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
@@ -153,7 +153,7 @@ class subjectLastDayTestCase(TestCase):
 
 #test subject after experiment has started
 class subjectAfterStartTestCase(TestCase):
-    fixtures = ['parameters.json']
+    fixtures = ['parameters.json' , 'instruction_set.json']
 
     session = None      #test session
 
@@ -167,7 +167,7 @@ class subjectAfterStartTestCase(TestCase):
 
         start_date = todaysDate()
 
-        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}]}
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'}]}
 
         r = json.loads(updateSession(data,session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
@@ -269,7 +269,7 @@ class subjectAfterStartTestCase(TestCase):
 
 #test subject before experiment starts
 class subjectBeforeStartTestCase(TestCase):
-    fixtures = ['parameters.json']
+    fixtures = ['parameters.json', 'instruction_set.json']
 
     session = None      #test session
 
@@ -283,7 +283,7 @@ class subjectBeforeStartTestCase(TestCase):
 
         start_date = todaysDate() + timedelta(days=1)
 
-        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}]}
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'}]}
 
         r = json.loads(updateSession(data,session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
