@@ -28,6 +28,14 @@
         </div>
         <div class="row">
             <div class="col-lg-4 text-lg-right">
+                <u>{{session_form.instruction_set.label}}</u>:
+            </div>
+            <div class="col-lg-8">
+                <span v-html="session.instruction_set.title"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 text-lg-right">
                 <u>{{session_form.start_date.label}}</u>:
             </div>
             <div class="col-lg-8 ">

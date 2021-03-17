@@ -31,19 +31,8 @@ class Parameters(models.Model):
 
     trackerDataOnly = models.BooleanField(default=True)  # only use data collected from fitness tracker
 
-    heartHelpText = models.CharField(max_length=5000, default="")  # heart help text shown to subjects
-    immuneHelpText = models.CharField(max_length=5000, default="")  # immune help text shown to subjects
-    paymentHelpText = models.CharField(max_length=5000, default="")  # payment help text shown to subjects for none baseline
-    paymentHelpTextBaseline = models.CharField(max_length=5000, default="")  # payment help text shown to subjects for basline treatments
-
     manualHelpText = models.CharField(max_length=5000, default="")                      # help text shown to staff
     staffHomeHelpText = models.CharField(max_length=5000, default="")                   # help text shown to staff home page
-
-    blockChangeSubject = models.CharField(max_length=1000, default="")  # help subject shown when time block changes
-    blockChangeText = models.CharField(max_length=5000, default="")  # help text shown when time block changes
-
-    blockPreChangeSubject = models.CharField(max_length=1000, default="")  # help subject shown 2 days before time block changes
-    blockPreChangeText = models.CharField(max_length=5000, default="")  # help text shown 2 days before time block changes
 
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
