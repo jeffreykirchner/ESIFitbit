@@ -313,11 +313,11 @@ class Session_subject(models.Model):
         return fitbit_response
 
     #calc subject's activity today  
-    def calcTodaysActivity(self,current_period):
+    def calcTodaysActivity(self, current_period):
         logger = logging.getLogger(__name__) 
         
         #get session day
-        session_day = main.models.Session_day.objects.filter(session = self.session,period_number = current_period)
+        session_day = main.models.Session_day.objects.filter(session = self.session, period_number = current_period)
 
         if session_day:
             session_day=session_day.first()
