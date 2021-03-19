@@ -91,87 +91,111 @@
         <!-- time blocks -->
         <div class="row mt-2 border-top">
             <div class="col" style="text-align: center;">
-               Earnings<sub>T</sub> ($) = FixedPayPerDay + (HeartPay<sub>B</sub> * HeartActivity<sub>T</sub>) + (ImmunePay<sub>B</sub> * ImmuneActivity<sub>T</sub>)
+               Earnings<sub>T</sub> ($) = FixedPay<sub>B</sub> + (HeartPay<sub>B</sub> * HeartActivity<sub>T</sub>) + (ImmunePay<sub>B</sub> * ImmuneActivity<sub>T</sub>)
             </div>                            
         </div>
-        <div class="row">
-            <div class="col-3" style="text-align: right;">
-                {{parameterset_form.fixed_pay_per_day.label}}:
+        <div class="row mt-4">
+            <div class="col-md-2" style="text-align: right;">
+                {{parameterset_form.block_1_fixed_pay_per_day.label}}:
             </div>
-            <div class="col-1">
-                <span v-html="session.parameterset.fixed_pay_per_day"></span>
+            <div class="col-md">
+                <span v-html="session.parameterset.block_1_fixed_pay_per_day"></span>
             </div>
-            <div class="col-3" style="text-align: right;">
-               
-            </div>
-            <div class="col-1">
-               
-            </div>
-            <div class="col-3" style="text-align: right;">
-                {{parameterset_form.minimum_wrist_minutes.label}}:
-            </div>
-            <div class="col-1">
-                <span v-html="session.parameterset.minimum_wrist_minutes"></span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-3" style="text-align: right;">
+            <div class="col-md-2" style="text-align: right;">
                 {{parameterset_form.block_1_heart_pay.label}}:
             </div>
-            <div class="col-1">
+            <div class="col-md">
                 <span v-html="session.parameterset.block_1_heart_pay"></span>
             </div>
-            <div class="col-3" style="text-align: right;">
+            <div class="col-md-2" style="text-align: right;">
                 {{parameterset_form.block_1_immune_pay.label}}:
             </div>
-            <div class="col-1">
+            <div class="col-md">
                 <span v-html="session.parameterset.block_1_immune_pay"></span>
             </div>
-            <div class="col-3" style="text-align: right;">
+            <div class="col-md-2" style="text-align: right;">
                 {{parameterset_form.block_1_day_count.label}}:
             </div>
-            <div class="col-1">
+            <div class="col-md">
                 <span v-html="session.parameterset.block_1_day_count"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-3" style="text-align: right;">
+            <div class="col-md-2" style="text-align: right;">
+                {{parameterset_form.block_2_fixed_pay_per_day.label}}:
+            </div>
+            <div class="col-md">
+                <span v-html="session.parameterset.block_2_fixed_pay_per_day"></span>
+            </div>
+            <div class="col-md-2" style="text-align: right;">
                 {{parameterset_form.block_2_heart_pay.label}}:
             </div>
-            <div class="col-1">
+            <div class="col-md">
                 <span v-html="session.parameterset.block_2_heart_pay"></span>
             </div>
-            <div class="col-3" style="text-align: right;">
+            <div class="col-md-2" style="text-align: right;">
                 {{parameterset_form.block_2_immune_pay.label}}:
             </div>
-            <div class="col-1">
+            <div class="col-md">
                 <span v-html="session.parameterset.block_2_immune_pay"></span>
             </div>
-            <div class="col-3" style="text-align: right;">
+            <div class="col-md-2" style="text-align: right;">
                 {{parameterset_form.block_2_day_count.label}}:
             </div>
-            <div class="col-1">
+            <div class="col-md">
                 <span v-html="session.parameterset.block_2_day_count"></span>
             </div>
         </div>
         <div class="row">
-            <div class="col-3" style="text-align: right;">
+            <div class="col-md-2" style="text-align: right;">
+                {{parameterset_form.block_3_fixed_pay_per_day.label}}:
+            </div>
+            <div class="col-md">
+                <span v-html="session.parameterset.block_3_fixed_pay_per_day"></span>
+            </div>
+            <div class="col-md-2" style="text-align: right;">
                 {{parameterset_form.block_3_heart_pay.label}}:
             </div>
-            <div class="col-1">
+            <div class="col-md">
                 <span v-html="session.parameterset.block_3_heart_pay"></span>
             </div>
-            <div class="col-3" style="text-align: right;">
+            <div class="col-md-2" style="text-align: right;">
                 {{parameterset_form.block_3_immune_pay.label}}:
             </div>
-            <div class="col-1">
+            <div class="col-md">
                 <span v-html="session.parameterset.block_3_immune_pay"></span>
             </div>
-            <div class="col-3" style="text-align: right;">
+            <div class="col-md-2" style="text-align: right;">
                 {{parameterset_form.block_3_day_count.label}}:
             </div>
-            <div class="col-1">
+            <div class="col-md">
                 <span v-html="session.parameterset.block_3_day_count"></span>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-2" style="text-align: right;">
+                {{parameterset_form.minimum_wrist_minutes.label}}:
+            </div>
+            <div class="col-md">
+                <span v-html="session.parameterset.minimum_wrist_minutes"></span>
+            </div>
+            <div class="col-md" style="text-align: right;">
+               
+            </div>
+            <div class="col-md">
+               
+            </div>
+            <div class="col-md" style="text-align: right;">
+               
+            </div>
+            <div class="col-md">
+                
+            </div>
+            <div class="col-md" style="text-align: right;">
+               
+            </div>
+            <div class="col-md">
+                
             </div>
         </div>
 

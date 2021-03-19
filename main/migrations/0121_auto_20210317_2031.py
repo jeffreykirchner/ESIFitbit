@@ -10,8 +10,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveConstraint(
-            model_name='session_day',
-            name='unique_SD_date',
-        ),
+        # migrations.RemoveConstraint(
+        #     model_name='session_day',
+        #     name='unique_SD_date',
+        # ),
     ]
