@@ -680,3 +680,209 @@ class SubjectInstructions(TestCase):
 
         self.assertEqual(notification_title, "")
         self.assertEqual(notification_text, "")
+
+class SubjectPayments(TestCase):
+    '''
+    check that correct payments are being used during each time block
+    '''
+    fixtures = ['parameters.json', 'instruction_set.json']
+
+    session = None
+
+    def setUp(self):
+        logger = logging.getLogger(__name__)
+
+        createSession({})
+
+        #set sessoin start to tomorrow
+        self.session = Session.objects.first()
+
+        start_date = todaysDate()
+
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}, {'name': 'instruction_set', 'value': '2'}]}
+
+        result = json.loads(updateSession(data, self.session.id).content.decode("UTF-8"))
+        self.assertEqual(result['status'],"success")
+
+        addSubject({},self.session.id)
+        addSubject({},self.session.id)
+        addSubject({},self.session.id)
+        addSubject({},self.session.id)
+        addSubject({},self.session.id)
+        addSubject({},self.session.id)
+
+        self.session = Session.objects.get(id = self.session.id)
+        self.session.parameterset.block_1_fixed_pay_per_day = 3
+        self.session.parameterset.block_2_fixed_pay_per_day = 4
+        self.session.parameterset.block_3_fixed_pay_per_day = 5
+        self.session.parameterset.save()
+
+    
+    def test_three_x_three_one(self):
+        '''
+        test experiment with a 3 x 3 x 3 time block one
+        '''
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+
+        session.parameterset.block_1_day_count = 3
+        session.parameterset.block_2_day_count = 3
+        session.parameterset.block_3_day_count = 3
+
+        session.parameterset.save()
+        session.calcEndDate()
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        logger.info(f"Session start date {session.start_date} end date {session.end_date}")
+
+        #check for correct base payments block 1
+        self.assertEqual(session.parameterset.get_fixed_pay(session.getCurrentSessionDay().period_number), session.parameterset.block_1_fixed_pay_per_day)
+        self.assertEqual(session.parameterset.getHeartPay(session.getCurrentSessionDay().period_number), session.parameterset.block_1_heart_pay)
+        self.assertEqual(session.parameterset.getImmunePay(session.getCurrentSessionDay().period_number), session.parameterset.block_1_immune_pay)
+    
+    def test_three_x_three_two(self):
+        '''
+        test experiment with a 3 x 3 x 3 time block one
+        '''
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+
+        session.parameterset.block_1_day_count = 3
+        session.parameterset.block_2_day_count = 3
+        session.parameterset.block_3_day_count = 3
+        session.parameterset.save()
+
+        start_date = todaysDate() - timedelta(4)
+
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}, {'name': 'instruction_set', 'value': '2'}]}
+
+        result = json.loads(updateSession(data, self.session.id).content.decode("UTF-8"))
+        self.assertEqual(result['status'],"success")
+
+        session = Session.objects.get(id = session.id)
+        session.calcEndDate()
+        session = Session.objects.get(id = session.id)
+
+        session.calcEndDate()
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        logger.info(f"Session start date {session.start_date} end date {session.end_date}")
+
+        #check for correct base payments block 2
+        self.assertEqual(session.parameterset.get_fixed_pay(session.getCurrentSessionDay().period_number), session.parameterset.block_2_fixed_pay_per_day)
+        self.assertEqual(session.parameterset.getHeartPay(session.getCurrentSessionDay().period_number), session.parameterset.block_2_heart_pay)
+        self.assertEqual(session.parameterset.getImmunePay(session.getCurrentSessionDay().period_number), session.parameterset.block_2_immune_pay)
+
+    def test_three_x_three_three(self):
+        '''
+        test experiment with a 3 x 3 x 3 time block one
+        '''
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+
+        session.parameterset.block_1_day_count = 3
+        session.parameterset.block_2_day_count = 3
+        session.parameterset.block_3_day_count = 3
+        session.parameterset.save()
+
+        start_date = todaysDate() - timedelta(7)
+
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}, {'name': 'instruction_set', 'value': '2'}]}
+
+        result = json.loads(updateSession(data, self.session.id).content.decode("UTF-8"))
+        self.assertEqual(result['status'],"success")
+
+        session = Session.objects.get(id = session.id)
+        session.calcEndDate()
+        session = Session.objects.get(id = session.id)
+
+        session.calcEndDate()
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        logger.info(f"Session start date {session.start_date} end date {session.end_date}")
+
+        #check for correct base payments block 3
+        self.assertEqual(session.parameterset.get_fixed_pay(session.getCurrentSessionDay().period_number), session.parameterset.block_3_fixed_pay_per_day)
+        self.assertEqual(session.parameterset.getHeartPay(session.getCurrentSessionDay().period_number), session.parameterset.block_3_heart_pay)
+        self.assertEqual(session.parameterset.getImmunePay(session.getCurrentSessionDay().period_number), session.parameterset.block_3_immune_pay)
+
+    def test_three_x_three_total_payment(self):
+        '''
+        test experiment with a 3 x 3 x 3 time block one
+        '''
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+
+        session.parameterset.block_1_day_count = 3
+        session.parameterset.block_2_day_count = 3
+        session.parameterset.block_3_day_count = 3
+        session.parameterset.save()
+
+        parameterset = session.parameterset
+
+        start_date = todaysDate() - timedelta(7)
+
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}, {'name': 'instruction_set', 'value': '2'}]}
+
+        result = json.loads(updateSession(data, self.session.id).content.decode("UTF-8"))
+        self.assertEqual(result['status'],"success")
+
+        session = Session.objects.get(id = session.id)
+        session.calcEndDate()
+        session = Session.objects.get(id = session.id)
+
+        session.calcEndDate()
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        logger.info(f"Session start date {session.start_date} end date {session.end_date}")
+
+        #check for correct base payments
+        session_subject = session.session_subjects.first()
+        session_day_2day = session.getCurrentSessionDay()
+        session_day_yda = session.getYesterdaysSessionDay()
+        period_number = session.getCurrentSessionDay().period_number
+
+        session_subject_activity_yda = session_day_yda.Session_day_subject_actvities_SD.get(session_subject=session_subject)
+
+        session_subject_activity_yda.heart_activity_minutes = 20
+        session_subject_activity_yda.immune_activity_minutes = 480
+
+        session_subject_activity_yda.heart_activity = 0.6
+        session_subject_activity_yda.immune_activity = 0.6
+
+        session_subject_activity_yda.save()
+
+        session_subject.calcTodaysActivity(period_number)
+        session_subject_activity_2day = session_day_2day.Session_day_subject_actvities_SD.get(session_subject=session_subject)
+
+        #wolfram alpha
+        #solve x  = a * m + 0.5 * (1 + m) * (1 - a * m) * (f^b / (c +f^b)), a = 0.5, b = 3.0, c = 6, m = 0.6, f = 20 /15
+        #solve x  = a * m + 0.5 * (1 + m) * (1 - a * m) * (f^b / (c +f^b)), a = 0.2, b = 4, c = 4, m = 0.6, f = 480 /240
+
+        self.assertEqual(float(session_subject_activity_2day.heart_activity),round(0.458584,2))
+        self.assertEqual(float(session_subject_activity_2day.immune_activity),round(0.6832,2))
+
+        self.assertEqual(round(float(session_subject_activity_2day.getTodaysTotalEarnings()),2),
+                          round(float(parameterset.block_3_fixed_pay_per_day + 
+                                parameterset.block_3_heart_pay * session_subject_activity_2day.heart_activity +
+                                parameterset.block_3_immune_pay * session_subject_activity_2day.immune_activity)
+                               ,2))
+
+
+

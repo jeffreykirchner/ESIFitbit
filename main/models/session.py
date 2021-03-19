@@ -321,7 +321,7 @@ class Session(models.Model):
                           'Block 1 heart pay','Block 2 heart pay','Block 3 heart pay', 
                           'Block 1 immune pay','Block 2 immune pay','Block 3 immune pay',
                           'Block 1 day count','Block 2 day count','Block 3 day count', 
-                          'Fixed pay per day','Minutes required on wrist',
+                          'Block 1 fixed pay', 'Block 2 fixed pay', 'Block 3 fixed pay', 'Minutes required on wrist',
                           'Treatment 3 heart bonus','Treatment 3 immune bonus','Treatment 3 bonus target count',  
                           'Y min heart','Y max heart','Y ticks heart','X min heart','X max heart','X ticks heart',  
                           'Y min immune','Y max immune','Y ticks immune','X min immune','X max immune','X ticks immune'])
@@ -413,20 +413,23 @@ class Session(models.Model):
         if not self.instruction_set:
             return ""        
 
+        p_number_used = p_number
+
         if self.parameterset.getBlockChangeToday(p_number):
             notice_type = NoticeType.START
             time_block = self.get_current_block()
         elif self.parameterset.getBlockChangeInTwoDays(p_number):
+            p_number_used = p_number + 2
             notice_type = NoticeType.ADVANCE
-            time_block = self.get_next_block(p_number + 2)
+            time_block = self.get_next_block(p_number_used)
         else:
             return ""
 
         notice_text = self.instruction_set.get_notice_text(time_block, notice_type)
-       
-        notice_text = notice_text.replace("[heart pay]",f'{self.parameterset.getHeartPay(p_number)/100:0.2f}')
-        notice_text = notice_text.replace("[immune pay]",f'{self.parameterset.getImmunePay(p_number)/100:0.2f}')
-        notice_text = notice_text.replace("[fixed pay]",f'{self.parameterset.fixed_pay_per_day:0.2f}')
+
+        notice_text = notice_text.replace("[heart pay]",f'{self.parameterset.getHeartPay(p_number_used)/100:0.2f}')
+        notice_text = notice_text.replace("[immune pay]",f'{self.parameterset.getImmunePay(p_number_used)/100:0.2f}')
+        notice_text = notice_text.replace("[fixed pay]",f'{self.parameterset.get_fixed_pay(p_number_used):0.2f}')
 
         return notice_text
     
