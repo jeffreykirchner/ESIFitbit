@@ -336,7 +336,7 @@ def startSession(data,id):
     s=Session.objects.get(id=id)
 
     #check for subjects in session before starting
-    if s.session_subjects.all():
+    if s.session_subjects.all() and s.instruction_set:
 
         if s.started==False:
             s.addNewSessionDays()
