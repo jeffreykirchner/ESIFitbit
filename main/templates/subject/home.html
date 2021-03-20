@@ -98,21 +98,18 @@
                     
                         <div v-if="toggleState==='heart'">
                             {%include "subject/home/heart_tab.html"%}
+                            {%include "subject/home/chart.html"%}
+                            {%include "subject/home/averages.html"%}
                         </div>
                         <div v-else-if="toggleState==='immune'">
                             {%include "subject/home/immune_tab.html"%}
+                            {%include "subject/home/chart.html"%}
+                            {%include "subject/home/averages.html"%}
                         </div>  
                         <div v-else-if="toggleState==='payment'">
                             {%include "subject/home/payment_tab.html"%}                 
                         </div>
 
-                        <div v-show="toggleState != 'payment'">
-                            <div class="row">
-                                <div class="col" style="text-align: center;">
-                                    <canvas key="healthChart" id="healthChart" style="border-style: solid;border-width: 1px;" width="300" height="325"></canvas>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <div v-else>
                         <div class="row">

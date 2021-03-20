@@ -60,6 +60,9 @@ var app = new Vue({
         payment_toggle_background : "lightgrey",
         payment_available : true,
         soft_delete:false,
+        show_averages : false,
+        average_heart_score: "---",
+        average_sleep_score: "---",
     },
 
     methods:{
@@ -83,7 +86,10 @@ var app = new Vue({
                                 app.$data.session_last_day = response.data.session_last_day;
                                 app.$data.fitBitTimeRequired = response.data.fitBitTimeRequired;
                                 app.$data.fitBitTimeRequirementMet = response.data.fitBitTimeRequirementMet;
-                                
+
+                                app.$data.show_averages = response.data.show_averages;
+                                app.$data.average_heart_score = response.data.average_heart_score;
+                                app.$data.average_sleep_score = response.data.average_sleep_score;
                             }
                             else
                             {

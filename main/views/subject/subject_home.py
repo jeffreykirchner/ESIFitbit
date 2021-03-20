@@ -444,20 +444,37 @@ def getSessionDaySubject(data,session_subject,session_day):
         #     notification_text = notification_text.replace("[immune pay]",f'{ps.getImmunePay(p_number+2)/100:0.2f}')
         #     notification_text = notification_text.replace("[fixed pay]",f'{ps.fixed_pay_per_day:0.2f}')
 
-        fitBitTimeRequirementMet = True
-        fitBitTimeRequired = ps.getFormatedWristMinutes()
+        show_averages = False
+        average_heart_score = 0
+        average_sleep_score = 0
+
+        if session_day.session.treatment == "A" or \
+           session_day.session.treatment == "B" or \
+           session_day.session.treatment == "C":
+
+            show_averages = True
+            average_heart_score = session_subject.get_average_heart_score()
+            if not average_heart_score:
+                average_heart_score = "---"
+            
+            average_sleep_score = session_subject.get_average_sleep_score()
+            if not average_sleep_score:
+                average_sleep_score = "---"
+
+        fitbit_time_requirement_met = True
+        fit_bit_time_required = ps.getFormatedWristMinutes()
 
         if p_number>1:
             if session_day_subject_actvity_previous_day.fitbit_on_wrist_minutes < ps.minimum_wrist_minutes :
-                fitBitTimeRequirementMet = False
+                fitbit_time_requirement_met = False
 
         return JsonResponse({"status" : status,
                             "fitbitError" : fitbitError,
                             "fitBitLastSynced" : session_subject.getFitbitLastSyncStr(False),
                             "fitbitSyncedToday" : session_subject.fitbitSyncedToday(),
                             "fitbit_link" : session_subject.getFitBitLink("subject"),
-                            "fitBitTimeRequired" : fitBitTimeRequired,
-                            "fitBitTimeRequirementMet" : fitBitTimeRequirementMet,
+                            "fitBitTimeRequired" : fit_bit_time_required,
+                            "fitBitTimeRequirementMet" : fitbit_time_requirement_met,
                             "session_date" : session_date,
                             "soft_delete" : session_subject.soft_delete,
                             "notification_title" : notification_title,
@@ -469,6 +486,9 @@ def getSessionDaySubject(data,session_subject,session_day):
                             "session_complete" : session_subject.sessionComplete(),
                             "session_canceled" : session_subject.session.canceled,
                             "session_last_day" : session_last_day,
+                            "show_averages" : show_averages,
+                            "average_heart_score" : average_heart_score,
+                            "average_sleep_score" : average_sleep_score,
                             "session_day_subject_actvity" : session_day_subject_actvity.json(),
                             "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
                             "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)
