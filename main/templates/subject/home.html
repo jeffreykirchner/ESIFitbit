@@ -96,18 +96,19 @@
                             </div>
                         </div>
                     
-                        <div v-if="toggleState==='heart'">
-                            {%include "subject/home/heart_tab.html"%}
-                            {%include "subject/home/chart.html"%}
-                            {%include "subject/home/averages.html"%}
+                        <div v-show="toggleState==='heart'">
+                            {%include "subject/home/heart_tab.html"%}                            
                         </div>
-                        <div v-else-if="toggleState==='immune'">
+                        <div v-show="toggleState==='immune'">
                             {%include "subject/home/immune_tab.html"%}
+                        </div>  
+                        <div v-show="toggleState==='payment'">
+                            {%include "subject/home/payment_tab.html"%}                 
+                        </div>
+
+                        <div v-show="toggleState != 'payment'">
                             {%include "subject/home/chart.html"%}
                             {%include "subject/home/averages.html"%}
-                        </div>  
-                        <div v-else-if="toggleState==='payment'">
-                            {%include "subject/home/payment_tab.html"%}                 
                         </div>
 
                     </div>
