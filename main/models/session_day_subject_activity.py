@@ -130,17 +130,22 @@ class Session_day_subject_actvity(models.Model):
         logger = logging.getLogger(__name__)
 
         a = float(a)
-        b=float(b)
-        c=float(c)
-        y=float(y)
-        z=float(z)
-        n=float(n)
+        b = float(b)
+        c = float(c)
+        y = float(y)
+        z = float(z)
+        n = float(n)
 
         #v = 2**(1/b) * e * ((a * c * d - c * d)/(a**2 * d**2 - 2 * a * d + 2 * d - 1))**(1/b)
         # x = 2^(1/b) n ((a c y - c z)/(a y^2 - a y - y + 2 z - 1))^(1/b)
 
         #v = 2.0**(1 / float(b)) * float(e) * ((float(a) * float(c) * float(d) - float(c) * float(d))/((float(d) - 1.0) * (float(a) * float(d) + 1.0)))**(1.0/float(b))
-        v = 2.0**(1/b) * n * ((a * c * y - c * z)/(a * y**2 - a * y - y + 2 * z - 1))**(1/b)
+        try:
+            v = 2.0**(1/b) * n * ((a * c * y - c * z)/(a * y**2 - a * y - y + 2 * z - 1))**(1/b)
+        except ZeroDivisionError:
+            v = 0
+            logger.warning(f"calcMaintenance divide by zero: a {a}, b {b}, c {c}, y {y}, z {z}, n {n}")
+        
         logger.info(f"calcMaintenance {v}")
 
         v= round(v,2)
