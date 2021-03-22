@@ -39,7 +39,10 @@ class Parameterset(models.Model):
     block_3_immune_pay = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
 
     #fixed pay per day $
-    fixed_pay_per_day = models.DecimalField(decimal_places=2, default=4.00, max_digits=6)
+    block_1_fixed_pay_per_day = models.DecimalField(decimal_places=2, default=3.00, max_digits=6)
+    block_2_fixed_pay_per_day = models.DecimalField(decimal_places=2, default=3.00, max_digits=6)
+    block_3_fixed_pay_per_day = models.DecimalField(decimal_places=2, default=3.00, max_digits=6)
+
     minimum_wrist_minutes = models.IntegerField(default = 1080)
 
     #number of days for each time block
@@ -113,7 +116,10 @@ class Parameterset(models.Model):
             self.block_2_day_count = data.get("block_2_day_count")
             self.block_3_day_count = data.get("block_3_day_count")
 
-            self.fixed_pay_per_day = data.get("fixed_pay_per_day")
+            self.block_1_fixed_pay_per_day = data.get("block_1_fixed_pay_per_day")
+            self.block_2_fixed_pay_per_day = data.get("block_2_fixed_pay_per_day")
+            self.block_3_fixed_pay_per_day = data.get("block_3_fixed_pay_per_day")
+
             self.minimum_wrist_minutes = data.get("minimum_wrist_minutes")
 
             self.treatment_3_heart_bonus = data.get("treatment_3_heart_bonus")
@@ -172,7 +178,10 @@ class Parameterset(models.Model):
         self.block_2_day_count = data.block_2_day_count
         self.block_3_day_count = data.block_3_day_count
 
-        self.fixed_pay_per_day = data.fixed_pay_per_day
+        self.block_1_fixed_pay_per_day = data.block_1_fixed_pay_per_day
+        self.block_2_fixed_pay_per_day = data.block_2_fixed_pay_per_day
+        self.block_3_fixed_pay_per_day = data.block_3_fixed_pay_per_day
+
         self.minimum_wrist_minutes = data.minimum_wrist_minutes
 
         self.treatment_3_heart_bonus = data.treatment_3_heart_bonus
@@ -208,7 +217,7 @@ class Parameterset(models.Model):
             return self.block_3_heart_pay
 
     #return the current maximum payment for heart activty
-    def getImmunePay(self,period):
+    def getImmunePay(self, period):
 
         if period<=self.block_1_day_count+1:
             return self.block_1_immune_pay
@@ -216,6 +225,15 @@ class Parameterset(models.Model):
             return self.block_2_immune_pay
         else:
             return self.block_3_immune_pay
+    
+    def get_fixed_pay(self, period):
+
+        if period<=self.block_1_day_count+1:
+            return self.block_1_fixed_pay_per_day
+        elif period<=self.block_2_day_count+self.block_1_day_count+1:
+            return self.block_2_fixed_pay_per_day
+        else:
+            return self.block_3_fixed_pay_per_day
 
     #get period's time block
     def getBlock(self,period):
@@ -270,7 +288,8 @@ class Parameterset(models.Model):
                           self.block_1_heart_pay,self.block_2_heart_pay,self.block_3_heart_pay,
                           self.block_1_immune_pay,self.block_2_immune_pay,self.block_3_immune_pay,
                           self.block_1_day_count,self.block_2_day_count,self.block_3_day_count,
-                          self.fixed_pay_per_day,self.minimum_wrist_minutes,
+                          self.block_1_fixed_pay_per_day,self.block_2_fixed_pay_per_day, self.block_3_fixed_pay_per_day,
+                          self.minimum_wrist_minutes,
                           self.treatment_3_heart_bonus,self.treatment_3_immune_bonus,self.treatment_3_bonus_target_count,
                           self.y_min_heart,self.y_max_heart,self.y_ticks_heart,self.x_min_heart,self.x_max_heart,self.x_ticks_heart,
                           self.y_min_immune,self.y_max_immune,self.y_ticks_immune,self.x_min_immune,self.x_max_immune,self.x_ticks_immune])
@@ -301,7 +320,10 @@ class Parameterset(models.Model):
             "block_2_immune_pay":self.block_2_immune_pay,
             "block_3_immune_pay":self.block_3_immune_pay,
 
-            "fixed_pay_per_day":self.fixed_pay_per_day,
+            "block_1_fixed_pay_per_day":self.block_1_fixed_pay_per_day,
+            "block_2_fixed_pay_per_day":self.block_2_fixed_pay_per_day,
+            "block_3_fixed_pay_per_day":self.block_3_fixed_pay_per_day,
+
             "minimum_wrist_minutes":self.minimum_wrist_minutes,
 
             "treatment_3_heart_bonus":self.treatment_3_heart_bonus,

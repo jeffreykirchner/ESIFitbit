@@ -45,7 +45,10 @@ var app = new Vue({
                                 block_2_immune_pay:"",
                                 block_3_immune_pay:"",
 
-                                fixed_pay_per_day:"",
+                                block_1_fixed_pay_per_day:"",
+                                block_2_fixed_pay_per_day:"",
+                                block_3_fixed_pay_per_day:"",
+
                                 minimum_wrist_minutes:"",
 
                                 treatment_3_heart_bonus:"",

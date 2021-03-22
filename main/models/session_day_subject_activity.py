@@ -246,7 +246,9 @@ class Session_day_subject_actvity(models.Model):
     
     #get today's total earnings
     def getTodaysTotalEarnings(self):
-        return self.session_day.session.parameterset.fixed_pay_per_day + self.getTodaysHeartEarnings() + self.getTodaysImmuneEarnings()
+        return self.session_day.session.parameterset.get_fixed_pay(self.session_day.period_number) + \
+               self.getTodaysHeartEarnings() + \
+               self.getTodaysImmuneEarnings()
 
     #save today's total earnings
     def storeTodaysTotalEarnings(self):
@@ -435,7 +437,7 @@ class Session_day_subject_actvity(models.Model):
         writer.writerow([f'{self.session_day.session.title}', self.session_day.period_number, self.session_day.session.parameterset.getBlock(self.session_day.period_number),
                          self.session_day.getDateStr(),self.session_subject.id_number, self.session_subject.contact_email, self.heart_activity_minutes,
                          self.immune_activity_minutes,self.heart_activity, self.immune_activity, self.check_in_today,
-                         self.paypal_today, self.session_day.session.parameterset.fixed_pay_per_day, self.getTodaysHeartEarnings(),
+                         self.paypal_today, self.session_day.session.parameterset.get_fixed_pay(self.session_day.period_number), self.getTodaysHeartEarnings(),
                          self.getTodaysImmuneEarnings(), self.payment_today, self.fitbit_minutes_sedentary, self.fitbit_minutes_lightly_active,
                          self.fitbit_minutes_fairly_active, self.fitbit_minutes_very_active, self.fitbit_steps, self.fitbit_calories,
                          self.fitbit_minutes_heart_out_of_range, self.fitbit_minutes_heart_fat_burn, self.fitbit_minutes_heart_cardio,
@@ -464,7 +466,7 @@ class Session_day_subject_actvity(models.Model):
             "current_heart_earnings":f'{self.getTodaysHeartEarnings():0.2f}',
             "current_immune_earnings":f'{self.getTodaysImmuneEarnings():0.2f}',
             "current_total_earnings":f'{self.getTodaysTotalEarnings():0.2f}',
-            "fixed_pay_per_day" : f'{self.session_day.session.parameterset.fixed_pay_per_day:0.2f}',
+            "fixed_pay_per_day" : f'{self.session_day.session.parameterset.get_fixed_pay(self.session_day.period_number):0.2f}',
             "heart_maintenance_minutes" : f'{math.ceil(self.getHeartMaintenance())}mins',
             "immune_maintenance_hours" : immune_maintenance_hours,
             "heart_improvment_minutes" : self.getTodaysHeartImprovmentMinutes(),
