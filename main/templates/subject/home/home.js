@@ -28,7 +28,7 @@ var app = new Vue({
         {%if session_treatment == "I"%}
         payMeButtonText : 'Pay Me <i class="fab fa-paypal fa-lg"></i>',
         {%else%}
-        payMeButtonText : 'Check In <i class="fab fa-paypal fa-lg"></i>',
+        payMeButtonText : 'Check In <i class="fas fa-check"></i>',
         {%endif%}
         refreshButtonText : '<i class="fas fa-sync fa-spin"></i>',
         toggleState:"heart",
@@ -67,6 +67,10 @@ var app = new Vue({
         show_averages : false,
         average_heart_score: "---",
         average_sleep_score: "---",
+        current_daily_pay: "---",
+        current_block_length: "---",
+        current_missed_days: "---",
+        current_earnings: "---",
     },
 
     methods:{
@@ -94,6 +98,7 @@ var app = new Vue({
                                 app.$data.show_averages = response.data.show_averages;
                                 app.$data.average_heart_score = response.data.average_heart_score;
                                 app.$data.average_sleep_score = response.data.average_sleep_score;
+                                app.$data.current_daily_pay = response.data.current_daily_pay;
                             }
                             else
                             {

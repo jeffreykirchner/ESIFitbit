@@ -21,7 +21,7 @@ checkIn:function(){
                     app.$data.session_day_subject_actvity = response.data.session_day_subject_actvity;  
                     app.$data.session_complete = response.data.session_complete;
 
-                    app.$data.payMeButtonText = 'Check In <i class="fab fa-paypal fa-lg"></i>';     
+                    app.$data.payMeButtonText = 'Check In <i class="fas fa-check"></i>';     
 
                     if(response.data.status == "fail")
                         app.$data.paymentError=true;

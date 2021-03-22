@@ -103,7 +103,15 @@
                             {%include "subject/home/immune_tab.html"%}
                         </div>  
                         <div v-show="toggleState==='payment'">
-                            {%include "subject/home/payment_tab.html"%}                 
+                            {%if session_treatment == "I"%}
+                                {%include "subject/home/payment_tab_individual.html"%}       
+                            {%elif session_treatment == "A"%}   
+                                {%include "subject/home/payment_tab_A.html"%}
+                            {%elif session_treatment == "B"%}
+                                {%include "subject/home/payment_tab_B.html"%}
+                            {%elif session_treatment == "C"%} 
+                                {%include "subject/home/payment_tab_C.html"%}
+                            {%endif%}       
                         </div>
 
                         <div v-show="toggleState != 'payment'">

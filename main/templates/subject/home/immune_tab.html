@@ -18,11 +18,21 @@
 </div>
 <div class="row">
     <div class="col" style="text-align: center;">
-        Maintain score at <span v-html = session_day_subject_actvity.immune_activity></span> for tomorrow: <span v-html="session_day_subject_actvity.immune_maintenance_hours"></span>
+        Maintain score at <span v-html = session_day_subject_actvity.immune_activity></span> for tomorrow:</span>
     </div>
 </div>
 <div class="row">
     <div class="col" style="text-align: center;">
-        Improve score to <span v-html = session_day_subject_actvity.immune_improvment_hours.target_activity></span> for tomorrow: <span v-html="session_day_subject_actvity.immune_improvment_hours.target_hours"></span>
+        [[session_day_subject_actvity.immune_maintenance_hours]]
+    </div>
+</div>
+<div class="row">
+    <div class="col" style="text-align: center;">
+        Improve score to <span v-html = session_day_subject_actvity.immune_improvment_hours.target_activity></span> for tomorrow:
+    </div>
+</div>
+<div class="row">
+    <div class="col" style="text-align: center;">
+        [[session_day_subject_actvity.immune_improvment_hours.target_hours]]
     </div>
 </div>

@@ -539,7 +539,10 @@ class Session_subject(models.Model):
 
         heart_activity_average = self.Session_day_subject_actvities.filter(paypal_today = True).aggregate(Avg('heart_activity'))
 
-        # logger.info(f'get_average_heart_score {heart_activity_average}')
+        logger.info(f'get_average_heart_score {heart_activity_average}')
+
+        if not heart_activity_average["heart_activity__avg"]:
+            return -1
 
         return round(heart_activity_average["heart_activity__avg"] * 100)
     
@@ -555,7 +558,25 @@ class Session_subject(models.Model):
 
         # logger.info(f'get_average_heart_score {sleep_activity_average}')
 
+        if not sleep_activity_average["immune_activity__avg"]:
+            return -1
+
         return round(sleep_activity_average["immune_activity__avg"] * 100)
+    
+    def get_daily_payment_A_B_C(self):
+        '''
+        return what the current payment is for treatments A, B and C
+        '''
+
+        period_number = self.session.getCurrentSessionDay().period_number
+
+        if self.session.treatment=="A":
+            if self.session.parameterset.getHeartPay(period_number) == 0:
+                return self.session.parameterset.get_fixed_pay(period_number)
+            else:
+                return self.session.parameterset.get_fixed_pay(period_number)
+
+
 
     #return json object of class
     def json(self,get_fitbit_status,request_type):
