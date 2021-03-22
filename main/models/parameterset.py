@@ -243,6 +243,17 @@ class Parameterset(models.Model):
             return 2
         else:
             return 3
+    
+    def get_block_day_count(self, period):
+        '''
+        get number of days in time block that period falls in
+        '''
+        if period <= self.block_1_day_count+1:
+            return self.block_1_day_count
+        elif period<=self.block_2_day_count + self.block_1_day_count+1:
+            return self.block_2_day_count
+        else:
+            return self.block_3_day_count
 
     #return true if block 2 or 3 starts today
     def getBlockChangeToday(self,period):

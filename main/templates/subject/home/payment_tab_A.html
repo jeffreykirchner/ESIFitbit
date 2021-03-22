@@ -1,9 +1,14 @@
 {%if baseline_payment %}
     <div class="row mt-2">
+        <div class="col-md-6 offset-md-3 text-center">
+            If you miss no further paid days, and you maintain your current average heart ([[average_heart_score]]) and sleep ([[average_sleep_score]]) scores, then on [[next_pay_day]] you will be paid:
+        </div>
+    </div>
+    <div class="row mt-2">
         <div class="col text-center" >Total Pay =</div>
     </div>
     <div class="row mt-2">
-        <div class="col text-center">([[current_block_length]] - Missed Days) x Daily Pay</div>
+        <div class="col text-center">(Total Days - Missed Days) x Daily Pay</div>
     </div>
     <div class="row mt-2">
         <div class="col text-center">([[current_block_length]] – [[current_missed_days]]) x $[[current_daily_pay]] = $[[current_earnings]] </div>
@@ -40,7 +45,7 @@
 <div class = "row mt-4">
     <div class="col" style="text-align: center;">
         <div v-if="session_day_subject_actvity.paypal_today">
-            <span style="color: blue;" v-html="'Your payment will arrive tomorrow morning.<br>Check your email.'"></span>
+            <span style="color: blue;">You have checked in.</span>
             <div v-show="session_complete">
                 <span style="color: red;" v-html="'The study is complete, thank you for your participation!<br><u>Please return your Fitbit.</u>'"></span>
             </div>

@@ -71,6 +71,7 @@ var app = new Vue({
         current_block_length: "---",
         current_missed_days: "---",
         current_earnings: "---",
+        next_pay_day: "---"
     },
 
     methods:{
@@ -99,6 +100,7 @@ var app = new Vue({
                                 app.$data.average_heart_score = response.data.average_heart_score;
                                 app.$data.average_sleep_score = response.data.average_sleep_score;
                                 app.$data.current_daily_pay = response.data.current_daily_pay;
+                                app.$data.current_block_length = response.data.current_block_length;
                             }
                             else
                             {

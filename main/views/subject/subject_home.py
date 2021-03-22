@@ -452,6 +452,7 @@ def getSessionDaySubject(data,session_subject,session_day):
         average_heart_score = 0
         average_sleep_score = 0
         current_daily_pay = 0
+        current_block_length = 0
 
         if session_day.session.treatment == "A" or \
            session_day.session.treatment == "B" or \
@@ -467,6 +468,7 @@ def getSessionDaySubject(data,session_subject,session_day):
                 average_sleep_score = "---"
 
             current_daily_pay = session_subject.get_daily_payment_A_B_C()
+            current_block_length = ps.get_block_day_count(p_number)
 
         fitbit_time_requirement_met = True
         fit_bit_time_required = ps.getFormatedWristMinutes()
@@ -497,6 +499,7 @@ def getSessionDaySubject(data,session_subject,session_day):
                             "average_heart_score" : average_heart_score,
                             "average_sleep_score" : average_sleep_score,
                             "current_daily_pay" : f'{current_daily_pay:0.2f}',
+                            "current_block_length" : current_block_length,
                             "session_day_subject_actvity" : session_day_subject_actvity.json(),
                             "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
                             "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)
