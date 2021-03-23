@@ -228,18 +228,18 @@ class Parameterset(models.Model):
     
     def get_fixed_pay(self, period):
 
-        if period<=self.block_1_day_count+1:
+        if period <= self.block_1_day_count + 1:
             return self.block_1_fixed_pay_per_day
-        elif period<=self.block_2_day_count+self.block_1_day_count+1:
+        elif period <= self.block_2_day_count + self.block_1_day_count + 1:
             return self.block_2_fixed_pay_per_day
         else:
             return self.block_3_fixed_pay_per_day
 
     #get period's time block
     def getBlock(self,period):
-        if period <= self.block_1_day_count+1:
+        if period <= self.block_1_day_count + 1:
             return 1
-        elif period<=self.block_2_day_count + self.block_1_day_count+1:
+        elif period <= self.block_2_day_count + self.block_1_day_count + 1:
             return 2
         else:
             return 3
@@ -248,29 +248,53 @@ class Parameterset(models.Model):
         '''
         get number of days in time block that period falls in
         '''
-        if period <= self.block_1_day_count+1:
-            return self.block_1_day_count
-        elif period<=self.block_2_day_count + self.block_1_day_count+1:
+        if period <= self.block_1_day_count + 1:
+            return self.block_1_day_count + 1
+        elif period <= self.block_2_day_count + self.block_1_day_count + 1:
             return self.block_2_day_count
         else:
             return self.block_3_day_count
+    
+    def get_block_first_period(self, period):
+        '''
+        return the first period of block that given period falls in
+        '''
+        if period <= self.block_1_day_count + 1:
+            return 1
+        elif period <= self.block_2_day_count + self.block_1_day_count + 1:
+            return self.block_1_day_count + 2
+        else:
+            return self.block_1_day_count + self.block_2_day_count + 2
+    
+    def get_block_last_period(self, period):
+        '''
+        return the last period of block that given period falls in
+        '''
+        if period <= self.block_1_day_count + 1:
+            return self.block_1_day_count + 1
+        elif period <= self.block_2_day_count + self.block_1_day_count + 1:
+            return self.block_2_day_count + self.block_1_day_count + 1
+        else:
+            return self.block_1_day_count + self.block_2_day_count + self.block_3_day_count + 1
 
     #return true if block 2 or 3 starts today
     def getBlockChangeToday(self,period):
 
         #start of block 2
-        if period == self.block_1_day_count+1+1:
+        if period == self.block_1_day_count + 1 + 1:
             return True
 
         #start of block 3
-        if period == self.block_2_day_count+self.block_1_day_count+1+1:
+        if period == self.block_2_day_count + self.block_1_day_count + 1 + 1:
             return True
+        
+        return False
 
     #return true if time block changes in two days
     def getBlockChangeInTwoDays(self,period):
         
         #check that not last block
-        if period + 2 > self.block_1_day_count+self.block_2_day_count+self.block_3_day_count +1:
+        if period + 2 > self.block_1_day_count + self.block_2_day_count + self.block_3_day_count + 1:
             return False
 
         #check block 2 start
@@ -278,8 +302,10 @@ class Parameterset(models.Model):
             return True
 
         #check block 3 start
-        if period == self.block_2_day_count+self.block_1_day_count+1-1:
+        if period == self.block_2_day_count + self.block_1_day_count + 1 - 1:
             return True
+        
+        return False
 
     #return string formated wrist minutes
     def getFormatedWristMinutes(self) -> str:

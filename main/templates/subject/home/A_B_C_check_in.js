@@ -1,4 +1,4 @@
-checkIn:function(){
+payMe:function(){
 
     if(!app.$data.viewed_heart)
     {
@@ -27,6 +27,7 @@ checkIn:function(){
                         app.$data.paymentError=true;
                     else
                         app.$data.paymentError=false;    
+                        app.$data.treatment_A_B_C = response.data.treatment_A_B_C;
 
                 })
                 .catch(function (error) {

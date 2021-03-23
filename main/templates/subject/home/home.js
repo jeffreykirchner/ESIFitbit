@@ -64,14 +64,16 @@ var app = new Vue({
         payment_toggle_background : "lightgrey",
         payment_available : true,
         soft_delete:false,
-        show_averages : false,
-        average_heart_score: "---",
-        average_sleep_score: "---",
-        current_daily_pay: "---",
-        current_block_length: "---",
-        current_missed_days: "---",
-        current_earnings: "---",
-        next_pay_day: "---"
+        treatment_A_B_C:{
+            show_averages : false,
+            average_heart_score: "---",
+            average_sleep_score: "---",
+            current_daily_pay: "---",
+            current_block_length: "---",
+            current_missed_days: "---",
+            current_earnings: "---",
+            next_pay_day: "---"
+        },
     },
 
     methods:{
@@ -96,11 +98,7 @@ var app = new Vue({
                                 app.$data.fitBitTimeRequired = response.data.fitBitTimeRequired;
                                 app.$data.fitBitTimeRequirementMet = response.data.fitBitTimeRequirementMet;
 
-                                app.$data.show_averages = response.data.show_averages;
-                                app.$data.average_heart_score = response.data.average_heart_score;
-                                app.$data.average_sleep_score = response.data.average_sleep_score;
-                                app.$data.current_daily_pay = response.data.current_daily_pay;
-                                app.$data.current_block_length = response.data.current_block_length;
+                                app.takeTreatmentABC(response.data.treatment_A_B_C);
                             }
                             else
                             {
@@ -147,6 +145,10 @@ var app = new Vue({
                         .catch(function (error) {
                             console.log(error);
                         });                        
+        },
+
+        takeTreatmentABC:function(treatment_A_B_C){
+            app.$data.treatment_A_B_C = treatment_A_B_C;
         },
 
         submitQuestionnaire1:function(){                    

@@ -452,6 +452,36 @@ class Session(models.Model):
 
         return self.instruction_set.get_notice_title(time_block, notice_type)
 
+    def get_daily_payment_A_B_C(self, period_number):
+        '''
+        return what the current payment is for treatments A, B and C
+        '''
+
+        #period_number = self.session.getCurrentSessionDay().period_number
+
+        if self.treatment=="A":
+            if self.parameterset.getHeartPay(period_number) == 0:
+                return self.parameterset.get_fixed_pay(period_number)
+            else:
+                return self.parameterset.get_fixed_pay(period_number)
+    
+    def get_block_pay_date(self, period_number):
+        '''
+        return the pay date given the specified period
+        '''
+        last_period = self.parameterset.get_block_last_period(period_number)
+
+        last_period_date = self.session_days.get(period_number = last_period).date
+
+        return last_period_date + timedelta(days=1)
+    
+    def get_block_pay_date_formatted(self, period_number):
+        '''
+        return the pay date given the specified period formatted
+        '''
+
+        return self.get_block_pay_date(period_number).strftime("%#m/%#d/%Y")
+
     #return json object of class
     def json(self):
         '''

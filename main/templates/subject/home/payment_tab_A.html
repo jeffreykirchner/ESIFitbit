@@ -1,19 +1,20 @@
 {%if baseline_payment %}
     <div class="row mt-2">
         <div class="col-md-6 offset-md-3 text-center">
-            If you miss no further paid days, and you maintain your current average heart ([[average_heart_score]]) and sleep ([[average_sleep_score]]) scores, then on [[next_pay_day]] you will be paid:
+            If you miss no further paid days, and you maintain your current average heart ([[treatment_A_B_C.average_heart_score]]) and sleep ([[treatment_A_B_C.average_sleep_score]]) scores, then on [[treatment_A_B_C.next_pay_day]] you will be paid:
         </div>
     </div>
-    <div class="row mt-2">
-        <div class="col text-center" >Total Pay =</div>
+    <div v-show = "session_day_subject_actvity.paypal_today">
+        <div class="row mt-4">
+            <div class="col text-center" >Total Pay =</div>
+        </div>
+        <div class="row mt-1">
+            <div class="col text-center">(Total Days - Missed Days) x Daily Pay</div>
+        </div>
+        <div class="row mt-1">
+            <div class="col text-center">([[treatment_A_B_C.current_block_length]] – [[treatment_A_B_C.current_missed_days]]) x $[[treatment_A_B_C.current_daily_pay]] = $[[treatment_A_B_C.current_earnings]] </div>
+        </div>                               
     </div>
-    <div class="row mt-2">
-        <div class="col text-center">(Total Days - Missed Days) x Daily Pay</div>
-    </div>
-    <div class="row mt-2">
-        <div class="col text-center">([[current_block_length]] – [[current_missed_days]]) x $[[current_daily_pay]] = $[[current_earnings]] </div>
-    </div>                               
-    
 {%else%}
     <div class="row mt-2">
         <div class="col" style="text-align: center;">Your Payment today = </div>
@@ -45,7 +46,7 @@
 <div class = "row mt-4">
     <div class="col" style="text-align: center;">
         <div v-if="session_day_subject_actvity.paypal_today">
-            <span style="color: blue;">You have checked in.</span>
+            <span style="color: blue;">You have checked in for [[session_date]].</span>
             <div v-show="session_complete">
                 <span style="color: red;" v-html="'The study is complete, thank you for your participation!<br><u>Please return your Fitbit.</u>'"></span>
             </div>

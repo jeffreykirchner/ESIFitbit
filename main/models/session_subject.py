@@ -529,15 +529,17 @@ class Session_subject(models.Model):
 
         return  v
 
-    def get_average_heart_score(self):
+    def get_average_heart_score(self, period_number):
         '''
         return the current average heart score of eligable days
         '''
         logger = logging.getLogger(__name__)
 
-        period_number = self.session.getCurrentSessionDay().period_number
+        #period_number = self.session.getCurrentSessionDay().period_number
 
-        heart_activity_average = self.Session_day_subject_actvities.filter(paypal_today = True).aggregate(Avg('heart_activity'))
+        heart_activity_average = self.Session_day_subject_actvities.filter(paypal_today = True) \
+                                                                   .filter(session_day__period_number__lte = period_number) \
+                                                                   .aggregate(Avg('heart_activity'))
 
         logger.info(f'get_average_heart_score {heart_activity_average}')
 
@@ -546,15 +548,17 @@ class Session_subject(models.Model):
 
         return round(heart_activity_average["heart_activity__avg"] * 100)
     
-    def get_average_sleep_score(self):
+    def get_average_sleep_score(self, period_number):
         '''
         return the current average sleep score of eligable days
         '''
         logger = logging.getLogger(__name__)
 
-        period_number = self.session.getCurrentSessionDay().period_number
+        #period_number = self.session.getCurrentSessionDay().period_number
 
-        sleep_activity_average = self.Session_day_subject_actvities.filter(paypal_today = True).aggregate(Avg('immune_activity'))
+        sleep_activity_average = self.Session_day_subject_actvities.filter(paypal_today = True) \
+                                                                   .filter(session_day__period_number__lte = period_number) \
+                                                                   .aggregate(Avg('immune_activity'))
 
         # logger.info(f'get_average_heart_score {sleep_activity_average}')
 
@@ -562,21 +566,30 @@ class Session_subject(models.Model):
             return -1
 
         return round(sleep_activity_average["immune_activity__avg"] * 100)
+
+    def get_missed_checkins(self, period_number):
+        logger = logging.getLogger(__name__)
+
+        #period_number = self.session.getCurrentSessionDay().period_number
+        
+        start_period_number = self.session.parameterset.get_block_first_period(period_number)
+
+        missed_count = self.Session_day_subject_actvities.filter(paypal_today = False) \
+                                                         .filter(session_day__period_number__gte = start_period_number) \
+                                                         .filter(session_day__period_number__lte = period_number) \
+                                                         .count()
+
+        return missed_count
     
-    def get_daily_payment_A_B_C(self):
+    def get_earnings_in_block_so_far(self, period_number):
         '''
-        return what the current payment is for treatments A, B and C
+        return the earnings a subject has made up to this point
         '''
 
-        period_number = self.session.getCurrentSessionDay().period_number
+        missed_checkins = self.get_missed_checkins(period_number)
+        total_days = self.session.parameterset.get_block_day_count(period_number)
 
-        if self.session.treatment=="A":
-            if self.session.parameterset.getHeartPay(period_number) == 0:
-                return self.session.parameterset.get_fixed_pay(period_number)
-            else:
-                return self.session.parameterset.get_fixed_pay(period_number)
-
-
+        return (total_days - missed_checkins) * self.session.get_daily_payment_A_B_C(period_number)
 
     #return json object of class
     def json(self,get_fitbit_status,request_type):
