@@ -178,21 +178,31 @@ class Session_day_subject_actvity(models.Model):
                                     self.immune_activity,
                                     240)
 
-    #heart activity * 100
     def heart_activity_formatted(self):
-        v = int(self.heart_activity * 100)
-        return f'{v}'
+        '''
+        format heart score according to treamtnet
+        '''
+        if self.session_day.session.treatment == "I":
+            v = int(self.heart_activity * 100)
+            return f'{v}'
+        
+        return f'{self.heart_activity:0.3f}'
 
-    #immune activity * 100
     def immune_activity_formatted(self):
-        v = int(self.immune_activity * 100)
-        return f'{v}'
+        '''
+        format sleep score according to treatment
+        '''
+        if self.session_day.session.treatment == "I":
+            v = int(self.immune_activity * 100)
+            return f'{v}'
+    
+        return f'{self.immune_activity:0.3f}'
 
     #return the activity day before this one
     def getPreviousActivityDay(self):
         logger = logging.getLogger(__name__)
 
-        if self.session_day.period_number ==1:
+        if self.session_day.period_number == 1:
             return None
         
         try:
@@ -202,36 +212,49 @@ class Session_day_subject_actvity(models.Model):
             logger.warning(e)
             return None
     
-    #get range of possible heart activities for tomorrow
     def getHeartActivityFutureRange(self):
+        '''
+        return range of possible scores for subject's heart graph
+        '''
         logger = logging.getLogger(__name__)
         v = []
 
         ps = self.session_day.session.parameterset
 
-        value_step = (ps.x_max_heart-ps.x_min_heart) / 100
+        value_step = (ps.x_max_heart - ps.x_min_heart) / 100
         current_value = ps.x_min_heart
 
         logger.info(f'getHeartActivityFutureRange {self.heart_activity} {self.id} {self.session_day.period_number}')
 
+        multiplier = 1
+
+        if self.session_day.session.treatment == "I":
+            multiplier = 100
+
         for i in range(99):
-            v.append({"x":current_value, "y": self.calcHeartActivity(current_value,self.heart_activity,False)*100})
+            v.append({"x":current_value, "y": self.calcHeartActivity(current_value,self.heart_activity,False) * multiplier})
             current_value += value_step
 
         return v
 
-    ##get range of possible immune activities for tomorrow
     def getImmuneActivityFutureRange(self):
-
+        '''
+        return the range of possible scores for subject's sleep graph
+        '''
         v = []
 
         ps = self.session_day.session.parameterset
 
-        value_step = (ps.x_max_immune*60-ps.x_min_immune*60) / 100
-        current_value = ps.x_min_immune*60
+        value_step = (ps.x_max_immune * 60 - ps.x_min_immune * 60) / 100
+        current_value = ps.x_min_immune * 60
+
+        multiplier = 1
+
+        if self.session_day.session.treatment == "I":
+            multiplier = 100
 
         for i in range(99):
-            v.append({"x":current_value, "y": self.calcImmuneActivity(current_value,self.immune_activity,False)*100})
+            v.append({"x":current_value, "y": self.calcImmuneActivity(current_value,self.immune_activity,False) * multiplier})
             current_value += value_step
 
         return v

@@ -392,16 +392,25 @@ var app = new Vue({
             ctx.fillStyle = "black";
             ctx.textAlign = "right";
 
-            var tempY = h-marginX;     
+            var tempY = h - marginX;     
             var tempYValue = yMin;
 
-            for(var i=0;i<=yTickCount;i++)
+            for(var i=0;i <= yTickCount;i++)
             {                                       
                 ctx.moveTo(marginY, tempY);                                   
                 ctx.lineTo(marginY-5, tempY);
-                ctx.fillText(tempYValue,marginY-8,tempY+4);
 
-                tempY -= ((h-marginX-margin2)/ (yTickCount));
+                if(yMax == 1)
+                {
+                    ctx.fillText(tempYValue.toFixed(1), marginY-8, tempY+4);
+                }
+                else
+                {
+                    ctx.fillText(tempYValue, marginY-8, tempY+4);
+                }
+
+                tempY -= ((h-marginX-margin2) / (yTickCount));
+                
                 tempYValue += yTickValue;
             }
 
