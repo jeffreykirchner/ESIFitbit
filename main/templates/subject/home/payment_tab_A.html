@@ -1,5 +1,11 @@
 {%if baseline_payment %}
     <div class="row mt-2">
+        <div class="col">
+        </div>
+    </div>
+    {%include "subject/home/averages_heart.html"%}
+    {%include "subject/home/averages_sleep.html"%}
+    <div class="row mt-2">
         <div class="col-md-6 offset-md-3 text-center">
             If you miss no further paid days, and you maintain your current average heart ([[treatment_A_B_C.average_heart_score]]) and sleep ([[treatment_A_B_C.average_sleep_score]]) scores, then on [[treatment_A_B_C.next_pay_day]] you will be paid:
         </div>

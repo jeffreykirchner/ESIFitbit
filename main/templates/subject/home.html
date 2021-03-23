@@ -115,8 +115,13 @@
                         </div>
 
                         <div v-show="toggleState != 'payment'">
-                            {%include "subject/home/chart.html"%}
-                            {%include "subject/home/averages.html"%}
+                            {%include "subject/home/chart.html"%}                           
+                        </div>
+                        <div v-show="toggleState==='heart'">
+                            {%include "subject/home/averages_heart.html"%}   
+                        </div>
+                        <div v-show="toggleState==='immune'">
+                            {%include "subject/home/averages_sleep.html"%}   
                         </div>
 
                     </div>
