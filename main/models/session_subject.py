@@ -546,7 +546,7 @@ class Session_subject(models.Model):
         if not heart_activity_average["heart_activity__avg"]:
             return -1
 
-        return round(heart_activity_average["heart_activity__avg"], 3)
+        return round(heart_activity_average["heart_activity__avg"], 2)
     
     def get_average_sleep_score(self, period_number):
         '''
@@ -565,7 +565,7 @@ class Session_subject(models.Model):
         if not sleep_activity_average["immune_activity__avg"]:
             return -1
 
-        return round(sleep_activity_average["immune_activity__avg"],3)
+        return round(sleep_activity_average["immune_activity__avg"], 2)
 
     def get_missed_checkins(self, period_number):
         logger = logging.getLogger(__name__)
