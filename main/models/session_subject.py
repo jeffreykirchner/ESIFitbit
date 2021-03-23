@@ -1,21 +1,32 @@
-from django.db import models
+'''
+session subject model
+'''
 import logging
 import traceback
-from django.utils.timezone import now
-from . import Session,Parameters
-import uuid
-from django.conf import settings
 import requests
-from datetime import datetime,timedelta,timezone,date
+import uuid
 import pytz
 import random
 import main
 import math
-from main.globals import todaysDate
+
+from . import Session, Parameters
+
+from datetime import datetime, timedelta, timezone, date
+
+from django.db.models import Avg
+from django.conf import settings
 from django.utils.timezone import now
+from django.db import models
+from django.utils.timezone import now
+
+from main.globals import todaysDate
 
 #subject in session
 class Session_subject(models.Model):
+    '''
+    session subject model
+    '''
     session = models.ForeignKey(Session,on_delete=models.CASCADE,related_name="session_subjects")
 
     id_number = models.IntegerField(null=True,verbose_name = 'ID Number in Session')                   #local id number in session
@@ -24,8 +35,6 @@ class Session_subject(models.Model):
     name = models.CharField(max_length = 300,default = 'Subject Name', verbose_name='Subject Name')                     #subject name 
     contact_email = models.CharField(max_length = 300,default = 'Subject Email',verbose_name = 'Subject Email')         #contact email address
     student_id = models.CharField(max_length = 300,default = 'Student ID Number',verbose_name = 'Student ID Number')    #student ID number
-    # gmail_address = models.CharField(max_length = 300,default = 'Gmail Address',verbose_name = 'Gmail Address')         #gmail address asigned to subject for experiment 
-    # gmail_password = models.CharField(max_length = 300,default = 'Gmail Password',verbose_name = 'Gmail Password')      #password for above 
     
     consent_required = models.BooleanField(default=True,verbose_name = 'Consent Form Signed')          #true if subject has done consent form  
     consent_signature = models.CharField(max_length = 300,default = '',verbose_name = 'Consent Form Signature')
@@ -520,6 +529,68 @@ class Session_subject(models.Model):
 
         return  v
 
+    def get_average_heart_score(self, period_number):
+        '''
+        return the current average heart score of eligable days
+        '''
+        logger = logging.getLogger(__name__)
+
+        #period_number = self.session.getCurrentSessionDay().period_number
+
+        heart_activity_average = self.Session_day_subject_actvities.filter(paypal_today = True) \
+                                                                   .filter(session_day__period_number__lte = period_number) \
+                                                                   .aggregate(Avg('heart_activity'))
+
+        logger.info(f'get_average_heart_score {heart_activity_average}')
+
+        if not heart_activity_average["heart_activity__avg"]:
+            return -1
+
+        return round(heart_activity_average["heart_activity__avg"] * 100)
+    
+    def get_average_sleep_score(self, period_number):
+        '''
+        return the current average sleep score of eligable days
+        '''
+        logger = logging.getLogger(__name__)
+
+        #period_number = self.session.getCurrentSessionDay().period_number
+
+        sleep_activity_average = self.Session_day_subject_actvities.filter(paypal_today = True) \
+                                                                   .filter(session_day__period_number__lte = period_number) \
+                                                                   .aggregate(Avg('immune_activity'))
+
+        # logger.info(f'get_average_heart_score {sleep_activity_average}')
+
+        if not sleep_activity_average["immune_activity__avg"]:
+            return -1
+
+        return round(sleep_activity_average["immune_activity__avg"] * 100)
+
+    def get_missed_checkins(self, period_number):
+        logger = logging.getLogger(__name__)
+
+        #period_number = self.session.getCurrentSessionDay().period_number
+        
+        start_period_number = self.session.parameterset.get_block_first_period(period_number)
+
+        missed_count = self.Session_day_subject_actvities.filter(paypal_today = False) \
+                                                         .filter(session_day__period_number__gte = start_period_number) \
+                                                         .filter(session_day__period_number__lte = period_number) \
+                                                         .count()
+
+        return missed_count
+    
+    def get_earnings_in_block_so_far(self, period_number):
+        '''
+        return the earnings a subject has made up to this point
+        '''
+
+        missed_checkins = self.get_missed_checkins(period_number)
+        total_days = self.session.parameterset.get_block_day_count(period_number)
+
+        return (total_days - missed_checkins) * self.session.get_daily_payment_A_B_C(period_number)
+
     #return json object of class
     def json(self,get_fitbit_status,request_type):
 
@@ -536,8 +607,6 @@ class Session_subject(models.Model):
             "name":self.name,
             "contact_email":self.contact_email,
             "student_id":self.student_id,
-            # "gmail_address":self.gmail_address,
-            # "gmail_password":self.gmail_password,
             "login_url": p.siteURL +'subjectHome/' + str(self.login_key),
             "fitBit_Link" : self.getFitBitLink(request_type),
             "fitBit_Attached" : fitBit_Attached,
@@ -624,7 +693,7 @@ class Session_subject(models.Model):
         sdsa_list = self.Session_day_subject_actvities.all().order_by('session_day__period_number')
 
         return [sdsa.immune_activity_minutes/60 for sdsa in sdsa_list]
-    
+
     #take fitbit api url and return response
     def getFitbitInfo(self,url):
         logger = logging.getLogger(__name__)        

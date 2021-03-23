@@ -300,7 +300,11 @@ def payMe(data,session_subject,session_day):
     if status == "success":
         try:
             session_day_subject_actvity.paypal_today=True
-            session_day_subject_actvity.storeTodaysTotalEarnings()
+
+            #store daily earnings of individual treatment
+            if session_day.session == "I":
+                session_day_subject_actvity.storeTodaysTotalEarnings()
+
             session_day_subject_actvity.save()
         except Exception  as e:
             logger.info(e)
@@ -310,9 +314,15 @@ def payMe(data,session_subject,session_day):
         logger.info("Do PayPal")
         #add paypal code here
         pass
+    
+    treatment_a_b_c = {}
+    if status == "success":
+        treatment_a_b_c = get_treatment_a_b_c_json(session_day, session_subject,
+                                                   session_day.period_number, session_day.session.parameterset)
 
     return JsonResponse({"status":status,
                          "message":message,
+                         "treatment_A_B_C" : treatment_a_b_c,
                          "session_complete":session_subject.sessionComplete(),
                          "session_day_subject_actvity" :session_day_subject_actvity.json() if session_day_subject_actvity else {}},safe=False)
 
@@ -443,21 +453,21 @@ def getSessionDaySubject(data,session_subject,session_day):
         #     notification_text = notification_text.replace("[heart pay]",f'{ps.getHeartPay(p_number+2)/100:0.2f}')
         #     notification_text = notification_text.replace("[immune pay]",f'{ps.getImmunePay(p_number+2)/100:0.2f}')
         #     notification_text = notification_text.replace("[fixed pay]",f'{ps.fixed_pay_per_day:0.2f}')
-
-        fitBitTimeRequirementMet = True
-        fitBitTimeRequired = ps.getFormatedWristMinutes()
+        
+        fitbit_time_requirement_met = True
+        fit_bit_time_required = ps.getFormatedWristMinutes()
 
         if p_number>1:
             if session_day_subject_actvity_previous_day.fitbit_on_wrist_minutes < ps.minimum_wrist_minutes :
-                fitBitTimeRequirementMet = False
+                fitbit_time_requirement_met = False
 
         return JsonResponse({"status" : status,
                             "fitbitError" : fitbitError,
                             "fitBitLastSynced" : session_subject.getFitbitLastSyncStr(False),
                             "fitbitSyncedToday" : session_subject.fitbitSyncedToday(),
                             "fitbit_link" : session_subject.getFitBitLink("subject"),
-                            "fitBitTimeRequired" : fitBitTimeRequired,
-                            "fitBitTimeRequirementMet" : fitBitTimeRequirementMet,
+                            "fitBitTimeRequired" : fit_bit_time_required,
+                            "fitBitTimeRequirementMet" : fitbit_time_requirement_met,
                             "session_date" : session_date,
                             "soft_delete" : session_subject.soft_delete,
                             "notification_title" : notification_title,
@@ -469,7 +479,52 @@ def getSessionDaySubject(data,session_subject,session_day):
                             "session_complete" : session_subject.sessionComplete(),
                             "session_canceled" : session_subject.session.canceled,
                             "session_last_day" : session_last_day,
+                            "treatment_A_B_C" : get_treatment_a_b_c_json(session_day, session_subject, p_number, ps),
                             "session_day_subject_actvity" : session_day_subject_actvity.json(),
                             "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
                             "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)
+
+def get_treatment_a_b_c_json(session_day, session_subject, p_number, parameter_set):
+    '''
+    get variables for treatment A B and C
+    '''
+
+    show_averages = False
+    average_heart_score = 0
+    average_sleep_score = 0
+    current_daily_pay = 0
+    current_block_length = 0
+    current_earnings = 0
+    current_missed_days = 0
+    next_pay_day = "---"
+
+    if session_day.session.treatment == "A" or \
+        session_day.session.treatment == "B" or \
+        session_day.session.treatment == "C":
+
+        show_averages = True
+        average_heart_score = session_subject.get_average_heart_score(p_number)
+        if average_heart_score < 0:
+            average_heart_score = "---"
+        
+        average_sleep_score = session_subject.get_average_sleep_score(p_number)
+        if average_sleep_score < 0:
+            average_sleep_score = "---"
+
+        current_daily_pay = session_subject.session.get_daily_payment_A_B_C(p_number)
+        current_block_length = parameter_set.get_block_day_count(p_number)
+        current_missed_days = session_subject.get_missed_checkins(p_number)
+        current_earnings = session_subject.get_earnings_in_block_so_far(p_number)
+        next_pay_day = session_subject.session.get_block_pay_date_formatted(p_number)
+
+    return {"show_averages" : show_averages,
+            "average_heart_score" : average_heart_score,
+            "average_sleep_score" : average_sleep_score,
+            "current_daily_pay" : f'{current_daily_pay:0.2f}',
+            "current_block_length" : current_block_length,
+            "current_missed_days" : current_missed_days,
+            "current_earnings" : current_earnings,
+            "next_pay_day" : next_pay_day}
+
+
 

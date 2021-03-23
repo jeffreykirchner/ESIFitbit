@@ -25,7 +25,11 @@ var app = new Vue({
                                                 immune_activity_hours:"--",
                                                 time_on_wrist:"--",},
         graph_parameters:{},
+        {%if session_treatment == "I"%}
         payMeButtonText : 'Pay Me <i class="fab fa-paypal fa-lg"></i>',
+        {%else%}
+        payMeButtonText : 'Check In <i class="fas fa-check"></i>',
+        {%endif%}
         refreshButtonText : '<i class="fas fa-sync fa-spin"></i>',
         toggleState:"heart",
         session_complete:false,
@@ -60,6 +64,16 @@ var app = new Vue({
         payment_toggle_background : "lightgrey",
         payment_available : true,
         soft_delete:false,
+        treatment_A_B_C:{
+            show_averages : false,
+            average_heart_score: "---",
+            average_sleep_score: "---",
+            current_daily_pay: "---",
+            current_block_length: "---",
+            current_missed_days: "---",
+            current_earnings: "---",
+            next_pay_day: "---"
+        },
     },
 
     methods:{
@@ -83,7 +97,8 @@ var app = new Vue({
                                 app.$data.session_last_day = response.data.session_last_day;
                                 app.$data.fitBitTimeRequired = response.data.fitBitTimeRequired;
                                 app.$data.fitBitTimeRequirementMet = response.data.fitBitTimeRequirementMet;
-                                
+
+                                app.takeTreatmentABC(response.data.treatment_A_B_C);
                             }
                             else
                             {
@@ -130,6 +145,10 @@ var app = new Vue({
                         .catch(function (error) {
                             console.log(error);
                         });                        
+        },
+
+        takeTreatmentABC:function(treatment_A_B_C){
+            app.$data.treatment_A_B_C = treatment_A_B_C;
         },
 
         submitQuestionnaire1:function(){                    
@@ -300,42 +319,6 @@ var app = new Vue({
                         });                        
         },
 
-        payMe:function(){
-
-            if(!app.$data.viewed_heart)
-            {
-                alert("Please view Heart Health tab before payment.")
-                return;
-            }
-
-            if(!app.$data.viewed_immune)
-            {
-                alert("Please view the Sleep Health tab before payment.")
-                return;
-            }
-
-            app.$data.payMeButtonText = '<i class="fas fa-spinner fa-spin"></i>';
-
-            axios.post('/subjectHome/{{id}}/', {
-                            action :"payMe" ,                                                                                                                                                                
-                        })
-                        .then(function (response) {     
-                            app.$data.session_day_subject_actvity = response.data.session_day_subject_actvity;  
-                            app.$data.session_complete = response.data.session_complete;
-
-                            app.$data.payMeButtonText = 'Pay Me <i class="fab fa-paypal fa-lg"></i>';     
-
-                            if(response.data.status == "fail")
-                                app.$data.paymentError=true;
-                            else
-                                app.$data.paymentError=false;    
-
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
-        },
-
         updateCanvases:function(){
                     
             gp=app.$data.graph_parameters;
@@ -455,7 +438,7 @@ var app = new Vue({
 
             ctx.fillText(xLabel,w/2,h-4);
             ctx.restore();                       
-            },
+        },
 
         drawLine: function (chartID,yMin,yMax,xMin,xMax,dataSet,markerWidth,markerColor){
 
@@ -493,7 +476,7 @@ var app = new Vue({
             ctx.lineWidth=markerWidth;
             ctx.stroke();    
             ctx.restore();                                         
-            },
+        },
 
         convertToX:function(tempValue,maxValue,minValue,tempWidth, markerWidth){
             tempT = tempWidth / (maxValue-minValue);
@@ -600,7 +583,13 @@ var app = new Vue({
 
         hideHelpBox:function(){
             app.$data.helpText="";
-        },                        
+        },   
+        
+        {%if session_treatment == "I"%}
+            {%include "subject/home/individual_payment.js"%}
+        {%else%}
+            {%include "subject/home/A_B_C_check_in.js"%}
+        {%endif%}
     },
 
     mounted: function(){
