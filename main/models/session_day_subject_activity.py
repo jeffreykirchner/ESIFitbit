@@ -181,7 +181,7 @@ class Session_day_subject_actvity(models.Model):
             v = int(self.heart_activity * 100)
             return f'{v}'
         
-        return f'{self.heart_activity:0.3f}'
+        return f'{self.heart_activity:0.2f}'
 
     def immune_activity_formatted(self):
         '''
@@ -191,7 +191,7 @@ class Session_day_subject_actvity(models.Model):
             v = int(self.immune_activity * 100)
             return f'{v}'
     
-        return f'{self.immune_activity:0.3f}'
+        return f'{self.immune_activity:0.2f}'
 
     #return the activity day before this one
     def getPreviousActivityDay(self):
@@ -280,9 +280,9 @@ class Session_day_subject_actvity(models.Model):
 
         max_activity = self.calcHeartActivity(1440,self.heart_activity,True)
 
-        target_activity = (float(self.heart_activity) + max_activity)/2
+        target_activity = (float(self.heart_activity) + max_activity) / 2
 
-        target_activity = round(target_activity,2)
+        target_activity = round(target_activity, 2)
 
 
         target_minutes = self.calcMaintenance(p_set.heart_parameter_1,
@@ -296,7 +296,11 @@ class Session_day_subject_actvity(models.Model):
 
         target_minutes = math.ceil(target_minutes)
 
-        target_activity = int(target_activity*100)
+        if self.session_day.session.treatment == "I":
+            target_activity = int(target_activity*100)
+        else:
+            target_activity = f'{target_activity:0.2f}'
+        
 
         return {"target_activity": f'{target_activity}',"target_minutes":f' {target_minutes}mins',"target_bpm":f'{self.fitbit_min_heart_rate_zone_bpm}bpm'}
 
@@ -309,7 +313,7 @@ class Session_day_subject_actvity(models.Model):
 
         target_activity = (float(self.immune_activity) + max_activity)/2
 
-        target_activity = round(target_activity,2)
+        target_activity = round(target_activity, 2)
 
         target_minutes = self.calcMaintenance(p_set.immune_parameter_1,
                                     p_set.immune_parameter_2,
@@ -322,7 +326,10 @@ class Session_day_subject_actvity(models.Model):
 
         target_minutes = math.ceil(target_minutes)
 
-        target_activity = int(target_activity*100)
+        if self.session_day.session.treatment == "I":
+            target_activity = int(target_activity*100)
+        else:
+            target_activity = f'{target_activity:0.2f}'
 
         return {"target_activity": f'{target_activity}',"target_hours":f'{math.floor(target_minutes/60)}hrs {target_minutes%60}mins'}
 
