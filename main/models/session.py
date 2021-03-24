@@ -393,7 +393,6 @@ class Session(models.Model):
         
         return TimeBlock.THREE
         
-
     def get_instruction_text(self, page_type):
         '''
         get the page_type of instruction given the current period

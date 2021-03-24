@@ -537,7 +537,10 @@ class Session_subject(models.Model):
 
         #period_number = self.session.getCurrentSessionDay().period_number
 
+        start_period_number = self.session.parameterset.get_block_first_period(period_number)
+
         heart_activity_average = self.Session_day_subject_actvities.filter(paypal_today = True) \
+                                                                   .filter(session_day__period_number__gte = start_period_number) \
                                                                    .filter(session_day__period_number__lte = period_number) \
                                                                    .aggregate(Avg('heart_activity'))
 
@@ -555,8 +558,10 @@ class Session_subject(models.Model):
         logger = logging.getLogger(__name__)
 
         #period_number = self.session.getCurrentSessionDay().period_number
+        start_period_number = self.session.parameterset.get_block_first_period(period_number)
 
         sleep_activity_average = self.Session_day_subject_actvities.filter(paypal_today = True) \
+                                                                   .filter(session_day__period_number__gte = start_period_number) \
                                                                    .filter(session_day__period_number__lte = period_number) \
                                                                    .aggregate(Avg('immune_activity'))
 
@@ -625,7 +630,7 @@ class Session_subject(models.Model):
             "address_city":q1.address_city if q1 else "---",
             "address_state":q1.address_state if q1 else "---",
             "address_zip_code":q1.address_zip_code if q1 else "---",
-            "birthdate":q1.birthdate.strftime("%#m/%#d/%Y") if q1 and q1.birthdate else "---",
+            "birthdate" : q1.birthdate.strftime("%#m/%#d/%Y") if q1 and q1.birthdate else "---",
         }
     
     #get json object of current stats to show on server

@@ -101,7 +101,7 @@ class Session_day_subject_actvity(models.Model):
         self.save()
 
     #calc activity
-    def calcActivity(self,active_time,a,b,c,activity_score,round_result): 
+    def calcActivity(self,active_time,a,b,c,activity_score, round_result): 
         logger = logging.getLogger(__name__)
         #immuneActivityTodayT-1 * (1 - (1 - immuneActivityTodayT-1) * (immune_parameter_1 / immune_parameter_2  - immuneTimeT-1 / (immuneTimeT-1 + immune_parameter_3))
 
@@ -121,9 +121,9 @@ class Session_day_subject_actvity(models.Model):
             v = 0
 
         if round_result:
-            v = round(v,2)
+            v = round(v, 2)
 
-        return min(1,v)   
+        return min(1, v)   
 
     #calc minutes required to maintain target actvitity level
     def calcMaintenance(self,a,b,c,y,z,n):
@@ -278,12 +278,11 @@ class Session_day_subject_actvity(models.Model):
         logger = logging.getLogger(__name__)
         p_set = self.session_day.session.parameterset
 
-        max_activity = self.calcHeartActivity(1440,self.heart_activity,True)
+        max_activity = self.calcHeartActivity(1440, self.heart_activity, True)
 
         target_activity = (float(self.heart_activity) + max_activity) / 2
 
         target_activity = round(target_activity, 2)
-
 
         target_minutes = self.calcMaintenance(p_set.heart_parameter_1,
                                     p_set.heart_parameter_2,
