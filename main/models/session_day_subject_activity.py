@@ -16,6 +16,8 @@ from django.utils.timezone import now
 
 from . import Session_day,Session_subject,Parameters
 
+from main.globals import round_half_away_from_zero
+
 class Session_day_subject_actvity(models.Model):
     '''
     subject's daily activity
@@ -121,7 +123,7 @@ class Session_day_subject_actvity(models.Model):
             v = 0
 
         if round_result:
-            v = round(v, 2)
+            v = round_half_away_from_zero(v, 2)
 
         return min(1, v)   
 
@@ -143,7 +145,7 @@ class Session_day_subject_actvity(models.Model):
         v = 2.0**(1/b) * n * ((a * c * y - c * z)/(a * y**2 - a * y - y + 2 * z - 1))**(1/b)
         logger.info(f"calcMaintenance {v}")
 
-        v= round(v,2)
+        v= round_half_away_from_zero(v, 2)
 
         return v 
     
@@ -282,7 +284,7 @@ class Session_day_subject_actvity(models.Model):
 
         target_activity = (float(self.heart_activity) + max_activity) / 2
 
-        target_activity = round(target_activity, 2)
+        target_activity = round_half_away_from_zero(target_activity, 2)
 
         target_minutes = self.calcMaintenance(p_set.heart_parameter_1,
                                     p_set.heart_parameter_2,
@@ -312,7 +314,7 @@ class Session_day_subject_actvity(models.Model):
 
         target_activity = (float(self.immune_activity) + max_activity)/2
 
-        target_activity = round(target_activity, 2)
+        target_activity = round_half_away_from_zero(target_activity, 2)
 
         target_minutes = self.calcMaintenance(p_set.immune_parameter_1,
                                     p_set.immune_parameter_2,

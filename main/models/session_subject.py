@@ -20,7 +20,7 @@ from django.utils.timezone import now
 from django.db import models
 from django.utils.timezone import now
 
-from main.globals import todaysDate
+from main.globals import todaysDate, round_half_away_from_zero
 
 #subject in session
 class Session_subject(models.Model):
@@ -549,7 +549,7 @@ class Session_subject(models.Model):
         if not heart_activity_average["heart_activity__avg"]:
             return -1
 
-        return round(heart_activity_average["heart_activity__avg"], 2)
+        return round_half_away_from_zero(heart_activity_average["heart_activity__avg"], 2)
     
     def get_average_sleep_score(self, period_number):
         '''
@@ -570,7 +570,7 @@ class Session_subject(models.Model):
         if not sleep_activity_average["immune_activity__avg"]:
             return -1
 
-        return round(sleep_activity_average["immune_activity__avg"], 2)
+        return round_half_away_from_zero(sleep_activity_average["immune_activity__avg"], 2)
 
     def get_missed_checkins(self, period_number):
         logger = logging.getLogger(__name__)

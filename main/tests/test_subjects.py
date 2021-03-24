@@ -9,11 +9,12 @@ import json
 from django.test import TestCase
 
 from main.models import Session, Session_day_subject_actvity
-from main.globals import todaysDate, PageType, TimeBlock, NoticeType
+from main.globals import todaysDate, PageType, TimeBlock, NoticeType, round_half_away_from_zero
 
 from main.views.staff.staff_home import createSession
 from main.views.staff.staff_session import updateSession, addSubject, startSession, sendCancelations
 from main.views.subject.subject_home import payMe
+
 
 #test past last day of experiment
 class SubjectCompleteTestCase(TestCase):
@@ -875,11 +876,11 @@ class SubjectPayments(TestCase):
         #solve x  = a * m + 0.5 * (1 + m) * (1 - a * m) * (f^b / (c +f^b)), a = 0.5, b = 3.0, c = 6, m = 0.6, f = 20 /15
         #solve x  = a * m + 0.5 * (1 + m) * (1 - a * m) * (f^b / (c +f^b)), a = 0.2, b = 4, c = 4, m = 0.6, f = 480 /240
 
-        self.assertEqual(float(session_subject_activity_2day.heart_activity),round(0.458584,2))
-        self.assertEqual(float(session_subject_activity_2day.immune_activity),round(0.6832,2))
+        self.assertEqual(float(session_subject_activity_2day.heart_activity),round_half_away_from_zero(0.458584,2))
+        self.assertEqual(float(session_subject_activity_2day.immune_activity),round_half_away_from_zero(0.6832,2))
 
-        self.assertEqual(round(float(session_subject_activity_2day.getTodaysTotalEarnings()),2),
-                          round(float(parameterset.block_3_fixed_pay_per_day + 
+        self.assertEqual(round_half_away_from_zero(float(session_subject_activity_2day.getTodaysTotalEarnings()),2),
+                          round_half_away_from_zero(float(parameterset.block_3_fixed_pay_per_day + 
                                 parameterset.block_3_heart_pay * session_subject_activity_2day.heart_activity +
                                 parameterset.block_3_immune_pay * session_subject_activity_2day.immune_activity)
                                ,2))

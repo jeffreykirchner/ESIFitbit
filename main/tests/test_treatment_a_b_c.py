@@ -1,5 +1,5 @@
 '''
-tests for subject screen
+tests for treatment A B C
 '''
 from datetime import datetime,timedelta
 
