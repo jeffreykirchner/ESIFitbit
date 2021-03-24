@@ -275,6 +275,35 @@ class Session_day_subject_actvity(models.Model):
         self.payment_today = self.getTodaysTotalEarnings()
         self.save()
 
+    def calc_a_b_c_block_payments(self):
+        '''
+        calc block payment for treatments A B C
+        '''
+
+        logger = logging.getLogger(__name__)
+        
+        period_number = self.session_day.period_number
+
+        start_period = self.session_day.session.parameterset.get_block_first_period(period_number)
+        end_period = self.session_day.session.parameterset.get_block_last_period(period_number)
+        block_length = self.session_day.session.parameterset.get_block_day_count(period_number)
+        
+        session_day = self.session_day
+
+        #check if today is last period
+        if period_number != end_period:
+            logger.warning(f'calc_a_b_c_block_payments not last period {self}, end period {end_period}')
+            return 0
+        
+        #block 1 one calculations
+        if self.session_day.getCurrentHeartPay() == 0:
+            missed_days = self.session_subject.get_missed_checkins(period_number)
+            daily_payment = self.session_day.session.get_daily_payment_A_B_C(period_number) 
+            self.payment_today = (block_length - missed_days) * daily_payment
+            self.save() 
+            logger.info(f'calc_a_b_c_block_payments payment {self.payment_today}, block length {block_length}, missed days {missed_days}, daily payment {daily_payment}')
+
+        return float(self.payment_today)
     #get health improvment minutes
     def getTodaysHeartImprovmentMinutes(self):
         logger = logging.getLogger(__name__)

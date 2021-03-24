@@ -107,6 +107,25 @@ class Session_day(models.Model):
         for sdsa in sdsa_list:
             sdsa.getCSVResponse(writer)
 
+    def calc_a_b_c_block_payments(self):
+        '''
+        if today is payday, calc payments
+        '''
+
+        last_period = self.session.parameterset.get_block_last_period(self.period_number)
+
+        #check if this period is last period in block
+        if self.period_number != last_period:
+            return {"session day": self, "payments": []}
+        
+        result = []
+
+        for session_a in self.Session_day_subject_actvities_SD.all():
+            result.append({"subject": str(session_a.session_subject),
+                           "payment": session_a.calc_a_b_c_block_payments()})
+
+        return {"session day": str(self), "payments": result}
+
     #return json object of class
     def json(self):
         return{
