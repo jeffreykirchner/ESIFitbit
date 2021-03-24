@@ -28,6 +28,9 @@ class TestRounding(TestCase):
         self.assertEqual(1.65, round_half_away_from_zero(1.651,2))
         self.assertEqual(1.67, round_half_away_from_zero(1.666,2))
 
+        self.assertEqual(21.67, round_half_away_from_zero(21.666,2))
+        self.assertEqual(22.00, round_half_away_from_zero(21.995,2))
+
 
 
 
