@@ -517,7 +517,7 @@ def get_treatment_a_b_c_json(session_day, session_subject, p_number, parameter_s
         current_daily_pay = session_subject.get_daily_payment_A_B_C(p_number)
         current_block_length = parameter_set.get_block_day_count(p_number)
         current_missed_days = session_subject.get_missed_checkins(p_number)
-        current_earnings = session_subject.get_earnings_in_block_so_far(p_number)
+        current_earnings = f'{session_subject.get_earnings_in_block_so_far(p_number):0.2f}'
         next_pay_day = session_subject.session.get_block_pay_date_formatted(p_number)
 
     return {"show_averages" : show_averages,
