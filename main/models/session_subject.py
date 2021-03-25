@@ -586,6 +586,31 @@ class Session_subject(models.Model):
 
         return missed_count
     
+    def get_daily_payment_A_B_C(self, period_number):
+        '''
+        return what the current payment is for treatments A, B and C
+        '''
+
+        #period_number = self.session_day.period_number
+
+        payment = 0
+        parameterset = self.session.parameterset
+
+
+        if self.session.treatment=="A":
+            payment = float(parameterset.get_fixed_pay(period_number))
+
+            if parameterset.getHeartPay(period_number) > 0:
+                payment = payment + self.get_average_heart_score(period_number) * float(parameterset.getHeartPay(period_number)) + \
+                                    self.get_average_sleep_score(period_number) * float(parameterset.getImmunePay(period_number))
+
+        elif self.session.treatment=="B":
+            pass
+        elif self.session.treatment=="C":
+            pass        
+        
+        return round_half_away_from_zero(payment, 2)
+
     def get_earnings_in_block_so_far(self, period_number):
         '''
         return the earnings a subject has made up to this point
@@ -594,7 +619,7 @@ class Session_subject(models.Model):
         missed_checkins = self.get_missed_checkins(period_number)
         total_days = self.session.parameterset.get_block_day_count(period_number)
 
-        return (total_days - missed_checkins) * self.session.get_daily_payment_A_B_C(period_number)
+        return (total_days - missed_checkins) * self.get_daily_payment_A_B_C(period_number)
 
     #return json object of class
     def json(self,get_fitbit_status,request_type):

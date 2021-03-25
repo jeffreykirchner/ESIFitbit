@@ -5,24 +5,12 @@
 </div>
 {%include "subject/home/averages_heart.html"%}
 {%include "subject/home/averages_sleep.html"%}
-<div class="row">
+<div class="row mt-2">
     <div class="col-md-6 offset-md-3 text-center">
         Your current Daily Pay for each paid day will be $[[treatment_A_B_C.current_daily_pay]].
     </div>
 </div>
-<div class="row mt-2">
-    <div class="col-md-6 offset-md-3 text-center">
-        If you miss no further paid days, and you maintain your current average heart ([[treatment_A_B_C.average_heart_score]]) and sleep ([[treatment_A_B_C.average_sleep_score]]) scores, then on [[treatment_A_B_C.next_pay_day]] you will be paid:
-    </div>
-</div>
+{%include "subject/home/payment_tab_ABC_no_futher_missed.html"%}
 <div v-show = "session_day_subject_actvity.paypal_today">
-    <div class="row mt-4">
-        <div class="col text-center" >Total Pay =</div>
-    </div>
-    <div class="row mt-1">
-        <div class="col text-center">(Total Days - Missed Days) x Daily Pay</div>
-    </div>
-    <div class="row mt-1">
-        <div class="col text-center">([[treatment_A_B_C.current_block_length]] – [[treatment_A_B_C.current_missed_days]]) x $[[treatment_A_B_C.current_daily_pay]] = $[[treatment_A_B_C.current_earnings]] </div>
-    </div>                               
+    {%include "subject/home/payment_tab_A_total_pay.html"%}                               
 </div>

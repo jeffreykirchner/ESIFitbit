@@ -1,6 +1,7 @@
-{%if baseline_payment %}
+<div v-show="baseline_payment === true">
     {%include "subject/home/payment_tab_ABC_baseline.html"%}
-{%else%}
+</div>
+<div v-show="baseline_payment === false">
     {%if session_treatment == "A"%}
         {%include "subject/home/payment_tab_A.html"%}    
     {%elif session_treatment == "B"%}
@@ -8,6 +9,7 @@
     {%elif session_treatment == "C"%}
         {%include "subject/home/payment_tab_C.html"%} 
     {%endif%}
-{%endif%}
-
-{%include "subject/home/payment_tab_ABC_checkin.html"%}
+</div>
+<div v-show="baseline_payment != 'start'">
+    {%include "subject/home/payment_tab_ABC_checkin.html"%}
+</div>

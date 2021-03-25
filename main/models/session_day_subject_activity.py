@@ -298,12 +298,13 @@ class Session_day_subject_actvity(models.Model):
         #block 1 one calculations
         if self.session_day.getCurrentHeartPay() == 0:
             missed_days = self.session_subject.get_missed_checkins(period_number)
-            daily_payment = self.session_day.session.get_daily_payment_A_B_C(period_number) 
+            daily_payment = self.session_subject.get_daily_payment_A_B_C(period_number) 
             self.payment_today = (block_length - missed_days) * daily_payment
             self.save() 
             logger.info(f'calc_a_b_c_block_payments payment {self.payment_today}, block length {block_length}, missed days {missed_days}, daily payment {daily_payment}')
 
         return float(self.payment_today)
+
     #get health improvment minutes
     def getTodaysHeartImprovmentMinutes(self):
         logger = logging.getLogger(__name__)
@@ -516,8 +517,8 @@ class Session_day_subject_actvity(models.Model):
             "paypal_today":self.paypal_today,
             "heart_activity_future":self.getHeartActivityFutureRange(),
             "immune_activity_future":self.getImmuneActivityFutureRange(),
-            "current_heart_pay":f'{self.session_day.getCurrentHeartPay()/100:0.2f}',
-            "current_immune_pay":f'{self.session_day.getCurrentImmunePay()/100:0.2f}',
+            "current_heart_pay":f'{self.session_day.get_current_heart_pay_display():0.2f}',
+            "current_immune_pay":f'{self.session_day.get_current_immune_pay_display():0.2f}',
             "current_heart_earnings":f'{self.getTodaysHeartEarnings():0.2f}',
             "current_immune_earnings":f'{self.getTodaysImmuneEarnings():0.2f}',
             "current_total_earnings":f'{self.getTodaysTotalEarnings():0.2f}',

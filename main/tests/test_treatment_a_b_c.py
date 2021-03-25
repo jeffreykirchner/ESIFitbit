@@ -107,9 +107,10 @@ class SessionBlockTests(TestCase):
         self.assertEqual(todaysDate().date() + timedelta(days=12), session.get_block_pay_date(8))
         self.assertEqual(todaysDate().date() + timedelta(days=12), session.get_block_pay_date(12))
 
-        #check daily pay not heart pay
-        self.assertEqual(session.parameterset.block_1_fixed_pay_per_day, session.get_daily_payment_A_B_C(1))
-        self.assertEqual(session.parameterset.block_1_fixed_pay_per_day, session.get_daily_payment_A_B_C(4))
+        #check on block 1 daily payments
+        session_subject = session.session_subjects.first()
+        self.assertEqual(session.parameterset.block_1_fixed_pay_per_day, session_subject.get_daily_payment_A_B_C(1))
+        self.assertEqual(session.parameterset.block_1_fixed_pay_per_day, session_subject.get_daily_payment_A_B_C(4))
 
 
     def test_subject_averages(self):

@@ -74,7 +74,6 @@ def Subject_Home(request, id_):
                 session_subject_questionnaire2_form_ids.append(str(f.html_name))
 
             #which screen to show, baseline or full
-            baseline_payment = False
             baseline_heart = False
             baseline_sleep = False
 
@@ -82,9 +81,6 @@ def Subject_Home(request, id_):
                 baseline_payment = True
                 baseline_heart = True
                 baseline_sleep = True
-
-            if session_day and session_day.getCurrentHeartPay() == 0:
-                baseline_payment = True
 
             #logger.info(f'{baseline_payment} {baseline_heart} {baseline_sleep}')
 
@@ -106,7 +102,6 @@ def Subject_Home(request, id_):
                                                        "immune_help_text" : session.get_instruction_text(PageType.SLEEP),
                                                        "payment_help_text" : session.get_instruction_text(PageType.PAY),
                                                        "session_subject" : session_subject,
-                                                       "baseline_payment" : baseline_payment,
                                                        "baseline_heart" : baseline_heart,
                                                        "baseline_sleep" : baseline_sleep,
                                                        "session_treatment" : session.treatment})
@@ -404,11 +399,13 @@ def getSessionDaySubject(data,session_subject,session_day):
 
     session_date = "--/--/----"
     session_last_day = False
+    baseline_payment = False
+    if session_day and session_day.getCurrentHeartPay() == 0:
+        baseline_payment = True
 
     if session_day:
         session_date = session_day.getDateStr()
         session_last_day = session_day.lastDay()
-
 
     #get consent form if needed
     if session_subject.consent_required:
@@ -428,6 +425,7 @@ def getSessionDaySubject(data,session_subject,session_day):
                              "questionnaire2_required" : session_subject.getQuestionnaire2Required(),
                              "consent_required" : session_subject.consent_required,
                              "consent_form_text" : consent_form_text,
+                             "baseline_payment" : baseline_payment,
                              },safe=False)
     else:
         notification_title =""
@@ -468,6 +466,7 @@ def getSessionDaySubject(data,session_subject,session_day):
                             "fitbit_link" : session_subject.getFitBitLink("subject"),
                             "fitBitTimeRequired" : fit_bit_time_required,
                             "fitBitTimeRequirementMet" : fitbit_time_requirement_met,
+                            "baseline_payment" : baseline_payment,
                             "session_date" : session_date,
                             "soft_delete" : session_subject.soft_delete,
                             "notification_title" : notification_title,
@@ -506,12 +505,16 @@ def get_treatment_a_b_c_json(session_day, session_subject, p_number, parameter_s
         average_heart_score = session_subject.get_average_heart_score(p_number)
         if average_heart_score < 0:
             average_heart_score = "---"
+        else:
+            average_heart_score = f'{average_heart_score:0.2f}'
         
         average_sleep_score = session_subject.get_average_sleep_score(p_number)
         if average_sleep_score < 0:
             average_sleep_score = "---"
+        else:
+            average_sleep_score = f'{average_sleep_score:0.2f}'
 
-        current_daily_pay = session_subject.session.get_daily_payment_A_B_C(p_number)
+        current_daily_pay = session_subject.get_daily_payment_A_B_C(p_number)
         current_block_length = parameter_set.get_block_day_count(p_number)
         current_missed_days = session_subject.get_missed_checkins(p_number)
         current_earnings = session_subject.get_earnings_in_block_so_far(p_number)
