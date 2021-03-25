@@ -30,6 +30,7 @@ var app = new Vue({
         {%else%}
         payMeButtonText : 'Check In <i class="fas fa-check"></i>',
         {%endif%}
+        baseline_payment : "start",
         refreshButtonText : '<i class="fas fa-sync fa-spin"></i>',
         toggleState:"heart",
         session_complete:false,
@@ -112,7 +113,8 @@ var app = new Vue({
                             app.$data.fitbit_link = response.data.fitbit_link;  
                             app.$data.fitbitError = response.data.fitbitError;       
                             app.$data.fitBitLastSynced = response.data.fitBitLastSynced;      
-                            app.$data.fitbitSyncedToday = response.data.fitbitSyncedToday;               
+                            app.$data.fitbitSyncedToday = response.data.fitbitSyncedToday;   
+                            app.$data.baseline_payment = response.data.baseline_payment;            
 
                             if(!app.$data.soft_delete)
                             {

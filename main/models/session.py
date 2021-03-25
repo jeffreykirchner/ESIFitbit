@@ -393,7 +393,6 @@ class Session(models.Model):
         
         return TimeBlock.THREE
         
-
     def get_instruction_text(self, page_type):
         '''
         get the page_type of instruction given the current period
@@ -451,19 +450,6 @@ class Session(models.Model):
             return ""
 
         return self.instruction_set.get_notice_title(time_block, notice_type)
-
-    def get_daily_payment_A_B_C(self, period_number):
-        '''
-        return what the current payment is for treatments A, B and C
-        '''
-
-        #period_number = self.session.getCurrentSessionDay().period_number
-
-        if self.treatment=="A":
-            if self.parameterset.getHeartPay(period_number) == 0:
-                return self.parameterset.get_fixed_pay(period_number)
-            else:
-                return self.parameterset.get_fixed_pay(period_number)
     
     def get_block_pay_date(self, period_number):
         '''

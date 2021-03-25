@@ -20,7 +20,7 @@ from django.utils.timezone import now
 from django.db import models
 from django.utils.timezone import now
 
-from main.globals import todaysDate
+from main.globals import todaysDate, round_half_away_from_zero
 
 #subject in session
 class Session_subject(models.Model):
@@ -537,7 +537,10 @@ class Session_subject(models.Model):
 
         #period_number = self.session.getCurrentSessionDay().period_number
 
+        start_period_number = self.session.parameterset.get_block_first_period(period_number)
+
         heart_activity_average = self.Session_day_subject_actvities.filter(paypal_today = True) \
+                                                                   .filter(session_day__period_number__gte = start_period_number) \
                                                                    .filter(session_day__period_number__lte = period_number) \
                                                                    .aggregate(Avg('heart_activity'))
 
@@ -546,7 +549,7 @@ class Session_subject(models.Model):
         if not heart_activity_average["heart_activity__avg"]:
             return -1
 
-        return round(heart_activity_average["heart_activity__avg"], 2)
+        return round_half_away_from_zero(heart_activity_average["heart_activity__avg"], 2)
     
     def get_average_sleep_score(self, period_number):
         '''
@@ -555,8 +558,10 @@ class Session_subject(models.Model):
         logger = logging.getLogger(__name__)
 
         #period_number = self.session.getCurrentSessionDay().period_number
+        start_period_number = self.session.parameterset.get_block_first_period(period_number)
 
         sleep_activity_average = self.Session_day_subject_actvities.filter(paypal_today = True) \
+                                                                   .filter(session_day__period_number__gte = start_period_number) \
                                                                    .filter(session_day__period_number__lte = period_number) \
                                                                    .aggregate(Avg('immune_activity'))
 
@@ -565,7 +570,7 @@ class Session_subject(models.Model):
         if not sleep_activity_average["immune_activity__avg"]:
             return -1
 
-        return round(sleep_activity_average["immune_activity__avg"], 2)
+        return round_half_away_from_zero(sleep_activity_average["immune_activity__avg"], 2)
 
     def get_missed_checkins(self, period_number):
         logger = logging.getLogger(__name__)
@@ -581,6 +586,31 @@ class Session_subject(models.Model):
 
         return missed_count
     
+    def get_daily_payment_A_B_C(self, period_number):
+        '''
+        return what the current payment is for treatments A, B and C
+        '''
+
+        #period_number = self.session_day.period_number
+
+        payment = 0
+        parameterset = self.session.parameterset
+
+
+        if self.session.treatment=="A":
+            payment = float(parameterset.get_fixed_pay(period_number))
+
+            if parameterset.getHeartPay(period_number) > 0:
+                payment = payment + self.get_average_heart_score(period_number) * float(parameterset.getHeartPay(period_number)) + \
+                                    self.get_average_sleep_score(period_number) * float(parameterset.getImmunePay(period_number))
+
+        elif self.session.treatment=="B":
+            pass
+        elif self.session.treatment=="C":
+            pass        
+        
+        return round_half_away_from_zero(payment, 2)
+
     def get_earnings_in_block_so_far(self, period_number):
         '''
         return the earnings a subject has made up to this point
@@ -589,7 +619,7 @@ class Session_subject(models.Model):
         missed_checkins = self.get_missed_checkins(period_number)
         total_days = self.session.parameterset.get_block_day_count(period_number)
 
-        return (total_days - missed_checkins) * self.session.get_daily_payment_A_B_C(period_number)
+        return (total_days - missed_checkins) * self.get_daily_payment_A_B_C(period_number)
 
     #return json object of class
     def json(self,get_fitbit_status,request_type):
@@ -625,7 +655,7 @@ class Session_subject(models.Model):
             "address_city":q1.address_city if q1 else "---",
             "address_state":q1.address_state if q1 else "---",
             "address_zip_code":q1.address_zip_code if q1 else "---",
-            "birthdate":q1.birthdate.strftime("%#m/%#d/%Y") if q1 and q1.birthdate else "---",
+            "birthdate" : q1.birthdate.strftime("%#m/%#d/%Y") if q1 and q1.birthdate else "---",
         }
     
     #get json object of current stats to show on server

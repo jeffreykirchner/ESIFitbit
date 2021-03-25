@@ -85,9 +85,27 @@ class Session_day(models.Model):
     def getCurrentHeartPay(self):
         return self.session.getHeartPay(self.period_number)
 
+    def get_current_heart_pay_display(self):
+        '''
+        return the heart pay as it should be displayed to subjects
+        '''
+        if self.session.treatment=="I":
+            return self.getCurrentHeartPay()/100
+        else:
+            return self.getCurrentHeartPay()
+
     #return the current maximum payment for heart activty
     def getCurrentImmunePay(self):
         return self.session.getImmunePay(self.period_number)
+
+    def get_current_immune_pay_display(self):
+        '''
+        return the sleep pay as it should be displayed to subjects
+        '''
+        if self.session.treatment=="I":
+            return self.getCurrentImmunePay()/100
+        else:
+            return self.getCurrentImmunePay()
 
     #get the formatted date string
     def getDateStr(self):
@@ -106,6 +124,25 @@ class Session_day(models.Model):
 
         for sdsa in sdsa_list:
             sdsa.getCSVResponse(writer)
+
+    def calc_a_b_c_block_payments(self):
+        '''
+        if today is payday, calc payments
+        '''
+
+        last_period = self.session.parameterset.get_block_last_period(self.period_number)
+
+        #check if this period is last period in block
+        if self.period_number != last_period:
+            return {"session day": self, "payments": []}
+        
+        result = []
+
+        for session_a in self.Session_day_subject_actvities_SD.all():
+            result.append({"subject": str(session_a.session_subject),
+                           "payment": session_a.calc_a_b_c_block_payments()})
+
+        return {"session day": str(self), "payments": result}
 
     #return json object of class
     def json(self):

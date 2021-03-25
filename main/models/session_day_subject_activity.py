@@ -16,6 +16,8 @@ from django.utils.timezone import now
 
 from . import Session_day,Session_subject,Parameters
 
+from main.globals import round_half_away_from_zero
+
 class Session_day_subject_actvity(models.Model):
     '''
     subject's daily activity
@@ -101,7 +103,7 @@ class Session_day_subject_actvity(models.Model):
         self.save()
 
     #calc activity
-    def calcActivity(self,active_time,a,b,c,activity_score,round_result): 
+    def calcActivity(self,active_time,a,b,c,activity_score, round_result): 
         logger = logging.getLogger(__name__)
         #immuneActivityTodayT-1 * (1 - (1 - immuneActivityTodayT-1) * (immune_parameter_1 / immune_parameter_2  - immuneTimeT-1 / (immuneTimeT-1 + immune_parameter_3))
 
@@ -121,9 +123,9 @@ class Session_day_subject_actvity(models.Model):
             v = 0
 
         if round_result:
-            v = round(v,2)
+            v = round_half_away_from_zero(v, 2)
 
-        return min(1,v)   
+        return min(1, v)   
 
     #calc minutes required to maintain target actvitity level
     def calcMaintenance(self,a,b,c,y,z,n):
@@ -148,7 +150,7 @@ class Session_day_subject_actvity(models.Model):
         
         logger.info(f"calcMaintenance {v}")
 
-        v= round(v,2)
+        v= round_half_away_from_zero(v, 2)
 
         return v 
     
@@ -278,17 +280,46 @@ class Session_day_subject_actvity(models.Model):
         self.payment_today = self.getTodaysTotalEarnings()
         self.save()
 
+    def calc_a_b_c_block_payments(self):
+        '''
+        calc block payment for treatments A B C
+        '''
+
+        logger = logging.getLogger(__name__)
+        
+        period_number = self.session_day.period_number
+
+        start_period = self.session_day.session.parameterset.get_block_first_period(period_number)
+        end_period = self.session_day.session.parameterset.get_block_last_period(period_number)
+        block_length = self.session_day.session.parameterset.get_block_day_count(period_number)
+        
+        session_day = self.session_day
+
+        #check if today is last period
+        if period_number != end_period:
+            logger.warning(f'calc_a_b_c_block_payments not last period {self}, end period {end_period}')
+            return 0
+        
+        #block 1 one calculations
+        if self.session_day.getCurrentHeartPay() == 0:
+            missed_days = self.session_subject.get_missed_checkins(period_number)
+            daily_payment = self.session_subject.get_daily_payment_A_B_C(period_number) 
+            self.payment_today = (block_length - missed_days) * daily_payment
+            self.save() 
+            logger.info(f'calc_a_b_c_block_payments payment {self.payment_today}, block length {block_length}, missed days {missed_days}, daily payment {daily_payment}')
+
+        return float(self.payment_today)
+
     #get health improvment minutes
     def getTodaysHeartImprovmentMinutes(self):
         logger = logging.getLogger(__name__)
         p_set = self.session_day.session.parameterset
 
-        max_activity = self.calcHeartActivity(1440,self.heart_activity,True)
+        max_activity = self.calcHeartActivity(1440, self.heart_activity, True)
 
         target_activity = (float(self.heart_activity) + max_activity) / 2
 
-        target_activity = round(target_activity, 2)
-
+        target_activity = round_half_away_from_zero(target_activity, 2)
 
         target_minutes = self.calcMaintenance(p_set.heart_parameter_1,
                                     p_set.heart_parameter_2,
@@ -318,7 +349,7 @@ class Session_day_subject_actvity(models.Model):
 
         target_activity = (float(self.immune_activity) + max_activity)/2
 
-        target_activity = round(target_activity, 2)
+        target_activity = round_half_away_from_zero(target_activity, 2)
 
         target_minutes = self.calcMaintenance(p_set.immune_parameter_1,
                                     p_set.immune_parameter_2,
@@ -491,8 +522,8 @@ class Session_day_subject_actvity(models.Model):
             "paypal_today":self.paypal_today,
             "heart_activity_future":self.getHeartActivityFutureRange(),
             "immune_activity_future":self.getImmuneActivityFutureRange(),
-            "current_heart_pay":f'{self.session_day.getCurrentHeartPay()/100:0.2f}',
-            "current_immune_pay":f'{self.session_day.getCurrentImmunePay()/100:0.2f}',
+            "current_heart_pay":f'{self.session_day.get_current_heart_pay_display():0.2f}',
+            "current_immune_pay":f'{self.session_day.get_current_immune_pay_display():0.2f}',
             "current_heart_earnings":f'{self.getTodaysHeartEarnings():0.2f}',
             "current_immune_earnings":f'{self.getTodaysImmuneEarnings():0.2f}',
             "current_total_earnings":f'{self.getTodaysTotalEarnings():0.2f}',
