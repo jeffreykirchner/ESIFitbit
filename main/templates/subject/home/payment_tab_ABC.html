@@ -1,0 +1,13 @@
+{%if baseline_payment %}
+    {%include "subject/home/payment_tab_ABC_baseline.html"%}
+{%else%}
+    {%if session_treatment == "A"%}
+        {%include "subject/home/payment_tab_A.html"%}    
+    {%elif session_treatment == "B"%}
+        {%include "subject/home/payment_tab_B.html"%} 
+    {%elif session_treatment == "C"%}
+        {%include "subject/home/payment_tab_C.html"%} 
+    {%endif%}
+{%endif%}
+
+{%include "subject/home/payment_tab_ABC_checkin.html"%}
