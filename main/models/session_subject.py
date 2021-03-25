@@ -33,7 +33,7 @@ class Session_subject(models.Model):
 
     login_key = models.UUIDField(default=uuid.uuid4, verbose_name='Login Key',unique=True)                              #log in key used to ID subject for URL login
     name = models.CharField(max_length = 300,default = 'Subject Name', verbose_name='Subject Name')                     #subject name 
-    contact_email = models.CharField(max_length = 300,default = 'Subject Email',verbose_name = 'Subject Email')         #contact email address
+    contact_email = models.CharField(max_length = 300,default = 'abc@123.edu',verbose_name = 'Subject Email')         #contact email address
     student_id = models.CharField(max_length = 300,default = 'Student ID Number',verbose_name = 'Student ID Number')    #student ID number
     
     consent_required = models.BooleanField(default=True,verbose_name = 'Consent Form Signed')          #true if subject has done consent form  
@@ -619,7 +619,7 @@ class Session_subject(models.Model):
         missed_checkins = self.get_missed_checkins(period_number)
         total_days = self.session.parameterset.get_block_day_count(period_number)
 
-        return (total_days - missed_checkins) * self.get_daily_payment_A_B_C(period_number)
+        return round_half_away_from_zero((total_days - missed_checkins) * self.get_daily_payment_A_B_C(period_number),2)
 
     #return json object of class
     def json(self,get_fitbit_status,request_type):
