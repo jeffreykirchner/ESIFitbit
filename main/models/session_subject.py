@@ -544,7 +544,7 @@ class Session_subject(models.Model):
                                                                    .filter(session_day__period_number__lte = period_number) \
                                                                    .aggregate(Avg('heart_activity'))
 
-        logger.info(f'get_average_heart_score {heart_activity_average}')
+        logger.info(f'get_average_heart_score {heart_activity_average}, start period {start_period_number}, end period {period_number}')
 
         if not heart_activity_average["heart_activity__avg"]:
             return -1
@@ -565,7 +565,7 @@ class Session_subject(models.Model):
                                                                    .filter(session_day__period_number__lte = period_number) \
                                                                    .aggregate(Avg('immune_activity'))
 
-        # logger.info(f'get_average_heart_score {sleep_activity_average}')
+        logger.info(f'get_average_heart_score {sleep_activity_average}, start period {start_period_number}, end period {period_number}')
 
         if not sleep_activity_average["immune_activity__avg"]:
             return -1
@@ -590,7 +590,8 @@ class Session_subject(models.Model):
         '''
         return what the current payment is for treatments A, B and C
         '''
-
+        logger = logging.getLogger(__name__)
+        
         #period_number = self.session_day.period_number
 
         payment = 0
@@ -603,6 +604,10 @@ class Session_subject(models.Model):
             if parameterset.getHeartPay(period_number) > 0:
                 payment = payment + self.get_average_heart_score(period_number) * float(parameterset.getHeartPay(period_number)) + \
                                     self.get_average_sleep_score(period_number) * float(parameterset.getImmunePay(period_number))
+
+                logger.info(f'get_daily_payment_A_B_C heart score {self.get_average_heart_score(period_number)}, sleep score {self.get_average_sleep_score(period_number)}')
+
+
 
         elif self.session.treatment=="B":
             pass
