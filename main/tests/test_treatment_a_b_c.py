@@ -9,7 +9,7 @@ import json
 from django.test import TestCase
 
 from main.models import Session, Session_day_subject_actvity
-from main.globals import todaysDate, PageType, TimeBlock, NoticeType
+from main.globals import todaysDate, PageType, TimeBlock, NoticeType, round_half_away_from_zero
 
 from main.views.staff.staff_home import createSession
 from main.views.staff.staff_session import updateSession, addSubject, startSession, sendCancelations
@@ -454,6 +454,226 @@ class SessionABCPayments(TestCase):
         #check for none payment everywhere else
         for session_subject in self.session.session_subjects.all():
             for activity in session_subject.Session_day_subject_actvities.exclude(session_day__period_number = 4):
+                self.assertEqual(activity.payment_today, 0)
+    
+    def test_block_1_payments_day_6(self):
+        '''
+        test that block 2 payments are calculated correctly
+        ''' 
+
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+
+        session.start_date = todaysDate() - timedelta(days=5)
+
+        session.calcEndDate()
+        session = Session.objects.get(id = session.id)
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        start_sleep = 0.2
+        start_heart = 0.1
+
+        for session_subject in self.session.session_subjects.all():
+            for activity in session_subject.Session_day_subject_actvities.all().order_by('session_day__period_number'):
+                activity.heart_activity = start_heart
+                activity.immune_activity = start_sleep
+
+                start_heart += 0.01
+                start_sleep += 0.01
+
+                activity.paypal_today = True
+                activity.save()
+
+        results = do_calc_a_b_c_treatments()
+
+        #logger.info(results)
+
+        for result in results["A B C Lumpsum Calculations"]:
+            self.assertEqual(result['payments'],[])
+        
+        #check for none payment everywhere else
+        for session_subject in self.session.session_subjects.all():
+            for activity in session_subject.Session_day_subject_actvities.all():
+                self.assertEqual(activity.payment_today, 0)
+    
+    def test_block_1_payments_day_8(self):
+        '''
+        test that block 2 payments are calculated correctly
+        ''' 
+
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+
+        session.start_date = todaysDate() - timedelta(days=7)
+
+        session.calcEndDate()
+        session = Session.objects.get(id = session.id)
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        start_sleep = 0.2
+        start_heart = 0.1
+
+        for session_subject in self.session.session_subjects.all():
+            for activity in session_subject.Session_day_subject_actvities.all().order_by('session_day__period_number'):
+                activity.heart_activity = start_heart
+                activity.immune_activity = start_sleep
+
+                activity.paypal_today = True
+                activity.save()
+
+                start_heart += 0.01
+                start_sleep += 0.01            
+            
+            start_sleep = 0.2
+            start_heart = 0.1
+
+        for session_subject in self.session.session_subjects.all():
+            for activity in session_subject.Session_day_subject_actvities.all().order_by('session_day__period_number'):
+                logger.info(f"period {activity.session_day.period_number}, subject {activity.session_subject.id}, heart score {activity.heart_activity}, sleep score {activity.immune_activity}, pay pal today {activity.paypal_today}")
+
+        results = do_calc_a_b_c_treatments()
+
+        #logger.info(results)
+        for result in results["A B C Lumpsum Calculations"]:
+            for payment in result['payments']:
+                self.assertEqual(payment['payment'], round_half_away_from_zero(3 * (3 + 8 * .15 + 8 * .25), 2))
+        
+        #check for none payment everywhere else
+        #check for correct payment on last block
+        for session_subject in self.session.session_subjects.all():
+            activity = session_subject.Session_day_subject_actvities.get(session_day__period_number = 7)
+            self.assertEqual(float(activity.payment_today), round_half_away_from_zero(3 * (3 + 8 * .15 + 8 * .25), 2))
+    
+    def test_block_1_payments_day_8_missed_day(self):
+        '''
+        test that block 2 payments are calculated correctly
+        ''' 
+
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+
+        session.start_date = todaysDate() - timedelta(days=7)
+
+        session.calcEndDate()
+        session = Session.objects.get(id = session.id)
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        start_sleep = 0.2
+        start_heart = 0.1
+
+        for session_subject in self.session.session_subjects.all():
+            for activity in session_subject.Session_day_subject_actvities.all().order_by('session_day__period_number'):
+                activity.heart_activity = start_heart
+                activity.immune_activity = start_sleep
+
+                activity.paypal_today = True
+                activity.save()
+
+                start_heart += 0.01
+                start_sleep += 0.01            
+            
+            start_sleep = 0.2
+            start_heart = 0.1
+
+        for session_subject in self.session.session_subjects.all():
+            activity = session_subject.Session_day_subject_actvities.get(session_day__period_number = 5)
+            activity.paypal_today = False
+            activity.save()
+
+        for session_subject in self.session.session_subjects.all():
+            for activity in session_subject.Session_day_subject_actvities.all().order_by('session_day__period_number'):
+                logger.info(f"period {activity.session_day.period_number}, subject {activity.session_subject.id}, heart score {activity.heart_activity}, sleep score {activity.immune_activity}, pay pal today {activity.paypal_today}")
+
+        results = do_calc_a_b_c_treatments()
+
+        #logger.info(results)
+        for result in results["A B C Lumpsum Calculations"]:
+            for payment in result['payments']:
+                self.assertEqual(payment['payment'], round_half_away_from_zero(2 * (3 + 8 * .16 + 8 * .26), 2))
+        
+        #check for none payment everywhere else
+        #check for correct payment on last block
+        for session_subject in self.session.session_subjects.all():
+            activity = session_subject.Session_day_subject_actvities.get(session_day__period_number = 7)
+            self.assertEqual(float(activity.payment_today), round_half_away_from_zero(2 * (3 + 8 * .16 + 8 * .26), 2))
+        
+        #check for zeros
+        for session_subject in self.session.session_subjects.all():
+            for activity in session_subject.Session_day_subject_actvities.exclude(session_day__period_number = 7):
+                self.assertEqual(activity.payment_today, 0)
+    
+    def test_block_1_payments_day_13_missed_day(self):
+        '''
+        test that block 3 payments are calculated correctly
+        ''' 
+
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+
+        session.start_date = todaysDate() - timedelta(days=12)
+
+        session.calcEndDate()
+        session = Session.objects.get(id = session.id)
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        start_sleep = 0.2
+        start_heart = 0.1
+
+        for session_subject in self.session.session_subjects.all():
+            for activity in session_subject.Session_day_subject_actvities.all().order_by('session_day__period_number'):
+                activity.heart_activity = start_heart
+                activity.immune_activity = start_sleep
+
+                activity.paypal_today = True
+                activity.save()
+
+                start_heart += 0.01
+                start_sleep += 0.01            
+            
+            start_sleep = 0.2
+            start_heart = 0.1
+
+        for session_subject in self.session.session_subjects.all():
+            activity = session_subject.Session_day_subject_actvities.get(session_day__period_number = 9)
+            activity.paypal_today = False
+            activity.save()
+
+        for session_subject in self.session.session_subjects.all():
+            for activity in session_subject.Session_day_subject_actvities.all().order_by('session_day__period_number'):
+                logger.info(f"period {activity.session_day.period_number}, subject {activity.session_subject.id}, heart score {activity.heart_activity}, sleep score {activity.immune_activity}, pay pal today {activity.paypal_today}")
+
+        results = do_calc_a_b_c_treatments()
+
+        #logger.info(results)
+        for result in results["A B C Lumpsum Calculations"]:
+            for payment in result['payments']:
+                self.assertEqual(payment['payment'], round_half_away_from_zero(4 * (3 + 16 * .19 + 16 * .29), 2))
+        
+        #check for none payment everywhere else
+        #check for correct payment on last block
+        for session_subject in self.session.session_subjects.all():
+            activity = session_subject.Session_day_subject_actvities.get(session_day__period_number = 12)
+            self.assertEqual(float(activity.payment_today), round_half_away_from_zero(4 * (3 + 16 * .19 + 16 * .29), 2))
+        
+        #check for zeros
+        for session_subject in self.session.session_subjects.all():
+            for activity in session_subject.Session_day_subject_actvities.exclude(session_day__period_number = 12):
                 self.assertEqual(activity.payment_today, 0)
 
 
