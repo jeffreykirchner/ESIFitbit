@@ -1,0 +1,77 @@
+<div v-show="baseline_payment === true">
+    <div class="row mt-2">
+        <div class="col" style="text-align: center;">Your Payment today = </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col" style="text-align: center;">(Fixed Pay per Day)</div>
+    </div>
+    
+    <div class="row mt-3">
+        <div class="col" style="text-align: center;">$[[session_day_subject_actvity.fixed_pay_per_day]]</div>
+    </div>                               
+</div>   
+<div v-show="baseline_payment === false">
+    <div class="row mt-2">
+        <div class="col" style="text-align: center;">Your Payment today = </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col" style="text-align: center;">(Fixed Pay per Day)</div>
+    </div>
+    <div class="row mt">
+        <div class="col" style="text-align: center;">+ (Heart Pay) x (Today's Heart Score)</div>
+    </div>
+    <div class="row">
+        <div class="col" style="text-align: center;">+ (Sleep Pay) x (Today's Sleep Score)</div>
+    </div>
+    <div class="row mt-3">
+        <div class="col" style="text-align: center;">$[[session_day_subject_actvity.fixed_pay_per_day]]</div>
+    </div>
+    <div class="row">
+        <div class="col" style="text-align: center;">+ $[[session_day_subject_actvity.current_heart_pay]] x [[session_day_subject_actvity.heart_activity]]</div>
+    </div>
+    <div class="row">
+        <div class="col" style="text-align: center;">+ $[[session_day_subject_actvity.current_immune_pay]] x [[session_day_subject_actvity.immune_activity]]</div>
+    </div>
+    <div class="row mt-3">
+        <div class="col" style="text-align: center;">$[[session_day_subject_actvity.fixed_pay_per_day]] + $[[session_day_subject_actvity.current_heart_earnings]] + $[[session_day_subject_actvity.current_immune_earnings]] = $[[session_day_subject_actvity.current_total_earnings]]</div>
+    </div>
+</div>
+
+<div v-show="baseline_payment != ''">
+    <div class = "row mt-4">
+        <div class="col" style="text-align: center;">
+            <div v-if="session_day_subject_actvity.paypal_today">
+                <span style="color: blue;" v-html="'Your payment will arrive tomorrow morning.<br>Check your email.'"></span>
+                <div v-show="session_complete">
+                    <span style="color: red;" v-html="'The study is complete, thank you for your participation!<br><u>Please return your Fitbit.</u>'"></span>
+                </div>
+            </div>
+            <div v-else-if="session_complete===false">
+                
+                <button class="btn btn-outline-primary" type="button" v-on:click = "payMe()" v-bind:disabled="fitbitError || fitBitTimeRequirementMet === false || fitbitSyncedToday === false"> 
+                    <span v-html="payMeButtonText"></span>
+                </button>
+                <div v-show="fitbitError">
+                    <u><a v-bind:href="fitbit_link" style="font-weight: bold;color: red;">Connect Fitbit</a></u>
+                </div>
+                <div v-show="paymentError">
+                    <span v-html="'***Payment Error***'" style="color: red;"></span>
+                </div>
+                <div v-show="fitbitSyncedToday === false">
+                    <span style="color: red;">You must sync your Fitbit with your phone.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class = "row mt-4">
+        <div class="col" style="text-align: center;">
+            Daily wrist time required: <span v-html="fitBitTimeRequired"></span>
+        </div>
+    </div>
+    <div class = "row">
+        <div class="col" style="text-align: center;" v-bind:style="[fitBitTimeRequirementMet ===false ? {'color': 'red' }:{}]">
+            Yesterday's time on wrist: <span v-html="session_day_subject_actvity_previous.time_on_wrist"></span>
+        </div>
+    </div> 
+</div>

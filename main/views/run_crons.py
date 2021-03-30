@@ -25,9 +25,12 @@ class RunCronsView(View):
 
         response = []
 
-        response.append(do_paypal())
-        # response.append(self.do_calc_daily_payments())
+        #do any A B C treatment calcs needed
+        response.append(do_calc_a_b_c_treatments())
 
+        #send payments
+        response.append(do_paypal())
+        
         logger.info(response)
 
         return JsonResponse({"response": response}, safe=False)
@@ -52,7 +55,6 @@ def do_paypal():
     yesterdays_sessions = Session_day.objects.filter(date=yesterdays_date.date()) \
                                              .filter(payments_sent = False) \
                                              .filter(session__soft_delete = False) \
-                                             .filter(session__treatment = "I") \
                                              .prefetch_related("Session_day_subject_actvities_SD")
 
     #logger.info(yesterdays_sessions)
@@ -90,13 +92,27 @@ def do_paypal():
     return {"Do Paypal Cron": result_list}
 
 
-def do_calc_daily_payments():
+def do_calc_a_b_c_treatments():
     '''
-    check for Induvidual Lumpsum treatments that need to have their payments calculated and fitbit data pulled.
+    check for A B C treatments for lumpsum payments.
     '''
 
-    # logger = logging.getLogger(__name__)
+    logger = logging.getLogger(__name__)
 
-    result = {"Do Daily Lumpsum Payments": "result here"}
+    yesterdays_date = todaysDate() - timedelta(days=1)
 
-    return result
+    #check for yesterday's sessions that fall on payday
+    yesterdays_sessions = Session_day.objects.filter(date=yesterdays_date.date()) \
+                                             .filter(payments_sent = False) \
+                                             .filter(session__soft_delete = False) \
+                                             .exclude(session__treatment = "I") \
+                                             .exclude(session__treatment = "Base")
+    
+    payments_list = []
+
+    logger.info(f'do_calc_a_b_c_treatments {yesterdays_sessions}')
+
+    for session_d in yesterdays_sessions:
+        payments_list.append(session_d.calc_a_b_c_block_payments())
+
+    return {"A B C Lumpsum Calculations": payments_list}

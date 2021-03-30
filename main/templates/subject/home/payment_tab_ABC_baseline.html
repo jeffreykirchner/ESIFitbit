@@ -1,0 +1,16 @@
+
+<div class="row mt-2">
+    <div class="col">
+    </div>
+</div>
+{%include "subject/home/averages_heart.html"%}
+{%include "subject/home/averages_sleep.html"%}
+<div class="row mt-2">
+    <div class="col-md-6 offset-md-3 text-center">
+        Your current Daily Pay for each paid day will be $[[treatment_A_B_C.current_daily_pay]].
+    </div>
+</div>
+{%include "subject/home/payment_tab_ABC_no_futher_missed.html"%}
+<div v-show = "session_day_subject_actvity.paypal_today">
+    {%include "subject/home/payment_tab_A_total_pay.html"%}                               
+</div>

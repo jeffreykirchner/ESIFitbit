@@ -11,18 +11,38 @@
         </div>                            
     </div>
 </div>
-<div class="row mt-1">
+<div class="row mt-3">
     <div class="col" style="text-align: center;">
         Today's hours required to:
     </div>
 </div>
-<div class="row">
-    <div class="col" style="text-align: center;">
-        Maintain score at <span v-html = session_day_subject_actvity.immune_activity></span> for tomorrow: <span v-html="session_day_subject_actvity.immune_maintenance_hours"></span>
+
+<!-- score maintainence -->
+<div class="row d-none d-sm-block">
+    <div class="col-md text-center">
+        Maintain score at [[session_day_subject_actvity.immune_activity]] for tomorrow: [[session_day_subject_actvity.immune_maintenance_hours]]
     </div>
 </div>
-<div class="row">
+<div class="row d-block d-sm-none">
+    <div class="col-md text-center">
+        Maintain score at [[session_day_subject_actvity.immune_activity]] for tomorrow:
+    </div>
+    <div class="col-md text-center">
+        [[session_day_subject_actvity.immune_maintenance_hours]]
+    </div>
+</div>
+
+<!-- score imporovement -->
+<div class="row d-none d-sm-block">
     <div class="col" style="text-align: center;">
-        Improve score to <span v-html = session_day_subject_actvity.immune_improvment_hours.target_activity></span> for tomorrow: <span v-html="session_day_subject_actvity.immune_improvment_hours.target_hours"></span>
+        Improve score to [[session_day_subject_actvity.immune_improvment_hours.target_activity]] for tomorrow: [[session_day_subject_actvity.immune_improvment_hours.target_hours]]
+    </div>
+</div>
+<div class="row d-block d-sm-none">
+    <div class="col" style="text-align: center;">
+        Improve score to <span v-html = session_day_subject_actvity.immune_improvment_hours.target_activity></span> for tomorrow:
+    </div>
+    <div class="col" style="text-align: center;">
+        [[session_day_subject_actvity.immune_improvment_hours.target_hours]]
     </div>
 </div>

@@ -393,7 +393,6 @@ class Session(models.Model):
         
         return TimeBlock.THREE
         
-
     def get_instruction_text(self, page_type):
         '''
         get the page_type of instruction given the current period
@@ -427,9 +426,14 @@ class Session(models.Model):
 
         notice_text = self.instruction_set.get_notice_text(time_block, notice_type)
 
-        notice_text = notice_text.replace("[heart pay]",f'{self.parameterset.getHeartPay(p_number_used)/100:0.2f}')
-        notice_text = notice_text.replace("[immune pay]",f'{self.parameterset.getImmunePay(p_number_used)/100:0.2f}')
-        notice_text = notice_text.replace("[fixed pay]",f'{self.parameterset.get_fixed_pay(p_number_used):0.2f}')
+        if self.treatment == "I" or self.treatment == "Base":
+            notice_text = notice_text.replace("[heart pay]", f'{self.parameterset.getHeartPay(p_number_used)/100:0.2f}')
+            notice_text = notice_text.replace("[immune pay]", f'{self.parameterset.getImmunePay(p_number_used)/100:0.2f}')            
+        else:
+            notice_text = notice_text.replace("[heart pay]", f'{self.parameterset.getHeartPay(p_number_used):0.2f}')
+            notice_text = notice_text.replace("[immune pay]", f'{self.parameterset.getImmunePay(p_number_used):0.2f}')
+
+        notice_text = notice_text.replace("[fixed pay]", f'{self.parameterset.get_fixed_pay(p_number_used):0.2f}')
 
         return notice_text
     
@@ -451,6 +455,23 @@ class Session(models.Model):
             return ""
 
         return self.instruction_set.get_notice_title(time_block, notice_type)
+    
+    def get_block_pay_date(self, period_number):
+        '''
+        return the pay date given the specified period
+        '''
+        last_period = self.parameterset.get_block_last_period(period_number)
+
+        last_period_date = self.session_days.get(period_number = last_period).date
+
+        return last_period_date + timedelta(days=1)
+    
+    def get_block_pay_date_formatted(self, period_number):
+        '''
+        return the pay date given the specified period formatted
+        '''
+
+        return self.get_block_pay_date(period_number).strftime("%#m/%#d/%Y")
 
     #return json object of class
     def json(self):

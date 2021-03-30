@@ -96,23 +96,30 @@
                             </div>
                         </div>
                     
-                        <div v-if="toggleState==='heart'">
-                            {%include "subject/home/heart_tab.html"%}
+                        <div v-show="toggleState==='heart'">
+                            {%include "subject/home/heart_tab.html"%}                            
                         </div>
-                        <div v-else-if="toggleState==='immune'">
+                        <div v-show="toggleState==='immune'">
                             {%include "subject/home/immune_tab.html"%}
                         </div>  
-                        <div v-else-if="toggleState==='payment'">
-                            {%include "subject/home/payment_tab.html"%}                 
+                        <div v-show="toggleState==='payment'">
+                            {%if session_treatment == "I"%}
+                                {%include "subject/home/payment_tab_individual.html"%}       
+                            {%elif session_treatment == "A" or session_treatment == "B" or session_treatment == "C"%}   
+                                {%include "subject/home/payment_tab_ABC.html"%}
+                            {%endif%}       
                         </div>
 
                         <div v-show="toggleState != 'payment'">
-                            <div class="row">
-                                <div class="col" style="text-align: center;">
-                                    <canvas key="healthChart" id="healthChart" style="border-style: solid;border-width: 1px;" width="300" height="325"></canvas>
-                                </div>
-                            </div>
+                            {%include "subject/home/chart.html"%}                           
                         </div>
+                        <div v-show="toggleState==='heart'">
+                            {%include "subject/home/averages_heart.html"%}   
+                        </div>
+                        <div v-show="toggleState==='immune'">
+                            {%include "subject/home/averages_sleep.html"%}   
+                        </div>
+
                     </div>
                     <div v-else>
                         <div class="row">
