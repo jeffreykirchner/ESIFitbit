@@ -677,6 +677,7 @@ class Session_subject(models.Model):
         immune_score = "---"
         immune_time = "---"
         wrist_time = "---|---"
+        missed_days = "---"
 
         if sada:
             #sada_yesterday = self.Session_day_subject_actvities.filter(session_day__period_number = sada.session_day.period_number - 1).first()
@@ -684,7 +685,13 @@ class Session_subject(models.Model):
 
             check_in = sada.check_in_today
             pay_pal = sada.paypal_today
-            earnings = f'${sada.getTodaysTotalEarnings():0.2f}'
+
+            if self.session.treatment == "I" or self.session.treatment == "Base":
+                earnings = f'${sada.getTodaysTotalEarnings():0.2f}'
+            else:
+                earnings = f'${self.get_earnings_in_block_so_far(sada.session_day.period_number):0.2f}'
+
+            missed_days = self.get_missed_checkins(sada.session_day.period_number)
 
             if check_in:
                 heart_score = f'{sada.heart_activity:0.2f}'
@@ -706,15 +713,16 @@ class Session_subject(models.Model):
             wrist_time = f'---| {sada.getFormatedWristMinutes()}'
 
         return{
-            "check_in":check_in,
-            "pay_pal":pay_pal,
-            "earnings":earnings,
-            "heart_score":heart_score,
-            "heart_time":heart_time,
-            "heart_bpm":heart_bpm,
-            "immune_score":immune_score,
-            "immune_time":immune_time,
-            "wrist_time":wrist_time,            
+            "check_in" : check_in,
+            "pay_pal" : pay_pal,
+            "earnings" : earnings,
+            "heart_score" : heart_score,
+            "heart_time" : heart_time,
+            "heart_bpm" : heart_bpm,
+            "immune_score" : immune_score,
+            "immune_time" : immune_time,
+            "wrist_time" : wrist_time, 
+            "missed_days" : missed_days,          
         }
 
     #get json object of daily minutes exercising
