@@ -23,6 +23,7 @@ var app = new Vue({
                     consent_required:true,
                     questionnaire1_required:true,
                     questionnaire2_required:true,
+                    treatment:"",
                     parameterset:{id:"",
                                 number_of_days:"",
                                 number_of_players:"",

@@ -31,41 +31,53 @@
             <!-- <caption style="caption-side:top;text-align: center;">Subjects</caption> -->
             <thead>
                 <tr>
-                    <th scope="col">
+                    <th scope="col" class = "m-1 p-1">
                         Name
                     </th> 
-                    <th scope="col" style="text-align: center;">
+                    <th scope="col" class = "text-center m-1 p-1">
                         Color
                     </th>
-                    <th scope="col" style="text-align: center;">
-                        Login<br>Link                    
+                    <th scope="col" class = "text-center m-1 p-1">
+                        Login Link                    
                     </th>
-                    <th scope="col" style="text-align: center;">
-                        Consent<br>Pre/Post Survey                  
+                    <th scope="col" class = "text-center m-1 p-1">
+                        Consent Pre/Post Survey                  
                     </th>                                
-                    <th scope="col" style="text-align: center;">
-                        Check In, PayPal<br>Today               
+                    <th scope="col" class = "text-center m-1 p-1">
+                        <div v-if="session.treatment === 'I' || session.treatment === 'Base'">
+                            Check In, PayPal Today               
+                        </div>
+                        <div v-else-if="session.treatment === 'A' || session.treatment === 'B' || session.treatment === 'C'">
+                            Visited, Check In Today
+                        </div>
                     </th>
-                    <th scope="col" style="text-align: center;">
-                        Today's<br>Earnings                    
+                    <th scope="col" class = "text-center m-1 p-1">
+                        <div v-if="session.treatment === 'I' || session.treatment === 'Base'">
+                            Today's Earnings   
+                        </div>
+                        <div v-else-if="session.treatment === 'A' || session.treatment === 'B' || session.treatment === 'C'">  
+                            Block Earnings
+                        </div>               
                     </th>
-                    <th scope="col" style="text-align: center;">
-                        Heart<br>Score                    
+                    <th scope="col" class = "text-center m-1 p-1">
+                        Missed Days
                     </th>
-                    <th scope="col" style="text-align: center;">
-                        Sleep<br>Score                    
+                    <th scope="col" class = "text-center m-1 p-1">
+                        Heart Score                    
                     </th>
-                    <th scope="col" style="text-align: center;">
-                        Wrist Time<br>
-                        YDA|2DAY                     
+                    <th scope="col" class = "text-center m-1 p-1">
+                        Sleep Score                    
                     </th>
-                    <th scope="col" style="text-align: center;">
-                        Last Fitbit<br>Phone Sync                  
+                    <th scope="col" class = "text-center m-1 p-1">
+                        Wrist Time YDA|2DAY                     
                     </th>
-                    <th scope="col" style="text-align: center;">
+                    <th scope="col" class = "text-center m-1 p-1">
+                        Last Fitbit Phone Sync                  
+                    </th>
+                    <th scope="col" class = "text-center m-1 p-1">
                         FitBit                                     
                     </th>                                                      
-                    <th scope="col"  style="text-align: center;">
+                    <th scope="col" class = "text-center m-1 p-1">
                         Control
                     </th>
                 </tr>
@@ -73,18 +85,18 @@
 
             <tbody id="subjectList">                                                  
                 <tr v-for="(s,index) in session_subjects" v-bind:key="s.id">                                                                          
-                    <td> 
-                        <span v-html="s.name"></span>                                      
+                    <td class = "m-1 p-1"> 
+                        [[s.name]]                                     
                     </td>
-                    <td style="text-align: center;">
+                    <td class = "text-center m-1 p-1">
                         <span  v-bind:style="{ color: s.display_color}"><i class="fas fa-palette"></i></span>
                     </td>
-                    <td style="text-align: center;"> 
+                    <td class = "text-center m-1 p-1"> 
                         <button type="button" class="btn btn-outline-primary btn-sm" v-on:click = "copySubjectLinkToClipboard(s.login_url)" title="Copy subject login URL">
                             <i class="far fa-copy"></i>   
                         </button>
                     </td>
-                    <td style="text-align: center;">
+                    <td class = "text-center m-1 p-1">
                         <span v-if="s.consent_required === false" style="color:green">
                             <i class="far fa-check-circle"></i>
                         </span>
@@ -107,7 +119,7 @@
                         </span>
 
                     </td>
-                    <td style="text-align: center;">
+                    <td class = "text-center m-1 p-1">
                         <span v-if="s.todays_stats.check_in" style="color:green">
                             <i class="far fa-check-circle"></i>
                         </span>
@@ -122,28 +134,36 @@
                             <i class="far fa-times-circle"></i>
                         </span>
                     </td>
-                    <td style="text-align: center;">
+                    <td class = "text-center m-1 p-1">
                         <span v-if="s.todays_stats.pay_pal">
-                            <span v-html="s.todays_stats.earnings"></span>  
+                            [[s.todays_stats.earnings]]  
                         </span>
                         <span v-else>
                             ---
                         </span>
                     </td>
-                    <td style="text-align: center;">
-                        <span v-html="s.todays_stats.heart_score"></span> | <span v-html="s.todays_stats.heart_time"></span> | <span v-html="s.todays_stats.heart_bpm"></span>                  
+                    <td class = "text-center m-1 p-1">
+                        <span v-if="s.todays_stats.pay_pal">
+                            [[s.todays_stats.missed_days]]    
+                        </span>
+                        <span v-else>
+                            ---
+                        </span>
                     </td>
-                    <td style="text-align: center;">
-                        <span v-html="s.todays_stats.immune_score"></span> | <span v-html="s.todays_stats.immune_time"></span>                    
+                    <td class = "text-center m-1 p-1">
+                        [[s.todays_stats.heart_score]] | [[s.todays_stats.heart_time]] | [[s.todays_stats.heart_bpm]]               
                     </td>
-                    <td style="text-align: center;">
-                        <span v-html="s.todays_stats.wrist_time"></span>
+                    <td class = "text-center m-1 p-1">
+                        [[s.todays_stats.immune_score]] | [[s.todays_stats.immune_time]]                   
                     </td>
-                    <td style="text-align: center;">
-                        <span v-html = "s.fitBit_last_synced"></span>
+                    <td class = "text-center m-1 p-1">
+                        [[s.todays_stats.wrist_time]]
                     </td>
-                    <td style="text-align: center;">                                        
-                        <a :href="s.fitBit_Link"><span v-html="'Setup'"></span></a>
+                    <td class = "text-center m-1 p-1">
+                        [[s.fitBit_last_synced]]
+                    </td>
+                    <td class = "text-center m-1 p-1">                                        
+                        <a :href="s.fitBit_Link">Setup</span></a>
 
                         <span v-if = "s.get_fitbit_status === false">
                             
@@ -155,7 +175,7 @@
                             <i class="far fa-times-circle"></i>
                         </span>                             
                     </td>                               
-                    <td style="text-align: center;">
+                    <td class = "text-center m-1 p-1">
                         <button v-bind:id="'editSubject' + s.id" type="button" class="btn btn-outline-primary btn-sm" v-on:click = "showEditSubject(s.id,index)" title="Edit subject info">
                             <i class="far fa-edit"></i>  
                         </button> 
