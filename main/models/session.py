@@ -426,9 +426,14 @@ class Session(models.Model):
 
         notice_text = self.instruction_set.get_notice_text(time_block, notice_type)
 
-        notice_text = notice_text.replace("[heart pay]",f'{self.parameterset.getHeartPay(p_number_used)/100:0.2f}')
-        notice_text = notice_text.replace("[immune pay]",f'{self.parameterset.getImmunePay(p_number_used)/100:0.2f}')
-        notice_text = notice_text.replace("[fixed pay]",f'{self.parameterset.get_fixed_pay(p_number_used):0.2f}')
+        if self.treatment == "I" or self.treatment == "Base":
+            notice_text = notice_text.replace("[heart pay]", f'{self.parameterset.getHeartPay(p_number_used)/100:0.2f}')
+            notice_text = notice_text.replace("[immune pay]", f'{self.parameterset.getImmunePay(p_number_used)/100:0.2f}')            
+        else:
+            notice_text = notice_text.replace("[heart pay]", f'{self.parameterset.getHeartPay(p_number_used):0.2f}')
+            notice_text = notice_text.replace("[immune pay]", f'{self.parameterset.getImmunePay(p_number_used):0.2f}')
+
+        notice_text = notice_text.replace("[fixed pay]", f'{self.parameterset.get_fixed_pay(p_number_used):0.2f}')
 
         return notice_text
     
