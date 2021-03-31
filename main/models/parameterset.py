@@ -50,11 +50,6 @@ class Parameterset(models.Model):
     block_2_day_count = models.IntegerField(default = 1)
     block_3_day_count = models.IntegerField(default = 1)
 
-    #bonus paid to subjects when group target met
-    treatment_3_heart_bonus = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
-    treatment_3_immune_bonus = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
-    treatment_3_bonus_target_count = models.IntegerField(default = 1)
-
     #heart graph self
     y_min_heart = models.IntegerField(default=0)
     y_max_heart = models.IntegerField(default=100)
@@ -122,10 +117,6 @@ class Parameterset(models.Model):
 
             self.minimum_wrist_minutes = data.get("minimum_wrist_minutes")
 
-            self.treatment_3_heart_bonus = data.get("treatment_3_heart_bonus")
-            self.treatment_3_immune_bonus = data.get("treatment_3_immune_bonus")
-            self.treatment_3_bonus_target_count = data.get("treatment_3_bonus_target_count")
-
             self.y_min_heart = data.get("y_min_heart")
             self.y_max_heart = data.get("y_max_heart")
             self.y_ticks_heart = data.get("y_ticks_heart")
@@ -183,10 +174,6 @@ class Parameterset(models.Model):
         self.block_3_fixed_pay_per_day = data.block_3_fixed_pay_per_day
 
         self.minimum_wrist_minutes = data.minimum_wrist_minutes
-
-        self.treatment_3_heart_bonus = data.treatment_3_heart_bonus
-        self.treatment_3_immune_bonus = data.treatment_3_immune_bonus
-        self.treatment_3_bonus_target_count = data.treatment_3_bonus_target_count
 
         self.y_min_heart = data.y_min_heart
         self.y_max_heart = data.y_max_heart
@@ -327,7 +314,6 @@ class Parameterset(models.Model):
                           self.block_1_day_count,self.block_2_day_count,self.block_3_day_count,
                           self.block_1_fixed_pay_per_day,self.block_2_fixed_pay_per_day, self.block_3_fixed_pay_per_day,
                           self.minimum_wrist_minutes,
-                          self.treatment_3_heart_bonus,self.treatment_3_immune_bonus,self.treatment_3_bonus_target_count,
                           self.y_min_heart,self.y_max_heart,self.y_ticks_heart,self.x_min_heart,self.x_max_heart,self.x_ticks_heart,
                           self.y_min_immune,self.y_max_immune,self.y_ticks_immune,self.x_min_immune,self.x_max_immune,self.x_ticks_immune])
 
@@ -362,10 +348,6 @@ class Parameterset(models.Model):
             "block_3_fixed_pay_per_day":self.block_3_fixed_pay_per_day,
 
             "minimum_wrist_minutes":self.minimum_wrist_minutes,
-
-            "treatment_3_heart_bonus":self.treatment_3_heart_bonus,
-            "treatment_3_immune_bonus":self.treatment_3_immune_bonus,
-            "treatment_3_bonus_target_count":self.treatment_3_bonus_target_count,
 
             "block_1_day_count":self.block_1_day_count,
             "block_2_day_count":self.block_2_day_count,

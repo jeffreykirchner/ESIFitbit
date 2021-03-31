@@ -52,10 +52,6 @@ var app = new Vue({
 
                                 minimum_wrist_minutes:"",
 
-                                treatment_3_heart_bonus:"",
-                                treatment_3_immune_bonus:"",
-                                treatment_3_bonus_target_count:"",
-
                                 block_1_day_count:"",
                                 block_2_day_count:"",
                                 block_3_day_count:"",}
