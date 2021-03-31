@@ -297,7 +297,7 @@ def payMe(data,session_subject,session_day):
             session_day_subject_actvity.paypal_today=True
 
             #store daily earnings of individual treatment
-            if session_day.session == "I":
+            if session_day.session.treatment == "I":
                 session_day_subject_actvity.storeTodaysTotalEarnings()
 
             session_day_subject_actvity.save()
