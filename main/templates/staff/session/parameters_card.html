@@ -200,7 +200,22 @@
         </div>
 
         <!-- treatment B C -->
-        
+        <div class="row mt-2 border-top">
+            <div class="col text-center">
+                Treatment B C Pay Levels
+            </div>
+        </div>
+        <div class = "row mt-2">
+            <div class="col">                
+                <button class="btn btn-outline-success" type="button" v-on:click = "addPayLevel()" v-bind:disabled="session.started"> 
+                    Add <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="col" v-for="(pay_level, index) in session.parameterset.pay_levels" v-bind:key="pay_level.id"> 
+                Score: [[pay_level.score]]<br>
+                Value: [[pay_level.value]]
+            </div> 
+        </div>
 
         <!-- graphs self -->
         <div class="row mt-2 border-top">

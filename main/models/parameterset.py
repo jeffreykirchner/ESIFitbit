@@ -366,6 +366,8 @@ class Parameterset(models.Model):
             "x_min_immune":self.x_min_immune,
             "x_max_immune":self.x_max_immune,
             "x_ticks_immune":self.x_ticks_immune,
+
+            "pay_levels" : [pl.json() for pl in self.paylevels.all()],
         }
 
     def json_graph(self):

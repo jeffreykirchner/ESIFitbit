@@ -16,6 +16,9 @@ class ParametersetPaylevel(models.Model):
     score = models.DecimalField(decimal_places=3, max_digits=5)          #if subject's score is less than or equal to this score pay value
     value = models.DecimalField(decimal_places=2, max_digits=5)          #value in dollars subject earns if score in this range
     
+    timestamp = models.DateTimeField(auto_now_add= True)
+    updated= models.DateTimeField(auto_now= True)
+
     def __str__(self):
         return str(self.id)
 
@@ -23,6 +26,9 @@ class ParametersetPaylevel(models.Model):
         verbose_name = 'Parameterset pay level'
         verbose_name_plural = 'Parameterset pay levels'
         ordering = ['score']
+        constraints = [
+            models.UniqueConstraint(fields=['parameterset', 'score'], name='unique_paylevel_score'),
+        ]
     
     def json(self):
         return{

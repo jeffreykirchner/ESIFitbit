@@ -14,8 +14,8 @@ from django.db.models.functions import Lower
 from main.globals import getRandomHexColor
 from main.globals import todaysDate
 
-from main.forms import Parameterset_form, SessionForm, Subject_form, Import_parameters_form
-from main.models import Session,Parameterset, Session_subject, Session_day_subject_actvity, Parameters
+from main.forms import Parameterset_form, SessionForm, Subject_form, Import_parameters_form, ParametersetPaylevelForm
+from main.models import Session,Parameterset, Session_subject, Session_day_subject_actvity, Parameters, ParametersetPaylevel
 
 @login_required
 def Staff_Session(request,id):
@@ -77,6 +77,8 @@ def Staff_Session(request,id):
                 return getSubjectsAvailableToCopy(id)
             elif data["action"] == "sendCopySubject":
                 return takeCopySubject(data, id)
+            elif data["action"] == "addPayLevel":
+                return add_pay_level(data,id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -85,6 +87,7 @@ def Staff_Session(request,id):
         session_form = SessionForm()
         subject_form = Subject_form()
         import_parameters_form = Import_parameters_form()
+        parameterset_paylevel_form = ParametersetPaylevelForm()
         p = Parameters.objects.first()
         yesterdays_date = todaysDate() - timedelta(days=1)
 
@@ -99,6 +102,7 @@ def Staff_Session(request,id):
                                                     'subject_form' : subject_form,
                                                     'help_text' : p.manualHelpText,
                                                     'import_parameters_form' : import_parameters_form,
+                                                    'parameterset_paylevel_form' : parameterset_paylevel_form,
                                                     'subject_form_ids' : subject_form_ids,
                                                     'yesterdays_date' : yesterdays_date.date().strftime("%Y-%m-%d")})     
 
@@ -648,3 +652,18 @@ def takeCopySubject(data, id):
 
     return JsonResponse({"subjectsAvailableToCopy" : getSubjectsAvailableToCopyJSON(id),
                           "session_subjects": getSubjectListJSON(id,False), } ,safe=False)
+
+def add_pay_level(data, id):
+    '''
+    add new pay level to parameter set
+    '''
+    s=Session.objects.get(id=id)
+
+    paylevel = ParametersetPaylevel()
+    paylevel.parameterset = s.parameterset
+    paylevel.score = -1
+    paylevel.value = -1
+
+    paylevel.save()
+
+    return JsonResponse({"parameterset" : s.parameterset.json()} ,safe=False)

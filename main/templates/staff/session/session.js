@@ -7,6 +7,9 @@ var app = new Vue({
     el: '#root',        
     data:{
         sessionParametersBeforeEdit:{},                     //store session before editing to restore if canceled
+        current_paylevel:{id : "",
+                           score : "",
+                           value : ""},
         session:{title:"",                                  //session and parameter set values
                     start_date:"",
                     end_date:"",
@@ -54,7 +57,10 @@ var app = new Vue({
 
                                 block_1_day_count:"",
                                 block_2_day_count:"",
-                                block_3_day_count:"",}
+                                block_3_day_count:"",
+
+                                pay_levels:[],
+                            }
                 },
         session_subjects:[],              //list of subjects in this session 
         cancelModal:false,                //if modal is canceled reload old values
@@ -412,6 +418,33 @@ var app = new Vue({
                             console.log(error);
                         }); 
             },
+
+        //add pay level
+        addPayLevel:function(){
+            axios.post('/session/{{id}}/', {
+                action :"addPayLevel" ,                                                                                                                                                           
+            })
+            .then(function (response) {     
+                app.$data.session.parameterset = response.parameterset;                                         
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+     
+        },
+
+        removePayLevel:function(id){
+            axios.post('/session/{{id}}/', {
+                action :"removePayLevel" ,  
+                id : id,                                                                                                                                                         
+            })
+            .then(function (response) {     
+                app.$data.session.parameterset = response.parameterset;                                         
+            })
+            .catch(function (error) {
+                console.log(error);
+            }); 
+        },
 
         //show fitbit connection status for each subject
         showFitbitStatus:function(){                    
