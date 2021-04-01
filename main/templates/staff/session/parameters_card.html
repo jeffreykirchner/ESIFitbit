@@ -202,10 +202,10 @@
         <!-- treatment B C -->
         <div class="row mt-2 border-top">                      
             <div class="col text-center mt-1">
-                Treatment B C Average Score Pay Levels
+                Treatment B and C Average Score Pay Levels
 
-                <span class="float-right">
-                    <button class="btn btn-outline-success btn-sm" type="button" v-on:click = "addPayLevel()" v-bind:disabled="session.started"> 
+                <span class="float-right" v-if = "session.started === false">
+                    <button class="btn btn-outline-success btn-sm" type="button" v-on:click = "addPayLevel()"> 
                         Add <i class="fas fa-plus"></i>
                     </button>
                 </span>

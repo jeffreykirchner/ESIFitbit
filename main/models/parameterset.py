@@ -131,6 +131,22 @@ class Parameterset(models.Model):
             self.x_max_immune = data.get("x_max_immune")
             self.x_ticks_immune = data.get("x_ticks_immune")
 
+            #remove any old pay levels
+            self.paylevels.all().delete()
+
+            paylevel_list = data.get("pay_levels", -1)
+
+            if paylevel_list != -1:
+                for paylevel in paylevel_list:
+                    new_paylevel = main.models.ParametersetPaylevel()
+
+                    new_paylevel.parameterset = self
+                    new_paylevel.score = paylevel["score"]
+                    new_paylevel.value = paylevel["value"]
+
+                    new_paylevel.save()
+
+
             self.save()
 
         except IntegrityError as err:
@@ -188,6 +204,21 @@ class Parameterset(models.Model):
         self.x_min_immune = data.x_min_immune
         self.x_max_immune = data.x_max_immune
         self.x_ticks_immune = data.x_ticks_immune
+
+         #remove any old pay levels
+        self.paylevels.all().delete()
+
+        for paylevel in data.paylevels.all():
+            new_paylevel = main.models.ParametersetPaylevel()
+
+            new_paylevel.parameterset = self
+            new_paylevel.score = paylevel.score
+            new_paylevel.value = paylevel.value
+
+            new_paylevel.save()
+
+
+        self.save()
 
         self.save()
 

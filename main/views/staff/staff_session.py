@@ -285,6 +285,7 @@ def updateSession(data,id):
         form_data_dict["consent_required"] = 1 if s.consent_required else 0
         form_data_dict["questionnaire1_required"] = 1 if s.questionnaire1_required else 0
         form_data_dict["questionnaire2_required"] = 1 if s.questionnaire2_required else 0
+        form_data_dict["treatment"] = s.treatment
 
     form = SessionForm(form_data_dict, instance=s)
 
@@ -346,21 +347,37 @@ def startSession(data,id):
 
     status = "success"
 
-    s=Session.objects.get(id=id)
+    session = Session.objects.get(id=id)
 
-    #check for subjects in session before starting
-    if s.session_subjects.all() and s.instruction_set:
+    #check that Treatment B C has payment level
+    if session.treatment == "B" or session.treatment == "C":
+        paylevel_one = session.parameterset.paylevels.filter(score = 1.00)
 
-        if s.started==False:
-            s.addNewSessionDays()
-            s.assignSubjectIdNumbers()
-
-        s.calcEndDate()
-        s.started=True
-        s.save()
-    else:
+        if paylevel_one.count() != 1:
+            logger.warning("startSession B C, no pay level 1.00")
+            status="fail"
+    
+    #check for subjects
+    if not session.session_subjects.filter(soft_delete=False):
+        logger.warning("startSession No Subjects")
+        status = "fail"
+    
+    #check for instruction set
+    if not session.instruction_set:
+        logger.warning("startSession No Intructions")
         status = "fail"
 
+    #check for subjects in session before starting
+    if status != "fail":
+    
+        if session.started == False:
+            session.addNewSessionDays()
+            session.assignSubjectIdNumbers()
+
+        session.calcEndDate()
+        session.started=True
+        session.save()
+           
     return JsonResponse({"session" : getSessionJSON(id), 
                          "status":status,   
                                 },safe=False)
@@ -670,16 +687,17 @@ def add_pay_level(data, id):
     logger.info("Add pay level")
     logger.info(data)
 
-    s=Session.objects.get(id=id)
+    session=Session.objects.get(id=id)
 
-    paylevel = ParametersetPaylevel()
-    paylevel.parameterset = s.parameterset
-    paylevel.score = -1
-    paylevel.value = 0
+    if session.started == False:
+        paylevel = ParametersetPaylevel()
+        paylevel.parameterset = session.parameterset
+        paylevel.score = -1
+        paylevel.value = 0
 
-    paylevel.save()
+        paylevel.save()
 
-    return JsonResponse({"parameterset" : s.parameterset.json()} ,safe=False)
+    return JsonResponse({"parameterset" : session.parameterset.json()} ,safe=False)
 
 def remove_pay_level(data, id):
     '''
