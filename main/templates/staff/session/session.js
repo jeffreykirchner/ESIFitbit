@@ -91,6 +91,7 @@ var app = new Vue({
         graph_parameters:{},
         earningsDownloadDate:"{{yesterdays_date}}",
         subject_form_ids:{{subject_form_ids|safe}},
+        paylevel_form_ids:{{paylevel_form_ids|safe}},
         last_refresh:"",
         auto_refresh:"Off",
         timeouts:[],
@@ -425,7 +426,7 @@ var app = new Vue({
                 action :"addPayLevel" ,                                                                                                                                                           
             })
             .then(function (response) {     
-                app.$data.session.parameterset = response.parameterset;                                         
+                app.$data.session.parameterset = response.data.parameterset;                                         
             })
             .catch(function (error) {
                 console.log(error);
@@ -433,17 +434,44 @@ var app = new Vue({
      
         },
 
+        //remove pay level
         removePayLevel:function(id){
             axios.post('/session/{{id}}/', {
                 action :"removePayLevel" ,  
                 id : id,                                                                                                                                                         
             })
             .then(function (response) {     
-                app.$data.session.parameterset = response.parameterset;                                         
+                app.$data.session.parameterset = response.data.parameterset;                                         
             })
             .catch(function (error) {
                 console.log(error);
             }); 
+        },
+
+        updatePaylevel:function(){
+            axios.post('/session/{{id}}/', {
+                action :"updatePaylevel" ,      
+                formData : $("#parametersetLevelsForm").serializeArray(),  
+                id : app.$data.current_paylevel.id,                                                                                                                                                        
+            })
+            .then(function (response) {     
+                status=response.data.status;                               
+
+                app.clearMainFormErrors();
+
+                if(status=="success")
+                {
+                    app.$data.session.parameterset = response.data.parameterset;       
+                    $('#editSessionParametersPaylevelModal').modal('toggle');    
+                } 
+                else
+                {                       
+                    app.displayErrors(response.data.errors);
+                }                                   
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
         },
 
         //show fitbit connection status for each subject
@@ -765,6 +793,22 @@ var app = new Vue({
             }
         },
 
+        //show edit parameters modal
+        showEditPaylevel:function(index){
+            app.clearMainFormErrors();
+
+            paylevel = app.$data.session.parameterset.pay_levels[index];
+
+            app.$data.current_paylevel = paylevel;
+            
+            $('#editSessionParametersPaylevelModal').modal('show');                   
+        },
+
+        //fire when edit experiment model hides, cancel action if nessicary
+        hideEditPaylevel:function(){
+            
+        },
+
         //show send invitation
         showSendInvitations:function(){
             
@@ -854,7 +898,7 @@ var app = new Vue({
                 $("#id_" + item).attr("class","form-control");
                 $("#id_errors_" + item).remove();
             }
-
+            
             for(var item in app.$data.session)
             {
                 $("#id_" + item).attr("class","form-control");
@@ -862,6 +906,13 @@ var app = new Vue({
             }
 
             s = app.$data.subject_form_ids;
+            for(var i in s)
+            {
+                $("#id_" + s[i]).attr("class","form-control");
+                $("#id_errors_" + s[i]).remove();
+            }
+
+            s = app.$data.paylevel_form_ids;
             for(var i in s)
             {
                 $("#id_" + s[i]).attr("class","form-control");
@@ -1130,5 +1181,6 @@ var app = new Vue({
         $('#editSubjectModal').on("hidden.bs.modal", this.hideEditSubject);  
         $('#hideUploadParameters').on("hidden.bs.modal", this.hideEditSubject); 
         $('#copySubjectModal').on("hidden.bs.modal", this.hideCopySubject); 
+        $('#editSessionParametersPaylevelModal').on("hidden.bs.modal", this.hideEditPaylevel); 
     },
 });

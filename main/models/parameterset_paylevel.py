@@ -13,8 +13,8 @@ class ParametersetPaylevel(models.Model):
 
     parameterset = models.ForeignKey(Parameterset, on_delete=models.CASCADE, related_name="paylevels")
 
-    score = models.DecimalField(decimal_places=3, max_digits=5)          #if subject's score is less than or equal to this score pay value
-    value = models.DecimalField(decimal_places=2, max_digits=5)          #value in dollars subject earns if score in this range
+    score = models.DecimalField(decimal_places=2, max_digits=5)                  #if subject's score is less than or equal to this score pay value
+    value = models.DecimalField(decimal_places=2, max_digits=5)                  #value in dollars subject earns if score in this range
     
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)

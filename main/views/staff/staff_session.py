@@ -78,7 +78,11 @@ def Staff_Session(request,id):
             elif data["action"] == "sendCopySubject":
                 return takeCopySubject(data, id)
             elif data["action"] == "addPayLevel":
-                return add_pay_level(data,id)
+                return add_pay_level(data, id)
+            elif data["action"] == "removePayLevel":
+                return remove_pay_level(data, id)
+            elif data["action"] == "updatePaylevel":
+                return update_pay_level(data, id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -95,6 +99,10 @@ def Staff_Session(request,id):
         subject_form_ids=[]
         for i in subject_form:
             subject_form_ids.append(i.html_name)
+
+        paylevel_form_ids=[]
+        for i in parameterset_paylevel_form:
+            paylevel_form_ids.append(i.html_name)
         
         return render(request,'staff/session.html',{'id' : id,
                                                     'parameterset_form' : parameterset_form,
@@ -104,6 +112,7 @@ def Staff_Session(request,id):
                                                     'import_parameters_form' : import_parameters_form,
                                                     'parameterset_paylevel_form' : parameterset_paylevel_form,
                                                     'subject_form_ids' : subject_form_ids,
+                                                    'paylevel_form_ids' : paylevel_form_ids,
                                                     'yesterdays_date' : yesterdays_date.date().strftime("%Y-%m-%d")})     
 
 #get list of experiment sessions
@@ -657,13 +666,59 @@ def add_pay_level(data, id):
     '''
     add new pay level to parameter set
     '''
+    logger = logging.getLogger(__name__) 
+    logger.info("Add pay level")
+    logger.info(data)
+
     s=Session.objects.get(id=id)
 
     paylevel = ParametersetPaylevel()
     paylevel.parameterset = s.parameterset
     paylevel.score = -1
-    paylevel.value = -1
+    paylevel.value = 0
 
     paylevel.save()
 
     return JsonResponse({"parameterset" : s.parameterset.json()} ,safe=False)
+
+def remove_pay_level(data, id):
+    '''
+    remove pay level from parameter set
+    '''
+    logger = logging.getLogger(__name__) 
+    logger.info("Remove pay level")
+    logger.info(data)
+
+    session = Session.objects.get(id=id)
+
+    paylevel = ParametersetPaylevel.objects.get(id=data["id"])
+    paylevel.delete()
+
+    return JsonResponse({"parameterset" : session.parameterset.json()} ,safe=False)
+
+def update_pay_level(data, id):
+    '''
+    update pay level
+    '''
+    logger = logging.getLogger(__name__) 
+    logger.info("Update pay level")
+    logger.info(data)
+
+    session = Session.objects.get(id=id)
+
+    form_data_dict = {}
+
+    for field in data["formData"]:            
+        form_data_dict[field["name"]] = field["value"]
+
+    form = ParametersetPaylevelForm(form_data_dict, instance=ParametersetPaylevel.objects.get(id = data["id"]))
+
+    if form.is_valid():
+        #print("valid form")                
+        form.save()           
+            
+        return JsonResponse({"status":"success","parameterset" : session.parameterset.json()} ,safe=False)                         
+                                
+    else:
+        logger.info("Invalid parameterset form")
+        return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)

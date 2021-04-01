@@ -10,14 +10,15 @@ class ParametersetPaylevelForm(forms.ModelForm):
     parameter set paylevel form
     '''
 
-    score = forms.DecimalField(label='Activity score from 0-1',
-                               min_value=0,
-                               widget=forms.NumberInput(attrs={"v-model":"current_paylevel.score"}))
+    score = forms.DecimalField(label='Activity score (0-1)',
+                               min_value=0.0,
+                               max_value=1.0,
+                               widget=forms.NumberInput(attrs={"v-model":"current_paylevel.score", "step":"0.1"}))
 
-    value = forms.DecimalField(label='$ value for level',
+    value = forms.DecimalField(label='Value for level ($)',
                                min_value=0,
                                widget=forms.NumberInput(attrs={"v-model":"current_paylevel.value"}))
 
     class Meta:
         model=ParametersetPaylevel
-        fields = ('__all__')
+        fields = ('score','value')
