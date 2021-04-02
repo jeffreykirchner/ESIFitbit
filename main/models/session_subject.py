@@ -605,15 +605,20 @@ class Session_subject(models.Model):
                 payment = payment + self.get_average_heart_score(period_number) * float(parameterset.getHeartPay(period_number)) + \
                                     self.get_average_sleep_score(period_number) * float(parameterset.getImmunePay(period_number))
 
-                logger.info(f'get_daily_payment_A_B_C heart score {self.get_average_heart_score(period_number)}, sleep score {self.get_average_sleep_score(period_number)}')
+                logger.info(f'get_daily_payment_A heart score {self.get_average_heart_score(period_number)}, sleep score {self.get_average_sleep_score(period_number)}')
 
+        elif self.session.treatment=="B" or self.session.treatment=="C":
+            payment = float(parameterset.get_fixed_pay(period_number))
 
+            if parameterset.getHeartPay(period_number) > 0:
+                heart_score = self.get_average_heart_score(period_number)
+                sleep_score = self.get_average_sleep_score(period_number) 
 
-        elif self.session.treatment=="B":
-            pass
-        elif self.session.treatment=="C":
-            pass        
-        
+                payment = payment + heart_score * float(parameterset.get_treatment_b_c_paylevel(heart_score)) + \
+                                    sleep_score * float(parameterset.get_treatment_b_c_paylevel(sleep_score))
+
+                logger.info(f'get_daily_payment_B_C heart score {self.get_average_heart_score(period_number)}, sleep score {self.get_average_sleep_score(period_number)}')
+
         return round_half_away_from_zero(payment, 2)
 
     def get_earnings_in_block_so_far(self, period_number):

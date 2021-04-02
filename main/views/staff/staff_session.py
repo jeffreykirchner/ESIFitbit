@@ -14,8 +14,8 @@ from django.db.models.functions import Lower
 from main.globals import getRandomHexColor
 from main.globals import todaysDate
 
-from main.forms import Parameterset_form, SessionForm, Subject_form, Import_parameters_form
-from main.models import Session,Parameterset, Session_subject, Session_day_subject_actvity, Parameters
+from main.forms import Parameterset_form, SessionForm, Subject_form, Import_parameters_form, ParametersetPaylevelForm
+from main.models import Session,Parameterset, Session_subject, Session_day_subject_actvity, Parameters, ParametersetPaylevel
 
 @login_required
 def Staff_Session(request,id):
@@ -77,6 +77,12 @@ def Staff_Session(request,id):
                 return getSubjectsAvailableToCopy(id)
             elif data["action"] == "sendCopySubject":
                 return takeCopySubject(data, id)
+            elif data["action"] == "addPayLevel":
+                return add_pay_level(data, id)
+            elif data["action"] == "removePayLevel":
+                return remove_pay_level(data, id)
+            elif data["action"] == "updatePaylevel":
+                return update_pay_level(data, id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -85,6 +91,7 @@ def Staff_Session(request,id):
         session_form = SessionForm()
         subject_form = Subject_form()
         import_parameters_form = Import_parameters_form()
+        parameterset_paylevel_form = ParametersetPaylevelForm()
         p = Parameters.objects.first()
         yesterdays_date = todaysDate() - timedelta(days=1)
 
@@ -92,6 +99,10 @@ def Staff_Session(request,id):
         subject_form_ids=[]
         for i in subject_form:
             subject_form_ids.append(i.html_name)
+
+        paylevel_form_ids=[]
+        for i in parameterset_paylevel_form:
+            paylevel_form_ids.append(i.html_name)
         
         return render(request,'staff/session.html',{'id' : id,
                                                     'parameterset_form' : parameterset_form,
@@ -99,7 +110,9 @@ def Staff_Session(request,id):
                                                     'subject_form' : subject_form,
                                                     'help_text' : p.manualHelpText,
                                                     'import_parameters_form' : import_parameters_form,
+                                                    'parameterset_paylevel_form' : parameterset_paylevel_form,
                                                     'subject_form_ids' : subject_form_ids,
+                                                    'paylevel_form_ids' : paylevel_form_ids,
                                                     'yesterdays_date' : yesterdays_date.date().strftime("%Y-%m-%d")})     
 
 #get list of experiment sessions
@@ -272,6 +285,7 @@ def updateSession(data,id):
         form_data_dict["consent_required"] = 1 if s.consent_required else 0
         form_data_dict["questionnaire1_required"] = 1 if s.questionnaire1_required else 0
         form_data_dict["questionnaire2_required"] = 1 if s.questionnaire2_required else 0
+        form_data_dict["treatment"] = s.treatment
 
     form = SessionForm(form_data_dict, instance=s)
 
@@ -333,21 +347,37 @@ def startSession(data,id):
 
     status = "success"
 
-    s=Session.objects.get(id=id)
+    session = Session.objects.get(id=id)
 
-    #check for subjects in session before starting
-    if s.session_subjects.all() and s.instruction_set:
+    #check that Treatment B C has payment level
+    if session.treatment == "B" or session.treatment == "C":
+        paylevel_one = session.parameterset.paylevels.filter(score = 1.00)
 
-        if s.started==False:
-            s.addNewSessionDays()
-            s.assignSubjectIdNumbers()
-
-        s.calcEndDate()
-        s.started=True
-        s.save()
-    else:
+        if paylevel_one.count() != 1:
+            logger.warning("startSession B C, no pay level 1.00")
+            status="fail"
+    
+    #check for subjects
+    if not session.session_subjects.filter(soft_delete=False):
+        logger.warning("startSession No Subjects")
+        status = "fail"
+    
+    #check for instruction set
+    if not session.instruction_set:
+        logger.warning("startSession No Intructions")
         status = "fail"
 
+    #check for subjects in session before starting
+    if status != "fail":
+    
+        if session.started == False:
+            session.addNewSessionDays()
+            session.assignSubjectIdNumbers()
+
+        session.calcEndDate()
+        session.started=True
+        session.save()
+           
     return JsonResponse({"session" : getSessionJSON(id), 
                          "status":status,   
                                 },safe=False)
@@ -648,3 +678,65 @@ def takeCopySubject(data, id):
 
     return JsonResponse({"subjectsAvailableToCopy" : getSubjectsAvailableToCopyJSON(id),
                           "session_subjects": getSubjectListJSON(id,False), } ,safe=False)
+
+def add_pay_level(data, id):
+    '''
+    add new pay level to parameter set
+    '''
+    logger = logging.getLogger(__name__) 
+    logger.info("Add pay level")
+    logger.info(data)
+
+    session=Session.objects.get(id=id)
+
+    if session.started == False:
+        paylevel = ParametersetPaylevel()
+        paylevel.parameterset = session.parameterset
+        paylevel.score = -1
+        paylevel.value = 0
+
+        paylevel.save()
+
+    return JsonResponse({"parameterset" : session.parameterset.json()} ,safe=False)
+
+def remove_pay_level(data, id):
+    '''
+    remove pay level from parameter set
+    '''
+    logger = logging.getLogger(__name__) 
+    logger.info("Remove pay level")
+    logger.info(data)
+
+    session = Session.objects.get(id=id)
+
+    paylevel = ParametersetPaylevel.objects.get(id=data["id"])
+    paylevel.delete()
+
+    return JsonResponse({"parameterset" : session.parameterset.json()} ,safe=False)
+
+def update_pay_level(data, id):
+    '''
+    update pay level
+    '''
+    logger = logging.getLogger(__name__) 
+    logger.info("Update pay level")
+    logger.info(data)
+
+    session = Session.objects.get(id=id)
+
+    form_data_dict = {}
+
+    for field in data["formData"]:            
+        form_data_dict[field["name"]] = field["value"]
+
+    form = ParametersetPaylevelForm(form_data_dict, instance=ParametersetPaylevel.objects.get(id = data["id"]))
+
+    if form.is_valid():
+        #print("valid form")                
+        form.save()           
+            
+        return JsonResponse({"status":"success","parameterset" : session.parameterset.json()} ,safe=False)                         
+                                
+    else:
+        logger.info("Invalid parameterset form")
+        return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
