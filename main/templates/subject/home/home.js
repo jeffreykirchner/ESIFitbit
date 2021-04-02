@@ -75,6 +75,8 @@ var app = new Vue({
             current_earnings: "---",
             next_pay_day: "---",
             paylevels : [],
+            paylevel_heart : "---",
+            paylevel_sleep : "---",
         },
     },
 

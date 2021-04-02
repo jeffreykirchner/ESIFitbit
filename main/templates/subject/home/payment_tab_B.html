@@ -25,8 +25,18 @@
         $[[pay_level.value]]
     </div>
 </div>
+<div class="row mt-2">
+    <div class="col text-center">
+    </div>
+</div>
 {%include "subject/home/averages_heart.html"%}
+{%include "subject/home/paylevel_heart.html"%}
+<div class="row mt-2">
+    <div class="col text-center">
+    </div>
+</div>
 {%include "subject/home/averages_sleep.html"%}
+{%include "subject/home/paylevel_sleep.html"%}
 <div v-show = "session_day_subject_actvity.paypal_today">
     <div class="row mt-2">
         <div class="col text-center">With your current levels of effort, your current Daily Pay for each paid day will be:</div>
@@ -38,7 +48,7 @@
         <div class="col text-center">Fixed Pay + (Heart Pay x Average Heart Score) + (Sleep Pay x Average Sleep Score) = </div>
     </div>
     <div class="row mt-1">
-        <div class="col text-center">$[[session_day_subject_actvity.fixed_pay_per_day]] + ($[[session_day_subject_actvity.current_heart_pay]] x [[treatment_A_B_C.average_heart_score]]) + ($[[session_day_subject_actvity.current_immune_pay]] x [[treatment_A_B_C.average_sleep_score]]) =</div>
+        <div class="col text-center">$[[session_day_subject_actvity.fixed_pay_per_day]] + ($[[treatment_A_B_C.paylevel_heart]] x [[treatment_A_B_C.average_heart_score]]) + ($[[treatment_A_B_C.paylevel_sleep]] x [[treatment_A_B_C.average_sleep_score]]) =</div>
     </div>
     <div class="row mt-1">
         <div class="col" style="text-align: center;">$[[treatment_A_B_C.current_daily_pay]]</div>

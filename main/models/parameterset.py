@@ -237,9 +237,9 @@ class Parameterset(models.Model):
     #return the current maximum payment for heart activty
     def getImmunePay(self, period):
 
-        if period<=self.block_1_day_count+1:
+        if period <= self.block_1_day_count + 1:
             return self.block_1_immune_pay
-        elif period<=self.block_2_day_count+self.block_1_day_count+1:
+        elif period <= self.block_2_day_count + self.block_1_day_count + 1:
             return self.block_2_immune_pay
         else:
             return self.block_3_immune_pay
@@ -252,6 +252,27 @@ class Parameterset(models.Model):
             return self.block_2_fixed_pay_per_day
         else:
             return self.block_3_fixed_pay_per_day
+
+    def get_treatment_b_c_paylevel(self, score):
+        '''
+        return the dollar payment
+        '''
+
+        if self.paylevels.all().count() == 0:
+            return 0
+
+        #check for score out of range
+        if score >= 1:
+            return self.paylevels.all().last().value
+        
+        if score <= 0:
+            return self.paylevels.all().first().value
+
+        for pay_level in self.paylevels.all():
+            if score <= pay_level.score:
+                return pay_level.value
+        
+        return 0
 
     #get period's time block
     def getBlock(self,period):
