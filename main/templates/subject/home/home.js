@@ -73,7 +73,8 @@ var app = new Vue({
             current_block_length: "---",
             current_missed_days: "---",
             current_earnings: "---",
-            next_pay_day: "---"
+            next_pay_day: "---",
+            paylevels : [],
         },
     },
 

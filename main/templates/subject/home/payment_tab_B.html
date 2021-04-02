@@ -1,6 +1,28 @@
 <div class="row mt-2">
-    <div class="col">
-        
+    <div class="col text-center">
+        Your daily pay rates for Heart and Sleep Scores are adjusted according to your average level of effort: 
+    </div>
+</div>
+<div class="row justify-content-center mt-2">
+    <div class="col-4 border text-center" style="background-color: rgb(241, 240, 240);">
+        Average Score
+    </div>
+    <div class="col-4 border text-center" style="background-color: rgb(241, 240, 240);">
+        Pay Rate
+    </div>
+</div>
+<div class="row justify-content-center" v-for="(pay_level, index) in treatment_A_B_C.paylevels" v-bind:key="pay_level.id">
+
+    <div class="col-4 border text-center">
+        <span v-if="index>0">
+            [[(parseFloat(treatment_A_B_C.paylevels[index-1].score) + .01).toFixed(2)]]-[[pay_level.score]]
+        </span>
+        <span v-else>
+            0.00-[[pay_level.score]]
+        </span>
+    </div>
+    <div class="col-4 border text-center">
+        $[[pay_level.value]]
     </div>
 </div>
 {%include "subject/home/averages_heart.html"%}

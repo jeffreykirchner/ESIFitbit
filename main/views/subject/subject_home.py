@@ -481,6 +481,7 @@ def get_treatment_a_b_c_json(session_day, session_subject, p_number, parameter_s
     current_earnings = 0
     current_missed_days = 0
     next_pay_day = "---"
+    paylevels = []
 
     if session_day.session.treatment == "A" or \
         session_day.session.treatment == "B" or \
@@ -505,6 +506,8 @@ def get_treatment_a_b_c_json(session_day, session_subject, p_number, parameter_s
         current_earnings = f'{session_subject.get_earnings_in_block_so_far(p_number):0.2f}'
         next_pay_day = session_subject.session.get_block_pay_date_formatted(p_number)
 
+        paylevels = [paylevel.json() for paylevel in session_day.session.parameterset.paylevels.all()]
+
     return {"show_averages" : show_averages,
             "average_heart_score" : average_heart_score,
             "average_sleep_score" : average_sleep_score,
@@ -512,7 +515,8 @@ def get_treatment_a_b_c_json(session_day, session_subject, p_number, parameter_s
             "current_block_length" : current_block_length,
             "current_missed_days" : current_missed_days,
             "current_earnings" : current_earnings,
-            "next_pay_day" : next_pay_day}
+            "next_pay_day" : next_pay_day,
+            "paylevels" : paylevels}
 
 
 

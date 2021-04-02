@@ -449,6 +449,8 @@ var app = new Vue({
         },
 
         updatePaylevel:function(){
+            app.$data.cancelModal=true;
+
             axios.post('/session/{{id}}/', {
                 action :"updatePaylevel" ,      
                 formData : $("#parametersetLevelsForm").serializeArray(),  
@@ -461,11 +463,12 @@ var app = new Vue({
 
                 if(status=="success")
                 {
+                    app.$data.cancelModal=false;
                     app.$data.session.parameterset = response.data.parameterset;       
-                    $('#editSessionParametersPaylevelModal').modal('toggle');    
+                    $('#editSessionParametersPaylevelModal').modal('toggle');      
                 } 
                 else
-                {                       
+                {                      
                     app.displayErrors(response.data.errors);
                 }                                   
             })
@@ -797,16 +800,30 @@ var app = new Vue({
         showEditPaylevel:function(index){
             app.clearMainFormErrors();
 
+            app.$data.paylevelBeforeEdit = Object.assign({}, app.$data.session.parameterset.pay_levels[index]);
+            app.$data.current_paylevel_index = index
+
             paylevel = app.$data.session.parameterset.pay_levels[index];
 
             app.$data.current_paylevel = paylevel;
             
+            app.$data.cancelModal=true;
+
             $('#editSessionParametersPaylevelModal').modal('show');                   
         },
 
         //fire when edit experiment model hides, cancel action if nessicary
         hideEditPaylevel:function(){
-            
+            if(app.$data.cancelModal)
+            {
+                index = app.$data.current_paylevel_index;
+
+                if(index != -1)
+                {
+                    Object.assign(app.session.parameterset.pay_levels[index], app.$data.paylevelBeforeEdit);
+                    app.$data.paylevelBeforeEdit=null;
+                }
+            }
         },
 
         //show send invitation
