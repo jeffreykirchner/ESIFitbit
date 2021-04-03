@@ -304,20 +304,22 @@ class Session_day_subject_actvity(models.Model):
             return 0
         
         #block 1 one calculations
-        if self.session_day.getCurrentHeartPay() == 0 or \
-           self.session_day.session.treatment == "A":
+        # if self.session_day.getCurrentHeartPay() == 0 or \
+        #    self.session_day.session.treatment == "A":
 
-            missed_days = self.session_subject.get_missed_checkins(period_number)
-            daily_payment = self.session_subject.get_daily_payment_A_B_C(period_number)
-            self.payment_today = (block_length - missed_days) * daily_payment
-            self.save() 
+           
 
-            logger.info(f'calc_a_b_c_block_payments payment {self.payment_today}, block length {block_length}, missed days {missed_days}, daily payment {daily_payment}')
+        # elif self.session_day.session.treatment == "B":
+        #     pass
+        # elif self.session_day.session.treatment == "C":
+        #     pass
 
-        elif self.session_day.session.treatment == "B":
-            pass
-        elif self.session_day.session.treatment == "C":
-            pass
+        missed_days = self.session_subject.get_missed_checkins(period_number)
+        daily_payment = self.session_subject.get_daily_payment_A_B_C(period_number)
+        self.payment_today = (block_length - missed_days) * daily_payment
+        self.save() 
+
+        logger.info(f'calc_a_b_c_block_payments payment {self.payment_today}, block length {block_length}, missed days {missed_days}, daily payment {daily_payment}')
 
         return float(self.payment_today)
 
