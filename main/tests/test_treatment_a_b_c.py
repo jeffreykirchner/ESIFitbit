@@ -1,14 +1,15 @@
 '''
 tests for treatment A B C
 '''
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
+from decimal import Decimal
 
 import logging
 import json
 
 from django.test import TestCase
 
-from main.models import Session, Session_day_subject_actvity
+from main.models import Session, Session_day_subject_actvity, ParametersetPaylevel
 from main.globals import todaysDate, PageType, TimeBlock, NoticeType, round_half_away_from_zero
 
 from main.views.staff.staff_home import createSession
@@ -271,6 +272,20 @@ class SessionABCPayments(TestCase):
 
         session = Session.objects.first()
         self.session = session
+
+        #add in paylevels
+        start_value = 1.00
+        start_score = .14
+        for i in range(8):
+            ParametersetPaylevel.objects.create(parameterset=self.session.parameterset, value=start_value, score=start_score)
+            start_value += 0.5
+            start_score += 0.1
+        
+        ParametersetPaylevel.objects.create(parameterset=self.session.parameterset, value=5, score=1)
+
+        for paylevel in ParametersetPaylevel.objects.all():
+            logger.info(f'Paylevels {paylevel.score} {paylevel.value}')
+
 
     def test_block_1_payments_day_1(self):
         '''
@@ -676,4 +691,80 @@ class SessionABCPayments(TestCase):
             for activity in session_subject.Session_day_subject_actvities.exclude(session_day__period_number = 12):
                 self.assertEqual(activity.payment_today, 0)
 
+    def test_b_c_paylevels(self):
+        '''
+        check that correct paylevel is return given a score level
+        '''
+
+        parmeter_set = self.session.parameterset
+
+        self.assertEqual(1.00, parmeter_set.get_treatment_b_c_paylevel(Decimal('0')))
+        self.assertEqual(1.00, parmeter_set.get_treatment_b_c_paylevel(Decimal('-1')))
+        self.assertEqual(5.00, parmeter_set.get_treatment_b_c_paylevel(Decimal('1')))
+        self.assertEqual(3.50, parmeter_set.get_treatment_b_c_paylevel(Decimal('0.64')))
+        self.assertEqual(4.00, parmeter_set.get_treatment_b_c_paylevel(Decimal('0.65')))
+    
+    def test_b_payments_8_missed_day(self):
+        '''
+        test treatment b payments
+        '''
+
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+
+        start_date = todaysDate() - timedelta(days=7)
+
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'B'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'}]}
+
+        r = json.loads(updateSession(data, session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        start_sleep = 0.2
+        start_heart = 0.1
+
+        for session_subject in self.session.session_subjects.all():
+            for activity in session_subject.Session_day_subject_actvities.all().order_by('session_day__period_number'):
+                activity.heart_activity = start_heart
+                activity.immune_activity = start_sleep
+
+                activity.paypal_today = True
+                activity.save()
+
+                start_heart += 0.01
+                start_sleep += 0.01            
+            
+            start_sleep = 0.2
+            start_heart = 0.1
+
+        for session_subject in self.session.session_subjects.all():
+            activity = session_subject.Session_day_subject_actvities.get(session_day__period_number = 5)
+            activity.paypal_today = False
+            activity.save()
+
+        for session_subject in self.session.session_subjects.all():
+            for activity in session_subject.Session_day_subject_actvities.all().order_by('session_day__period_number'):
+                logger.info(f"period {activity.session_day.period_number}, subject {activity.session_subject.id}, heart score {activity.heart_activity}, sleep score {activity.immune_activity}, pay pal today {activity.paypal_today}")
+
+        results = do_calc_a_b_c_treatments()
+
+        #logger.info(results)
+        for result in results["A B C Lumpsum Calculations"]:
+            for payment in result['payments']:
+                self.assertEqual(payment['payment'], round_half_away_from_zero(2 * (3 + 1.5 * .16 + 2 * .26), 2))
+        
+        #check for none payment everywhere else
+        #check for correct payment on last block
+        for session_subject in self.session.session_subjects.all():
+            activity = session_subject.Session_day_subject_actvities.get(session_day__period_number = 7)
+            self.assertEqual(float(activity.payment_today), round_half_away_from_zero(2 * (3 + 1.5 * .16 + 2 * .26), 2))
+        
+        #check for zeros
+        for session_subject in self.session.session_subjects.all():
+            for activity in session_subject.Session_day_subject_actvities.exclude(session_day__period_number = 7):
+                self.assertEqual(activity.payment_today, 0)
 

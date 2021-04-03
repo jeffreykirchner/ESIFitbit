@@ -12,3 +12,4 @@ from .consent_form_form import *
 from .session_form_admin import *
 from .instruction_set_page_form import *
 from .instruction_set_notice_form import *
+from .parameterset_paylevel_form import *

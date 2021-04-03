@@ -19,7 +19,8 @@ class SessionForm(forms.ModelForm):
 
     treatment = forms.TypedChoiceField(label='Treatment',
                                        choices=Session.Treatment.choices,
-                                       widget=forms.Select(attrs={"v-model" : "session.treatment"}))
+                                       widget=forms.Select(attrs={"v-model" : "session.treatment",
+                                                                  "v-bind:disabled" : "session.editable === false"}))
 
     instruction_set = forms.ModelChoiceField(label='Instruction Set',
                                              queryset=InstructionSet.objects.all(),

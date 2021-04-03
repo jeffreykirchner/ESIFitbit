@@ -481,6 +481,9 @@ def get_treatment_a_b_c_json(session_day, session_subject, p_number, parameter_s
     current_earnings = 0
     current_missed_days = 0
     next_pay_day = "---"
+    paylevels = []
+    paylevel_heart = 0
+    paylevel_sleep = 0
 
     if session_day.session.treatment == "A" or \
         session_day.session.treatment == "B" or \
@@ -488,12 +491,16 @@ def get_treatment_a_b_c_json(session_day, session_subject, p_number, parameter_s
 
         show_averages = True
         average_heart_score = session_subject.get_average_heart_score(p_number)
+        paylevel_heart = parameter_set.get_treatment_b_c_paylevel(average_heart_score)
+
         if average_heart_score < 0:
             average_heart_score = "---"
         else:
             average_heart_score = f'{average_heart_score:0.2f}'
         
         average_sleep_score = session_subject.get_average_sleep_score(p_number)
+        paylevel_sleep = parameter_set.get_treatment_b_c_paylevel(average_sleep_score)
+
         if average_sleep_score < 0:
             average_sleep_score = "---"
         else:
@@ -505,6 +512,8 @@ def get_treatment_a_b_c_json(session_day, session_subject, p_number, parameter_s
         current_earnings = f'{session_subject.get_earnings_in_block_so_far(p_number):0.2f}'
         next_pay_day = session_subject.session.get_block_pay_date_formatted(p_number)
 
+        paylevels = [paylevel.json() for paylevel in session_day.session.parameterset.paylevels.all()]
+
     return {"show_averages" : show_averages,
             "average_heart_score" : average_heart_score,
             "average_sleep_score" : average_sleep_score,
@@ -512,7 +521,10 @@ def get_treatment_a_b_c_json(session_day, session_subject, p_number, parameter_s
             "current_block_length" : current_block_length,
             "current_missed_days" : current_missed_days,
             "current_earnings" : current_earnings,
-            "next_pay_day" : next_pay_day}
-
+            "next_pay_day" : next_pay_day,
+            "paylevels" : paylevels,
+            "paylevel_heart" : f'{paylevel_heart:0.2f}',
+            "paylevel_sleep" : f'{paylevel_sleep:0.2f}',
+    }
 
 

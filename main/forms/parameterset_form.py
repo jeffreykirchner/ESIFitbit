@@ -104,18 +104,6 @@ class Parameterset_form(forms.ModelForm):
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_3_day_count",
                                                             "v-bind:disabled" :"session.editable === false"}))
 
-    treatment_3_heart_bonus = forms.DecimalField(label='Heart Bonus ($)',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.treatment_3_heart_bonus"}))
-
-    treatment_3_immune_bonus = forms.DecimalField(label='Sleep Bonus ($)',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.treatment_3_immune_bonus"}))
-    
-    treatment_3_bonus_target_count = forms.IntegerField(label='Cutoff, better than Nth Subject / Total',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.treatment_3_bonus_target_count"}))
-
     y_min_heart = forms.DecimalField(label='Heart Y Minimum',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.y_min_heart"}))

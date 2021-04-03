@@ -322,7 +322,6 @@ class Session(models.Model):
                           'Block 1 immune pay','Block 2 immune pay','Block 3 immune pay',
                           'Block 1 day count','Block 2 day count','Block 3 day count', 
                           'Block 1 fixed pay', 'Block 2 fixed pay', 'Block 3 fixed pay', 'Minutes required on wrist',
-                          'Treatment 3 heart bonus','Treatment 3 immune bonus','Treatment 3 bonus target count',  
                           'Y min heart','Y max heart','Y ticks heart','X min heart','X max heart','X ticks heart',  
                           'Y min immune','Y max immune','Y ticks immune','X min immune','X max immune','X ticks immune'])
 

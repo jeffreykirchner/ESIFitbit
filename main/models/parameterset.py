@@ -50,11 +50,6 @@ class Parameterset(models.Model):
     block_2_day_count = models.IntegerField(default = 1)
     block_3_day_count = models.IntegerField(default = 1)
 
-    #bonus paid to subjects when group target met
-    treatment_3_heart_bonus = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
-    treatment_3_immune_bonus = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
-    treatment_3_bonus_target_count = models.IntegerField(default = 1)
-
     #heart graph self
     y_min_heart = models.IntegerField(default=0)
     y_max_heart = models.IntegerField(default=100)
@@ -122,10 +117,6 @@ class Parameterset(models.Model):
 
             self.minimum_wrist_minutes = data.get("minimum_wrist_minutes")
 
-            self.treatment_3_heart_bonus = data.get("treatment_3_heart_bonus")
-            self.treatment_3_immune_bonus = data.get("treatment_3_immune_bonus")
-            self.treatment_3_bonus_target_count = data.get("treatment_3_bonus_target_count")
-
             self.y_min_heart = data.get("y_min_heart")
             self.y_max_heart = data.get("y_max_heart")
             self.y_ticks_heart = data.get("y_ticks_heart")
@@ -139,6 +130,22 @@ class Parameterset(models.Model):
             self.x_min_immune = data.get("x_min_immune")
             self.x_max_immune = data.get("x_max_immune")
             self.x_ticks_immune = data.get("x_ticks_immune")
+
+            #remove any old pay levels
+            self.paylevels.all().delete()
+
+            paylevel_list = data.get("pay_levels", -1)
+
+            if paylevel_list != -1:
+                for paylevel in paylevel_list:
+                    new_paylevel = main.models.ParametersetPaylevel()
+
+                    new_paylevel.parameterset = self
+                    new_paylevel.score = paylevel["score"]
+                    new_paylevel.value = paylevel["value"]
+
+                    new_paylevel.save()
+
 
             self.save()
 
@@ -184,10 +191,6 @@ class Parameterset(models.Model):
 
         self.minimum_wrist_minutes = data.minimum_wrist_minutes
 
-        self.treatment_3_heart_bonus = data.treatment_3_heart_bonus
-        self.treatment_3_immune_bonus = data.treatment_3_immune_bonus
-        self.treatment_3_bonus_target_count = data.treatment_3_bonus_target_count
-
         self.y_min_heart = data.y_min_heart
         self.y_max_heart = data.y_max_heart
         self.y_ticks_heart = data.y_ticks_heart
@@ -201,6 +204,21 @@ class Parameterset(models.Model):
         self.x_min_immune = data.x_min_immune
         self.x_max_immune = data.x_max_immune
         self.x_ticks_immune = data.x_ticks_immune
+
+         #remove any old pay levels
+        self.paylevels.all().delete()
+
+        for paylevel in data.paylevels.all():
+            new_paylevel = main.models.ParametersetPaylevel()
+
+            new_paylevel.parameterset = self
+            new_paylevel.score = paylevel.score
+            new_paylevel.value = paylevel.value
+
+            new_paylevel.save()
+
+
+        self.save()
 
         self.save()
 
@@ -219,9 +237,9 @@ class Parameterset(models.Model):
     #return the current maximum payment for heart activty
     def getImmunePay(self, period):
 
-        if period<=self.block_1_day_count+1:
+        if period <= self.block_1_day_count + 1:
             return self.block_1_immune_pay
-        elif period<=self.block_2_day_count+self.block_1_day_count+1:
+        elif period <= self.block_2_day_count + self.block_1_day_count + 1:
             return self.block_2_immune_pay
         else:
             return self.block_3_immune_pay
@@ -234,6 +252,27 @@ class Parameterset(models.Model):
             return self.block_2_fixed_pay_per_day
         else:
             return self.block_3_fixed_pay_per_day
+
+    def get_treatment_b_c_paylevel(self, score):
+        '''
+        return the dollar payment
+        '''
+
+        if self.paylevels.all().count() == 0:
+            return 0
+
+        #check for score out of range
+        if score >= 1:
+            return self.paylevels.all().last().value
+        
+        if score <= 0:
+            return self.paylevels.all().first().value
+
+        for pay_level in self.paylevels.all():
+            if score <= pay_level.score:
+                return pay_level.value
+        
+        return 0
 
     #get period's time block
     def getBlock(self,period):
@@ -327,7 +366,6 @@ class Parameterset(models.Model):
                           self.block_1_day_count,self.block_2_day_count,self.block_3_day_count,
                           self.block_1_fixed_pay_per_day,self.block_2_fixed_pay_per_day, self.block_3_fixed_pay_per_day,
                           self.minimum_wrist_minutes,
-                          self.treatment_3_heart_bonus,self.treatment_3_immune_bonus,self.treatment_3_bonus_target_count,
                           self.y_min_heart,self.y_max_heart,self.y_ticks_heart,self.x_min_heart,self.x_max_heart,self.x_ticks_heart,
                           self.y_min_immune,self.y_max_immune,self.y_ticks_immune,self.x_min_immune,self.x_max_immune,self.x_ticks_immune])
 
@@ -363,10 +401,6 @@ class Parameterset(models.Model):
 
             "minimum_wrist_minutes":self.minimum_wrist_minutes,
 
-            "treatment_3_heart_bonus":self.treatment_3_heart_bonus,
-            "treatment_3_immune_bonus":self.treatment_3_immune_bonus,
-            "treatment_3_bonus_target_count":self.treatment_3_bonus_target_count,
-
             "block_1_day_count":self.block_1_day_count,
             "block_2_day_count":self.block_2_day_count,
             "block_3_day_count":self.block_3_day_count,
@@ -384,6 +418,8 @@ class Parameterset(models.Model):
             "x_min_immune":self.x_min_immune,
             "x_max_immune":self.x_max_immune,
             "x_ticks_immune":self.x_ticks_immune,
+
+            "pay_levels" : [pl.json() for pl in self.paylevels.all()],
         }
 
     def json_graph(self):
