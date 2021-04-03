@@ -115,7 +115,10 @@ class Session_day_subject_actvity(models.Model):
         c=float(c)
 
         active_time = float(active_time)
-        activity_score = float(activity_score)
+        activity_score = min(0.99, float(activity_score))
+
+        #debug code
+        #active_time=111
 
         v = a * activity_score + 0.5 * (1 + activity_score) * (1 - a * activity_score) * (active_time**b / (c + active_time**b))
 
@@ -125,7 +128,7 @@ class Session_day_subject_actvity(models.Model):
         if round_result:
             v = round_half_away_from_zero(v, 2)
 
-        return min(1, v)   
+        return min(0.99, v)   
 
     #calc minutes required to maintain target actvitity level
     def calcMaintenance(self,a,b,c,y,z,n):
@@ -134,8 +137,8 @@ class Session_day_subject_actvity(models.Model):
         a = float(a)
         b = float(b)
         c = float(c)
-        y = float(y)
-        z = float(z)
+        y = min(0.99,float(y))
+        z = min(0.99,float(z))
         n = float(n)
 
 
@@ -152,8 +155,6 @@ class Session_day_subject_actvity(models.Model):
         v=abs(v)
 
         logger.info(f"calcMaintenance {v}, a {a}, b {b}, c {c}, y {y}, z {z}, n {n}")
-
-        v = round_half_away_from_zero(v, 2)
 
         return v 
     
@@ -326,6 +327,12 @@ class Session_day_subject_actvity(models.Model):
     #get health improvment minutes
     def getTodaysHeartImprovmentMinutes(self):
         logger = logging.getLogger(__name__)
+
+        #check that not maxed out
+        if self.heart_activity >= 0.99 :
+            logger.info('getTodaysHeartImprovmentMinutes already at max')
+            return {"target_activity": '--',"target_minutes": '--',"target_bpm":'--'}
+
         p_set = self.session_day.session.parameterset
 
         max_activity = self.calcHeartActivity(1440, self.heart_activity, True)
@@ -350,13 +357,17 @@ class Session_day_subject_actvity(models.Model):
         else:
             target_activity = f'{target_activity:0.2f}'
         
-
         return {"target_activity": f'{target_activity}',"target_minutes":f' {target_minutes}mins',"target_bpm":f'{self.fitbit_min_heart_rate_zone_bpm}bpm'}
 
     #get immune improvment minutes
     def getTodaysImmuneImprovmentHours(self):
         logger = logging.getLogger(__name__)
         p_set = self.session_day.session.parameterset
+
+        #check that not maxed out
+        if self.immune_activity >= 0.99 :
+            logger.info('getTodaysHeartImprovmentMinutes already at max')
+            return {"target_activity": '--',"target_hours": '--'}
 
         max_activity = self.calcImmuneActivity(1440,self.immune_activity,True)
 
