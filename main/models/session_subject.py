@@ -353,8 +353,8 @@ class Session_subject(models.Model):
 
         if sada_today:
             sada_today=sada_today.first()
-            sada_today.saveHeartActivity(sada_yesterday.heart_activity_minutes,sada_yesterday.heart_activity)
-            sada_today.saveImmuneActivity(sada_yesterday.immune_activity_minutes,sada_yesterday.immune_activity)
+            sada_today.saveHeartActivity(sada_yesterday.heart_activity_minutes, sada_yesterday.heart_activity)
+            sada_today.saveImmuneActivity(sada_yesterday.immune_activity_minutes, sada_yesterday.immune_activity)
 
             sada_today.save()
         else:
