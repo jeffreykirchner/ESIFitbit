@@ -109,16 +109,17 @@ class Session_subject(models.Model):
         
         self.reCalcAllActvity()
 
-        #save earnings
-        sada_set = self.Session_day_subject_actvities.order_by('session_day__period_number')
+        #save earnings if treatment I or B
+        if self.session.treatment == "I" or self.session.treatment == "Base":
+            sada_set = self.Session_day_subject_actvities.order_by('session_day__period_number')
 
-        for i in sada_set:
-            if i.session_day.date == d_today.date():
-                break
-            
-            i.paypal_today = True
-            i.storeTodaysTotalEarnings()
-            i.save()
+            for i in sada_set:
+                if i.session_day.date == d_today.date():
+                    break
+                
+                i.paypal_today = True
+                i.storeTodaysTotalEarnings()
+                i.save()
 
         #consent form
         self.consent_required=False
