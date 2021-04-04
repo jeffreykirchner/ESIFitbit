@@ -327,6 +327,13 @@ class Session(models.Model):
 
         self.parameterset.getCSVResponse(writer,self.title,self.Treatment(self.treatment).label)
 
+        #pay levels
+        if self.treatment == "B" or self.treatment == "C":
+            writer.writerow([])
+            writer.writerow(["Parameters Paylevels"])
+            writer.writerow(["Score Start", "Score End", "Value"])
+            self.parameterset.get_csv_response_pay_level(writer)
+
         return csv_response
 
     #get earnings in csv file for specified date

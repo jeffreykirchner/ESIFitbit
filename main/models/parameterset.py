@@ -6,6 +6,7 @@ import logging
 
 from django.db import models
 from django.db.utils import IntegrityError
+from decimal import Decimal
 
 import main
 
@@ -368,6 +369,15 @@ class Parameterset(models.Model):
                           self.minimum_wrist_minutes,
                           self.y_min_heart,self.y_max_heart,self.y_ticks_heart,self.x_min_heart,self.x_max_heart,self.x_ticks_heart,
                           self.y_min_immune,self.y_max_immune,self.y_ticks_immune,self.x_min_immune,self.x_max_immune,self.x_ticks_immune])
+
+    def get_csv_response_pay_level(self, writer):
+        '''
+        get csv version of pay levels
+        '''
+        start_score = 0
+        for pay_level in self.paylevels.all():
+            writer.writerow([start_score, pay_level.score,"$" + str(pay_level.value)])
+            start_score = pay_level.score + Decimal("0.01")
 
     #return json object of class
     def json(self):
