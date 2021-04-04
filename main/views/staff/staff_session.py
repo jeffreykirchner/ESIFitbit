@@ -244,14 +244,14 @@ def updateParameters(data,id):
         form_data_dict["block_2_day_count"] = s.parameterset.block_2_day_count
         form_data_dict["block_3_day_count"] = s.parameterset.block_3_day_count
     
-    if s.treatment=="B":
-        form_data_dict["block_1_heart_pay"] = 0
-        form_data_dict["block_2_heart_pay"] = 0
-        form_data_dict["block_3_heart_pay"] = 0
+    # if s.treatment=="B":
+    #     form_data_dict["block_1_heart_pay"] = 0
+    #     form_data_dict["block_2_heart_pay"] = 0
+    #     form_data_dict["block_3_heart_pay"] = 0
 
-        form_data_dict["block_1_immune_pay"] = 0
-        form_data_dict["block_2_immune_pay"] = 0
-        form_data_dict["block_3_immune_pay"] = 0
+    #     form_data_dict["block_1_immune_pay"] = 0
+    #     form_data_dict["block_2_immune_pay"] = 0
+    #     form_data_dict["block_3_immune_pay"] = 0
 
     form = Parameterset_form(form_data_dict,instance=s.parameterset)
 
