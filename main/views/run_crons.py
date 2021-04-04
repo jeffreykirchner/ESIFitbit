@@ -54,6 +54,7 @@ def do_paypal():
 
     yesterdays_sessions = Session_day.objects.filter(date=yesterdays_date.date()) \
                                              .filter(payments_sent = False) \
+                                             .filter(session__started = True) \
                                              .filter(session__soft_delete = False) \
                                              .prefetch_related("Session_day_subject_actvities_SD")
 
@@ -104,6 +105,7 @@ def do_calc_a_b_c_treatments():
     #check for yesterday's sessions that fall on payday
     yesterdays_sessions = Session_day.objects.filter(date=yesterdays_date.date()) \
                                              .filter(payments_sent = False) \
+                                             .filter(session__started = True) \
                                              .filter(session__soft_delete = False) \
                                              .exclude(session__treatment = "I") \
                                              .exclude(session__treatment = "Base")
