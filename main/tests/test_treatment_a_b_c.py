@@ -281,7 +281,7 @@ class SessionABCPayments(TestCase):
             start_value += 0.5
             start_score += 0.1
         
-        ParametersetPaylevel.objects.create(parameterset=self.session.parameterset, value=5, score=1)
+        ParametersetPaylevel.objects.create(parameterset=self.session.parameterset, value=5, score=0.99)
 
         for paylevel in ParametersetPaylevel.objects.all():
             logger.info(f'Paylevels {paylevel.score} {paylevel.value}')
