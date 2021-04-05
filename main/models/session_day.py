@@ -134,7 +134,7 @@ class Session_day(models.Model):
 
         #check if this period is last period in block
         if self.period_number != last_period:
-            return {"session day": self, "payments": []}
+            return {"session day": str(self), "payments": []}
         
         result = []
 
