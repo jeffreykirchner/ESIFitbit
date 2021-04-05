@@ -1,6 +1,8 @@
 '''
 tests for rounding
 '''
+import math
+
 from django.test import TestCase
 
 from main.globals import round_half_away_from_zero, calc_activity, calc_maintenance
@@ -46,14 +48,19 @@ class TestCalcMaintenance(TestCase):
         #solve y = a * x + 0.5 * (1 + x) * (1 - a * x) * ((z/n)^b / (c + (z/n)^b)), a=0.6, b=3, c=6, x=0.6, z=30, n=15
 
         self.assertEqual(0.65, calc_activity(30/15, 0.6, 3, 6, 0.6, True))
-        self.assertEqual(0.99, calc_activity(300/15, 0.6, 3, 6, 1, True))
+        self.assertEqual(1.0, calc_activity(300/15, 0.6, 3, 6, 1.0, True))
         self.assertEqual(0.5, calc_activity(0/15, 0.5, 3, 6, 0.99, True))
 
         self.assertEqual(0.89, calc_activity(480/240, 0.2, 4, 2.5, 1, True))
         self.assertEqual(0.73, calc_activity(480/240, 0.2, 4, 2.5, 0.6, True))
 
-        
+        #wolfram alpha
+        #x = 2 ^(1/b) * n * ((a*c*y - c*z)/(a * y^2 - a * y - y + 2 * z - 1))^(1/b), a = 0.5, b=3,c=6, y=0.99,z=0.99
 
+        self.assertEqual(30, math.ceil(calc_maintenance(0.6, 3, 6, 0.6, 0.65, 15)))
+        self.assertEqual(55, math.ceil(calc_maintenance(0.5, 3, 6, 0.5, 0.75, 15)))
+        self.assertEqual(111, math.ceil(calc_maintenance(0.5, 3, 6, 0.99, 0.99, 15)))
+        self.assertEqual(140, math.ceil(calc_maintenance(0.5, 3, 6, 1, 1, 15)))
 
 
             

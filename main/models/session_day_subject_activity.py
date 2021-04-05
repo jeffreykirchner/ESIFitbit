@@ -273,7 +273,7 @@ class Session_day_subject_actvity(models.Model):
         logger = logging.getLogger(__name__)
 
         #check that not maxed out
-        if self.heart_activity >= 0.99 :
+        if self.heart_activity >= 1.0 :
             logger.info('getTodaysHeartImprovmentMinutes already at max')
             return {"target_activity": '--',"target_minutes": '--',"target_bpm":'--'}
 
@@ -309,7 +309,7 @@ class Session_day_subject_actvity(models.Model):
         p_set = self.session_day.session.parameterset
 
         #check that not maxed out
-        if self.immune_activity >= 0.99 :
+        if self.immune_activity >= 1.0:
             logger.info('getTodaysHeartImprovmentMinutes already at max')
             return {"target_activity": '--',"target_hours": '--'}
 

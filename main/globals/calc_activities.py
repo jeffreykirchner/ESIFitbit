@@ -20,10 +20,10 @@ def calc_activity(active_time, a, b, c, activity_score, round_result):
     c=float(c)
 
     active_time = float(active_time)
-    activity_score = min(0.99, float(activity_score))
+    activity_score = min(1, float(activity_score))
 
     #debug code
-    #active_time=111
+    #active_time=140
 
     v = a * activity_score + 0.5 * (1 + activity_score) * (1 - a * activity_score) * (active_time**b / (c + active_time**b))
 
@@ -33,7 +33,7 @@ def calc_activity(active_time, a, b, c, activity_score, round_result):
     if round_result:
         v = round_half_away_from_zero(v, 2)
 
-    return min(0.99, v)   
+    return min(1, v)   
 
 #calc minutes required to maintain target actvitity level
 def calc_maintenance(a, b, c, y, z, n):
@@ -45,8 +45,8 @@ def calc_maintenance(a, b, c, y, z, n):
     a = float(a)
     b = float(b)
     c = float(c)
-    y = min(0.99,float(y))
-    z = min(0.99,float(z))
+    y = min(0.995,float(y))
+    z = min(0.995,float(z))
     n = float(n)
 
 
@@ -54,6 +54,7 @@ def calc_maintenance(a, b, c, y, z, n):
     # x = 2^(1/b) n ((a c y - c z)/(a y^2 - a y - y + 2 z - 1))^(1/b)
 
     #v = 2.0**(1 / float(b)) * float(e) * ((float(a) * float(c) * float(d) - float(c) * float(d))/((float(d) - 1.0) * (float(a) * float(d) + 1.0)))**(1.0/float(b))
+
     try:
         v = 2.0**(1/b) * n * ((a * c * y - c * z)/(a * y**2 - a * y - y + 2 * z - 1))**(1/b)
     except ZeroDivisionError:

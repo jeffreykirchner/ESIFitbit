@@ -351,7 +351,7 @@ def startSession(data,id):
 
     #check that Treatment B C has payment level
     if session.treatment == "B" or session.treatment == "C":
-        paylevel_one = session.parameterset.paylevels.filter(score = 0.99)
+        paylevel_one = session.parameterset.paylevels.filter(score = 1.0)
 
         if paylevel_one.count() != 1:
             logger.warning("startSession B C, no pay level 1.00")
