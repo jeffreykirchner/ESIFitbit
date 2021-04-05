@@ -244,14 +244,14 @@ def updateParameters(data,id):
         form_data_dict["block_2_day_count"] = s.parameterset.block_2_day_count
         form_data_dict["block_3_day_count"] = s.parameterset.block_3_day_count
     
-    if s.treatment=="B":
-        form_data_dict["block_1_heart_pay"] = 0
-        form_data_dict["block_2_heart_pay"] = 0
-        form_data_dict["block_3_heart_pay"] = 0
+    # if s.treatment=="B":
+    #     form_data_dict["block_1_heart_pay"] = 0
+    #     form_data_dict["block_2_heart_pay"] = 0
+    #     form_data_dict["block_3_heart_pay"] = 0
 
-        form_data_dict["block_1_immune_pay"] = 0
-        form_data_dict["block_2_immune_pay"] = 0
-        form_data_dict["block_3_immune_pay"] = 0
+    #     form_data_dict["block_1_immune_pay"] = 0
+    #     form_data_dict["block_2_immune_pay"] = 0
+    #     form_data_dict["block_3_immune_pay"] = 0
 
     form = Parameterset_form(form_data_dict,instance=s.parameterset)
 
@@ -351,7 +351,7 @@ def startSession(data,id):
 
     #check that Treatment B C has payment level
     if session.treatment == "B" or session.treatment == "C":
-        paylevel_one = session.parameterset.paylevels.filter(score = 1.00)
+        paylevel_one = session.parameterset.paylevels.filter(score = 1.0)
 
         if paylevel_one.count() != 1:
             logger.warning("startSession B C, no pay level 1.00")

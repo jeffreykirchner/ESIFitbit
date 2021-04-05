@@ -884,6 +884,3 @@ class SubjectPayments(TestCase):
                                 parameterset.block_3_heart_pay * session_subject_activity_2day.heart_activity +
                                 parameterset.block_3_immune_pay * session_subject_activity_2day.immune_activity)
                                ,2))
-
-
-

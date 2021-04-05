@@ -16,7 +16,7 @@ from django.utils.timezone import now
 
 from . import Session_day,Session_subject,Parameters
 
-from main.globals import round_half_away_from_zero
+from main.globals import round_half_away_from_zero, calc_maintenance, calc_activity
 
 class Session_day_subject_actvity(models.Model):
     '''
@@ -74,12 +74,12 @@ class Session_day_subject_actvity(models.Model):
 
         p_set = self.session_day.session.parameterset
 
-        return self.calcActivity(heart_time/15,
-                                p_set.heart_parameter_1,
-                                p_set.heart_parameter_2,
-                                p_set.heart_parameter_3,
-                                activity_score,
-                                round_result)
+        return calc_activity(heart_time/15,
+                            p_set.heart_parameter_1,
+                            p_set.heart_parameter_2,
+                            p_set.heart_parameter_3,
+                            activity_score,
+                            round_result)
 
     #save heart activity    
     def saveHeartActivity(self,heart_time,heartActivityMinus1):
@@ -90,73 +90,17 @@ class Session_day_subject_actvity(models.Model):
     def calcImmuneActivity(self,immune_time,activity_score,round_result):
         p_set = self.session_day.session.parameterset
 
-        return self.calcActivity(immune_time/240,
-                                p_set.immune_parameter_1,
-                                p_set.immune_parameter_2,
-                                p_set.immune_parameter_3,
-                                activity_score,
-                                round_result)
+        return calc_activity(immune_time/240,
+                            p_set.immune_parameter_1,
+                            p_set.immune_parameter_2,
+                            p_set.immune_parameter_3,
+                            activity_score,
+                            round_result)
 
     #save immune activity    
     def saveImmuneActivity(self,immune_time,immuneActivityMinus1):
         self.immune_activity = self.calcImmuneActivity(immune_time,immuneActivityMinus1,True)
         self.save()
-
-    #calc activity
-    def calcActivity(self,active_time,a,b,c,activity_score, round_result): 
-        logger = logging.getLogger(__name__)
-        #immuneActivityTodayT-1 * (1 - (1 - immuneActivityTodayT-1) * (immune_parameter_1 / immune_parameter_2  - immuneTimeT-1 / (immuneTimeT-1 + immune_parameter_3))
-
-        #logger.info(f'{active_time} {p1} {p2} {p3} {activityMinus1}')
-        #v = float(activityMinus1) * (1 - (1 - float(activityMinus1)) * (float(p1) / float(p2)  - float(active_time) / (float(active_time) + float(p3))))
-
-        a=float(a)
-        b=float(b)
-        c=float(c)
-
-        active_time = float(active_time)
-        activity_score = min(0.99, float(activity_score))
-
-        #debug code
-        #active_time=111
-
-        v = a * activity_score + 0.5 * (1 + activity_score) * (1 - a * activity_score) * (active_time**b / (c + active_time**b))
-
-        if v < 0:
-            v = 0
-
-        if round_result:
-            v = round_half_away_from_zero(v, 2)
-
-        return min(0.99, v)   
-
-    #calc minutes required to maintain target actvitity level
-    def calcMaintenance(self,a,b,c,y,z,n):
-        logger = logging.getLogger(__name__)
-
-        a = float(a)
-        b = float(b)
-        c = float(c)
-        y = min(0.99,float(y))
-        z = min(0.99,float(z))
-        n = float(n)
-
-
-        #v = 2**(1/b) * e * ((a * c * d - c * d)/(a**2 * d**2 - 2 * a * d + 2 * d - 1))**(1/b)
-        # x = 2^(1/b) n ((a c y - c z)/(a y^2 - a y - y + 2 z - 1))^(1/b)
-
-        #v = 2.0**(1 / float(b)) * float(e) * ((float(a) * float(c) * float(d) - float(c) * float(d))/((float(d) - 1.0) * (float(a) * float(d) + 1.0)))**(1.0/float(b))
-        try:
-            v = 2.0**(1/b) * n * ((a * c * y - c * z)/(a * y**2 - a * y - y + 2 * z - 1))**(1/b)
-        except ZeroDivisionError:
-            v = 0
-            logger.warning(f"calcMaintenance divide by zero: a {a}, b {b}, c {c}, y {y}, z {z}, n {n}")
-
-        v=abs(v)
-
-        logger.info(f"calcMaintenance {v}, a {a}, b {b}, c {c}, y {y}, z {z}, n {n}")
-
-        return v 
     
     #get number of minutes for heart maintenance
     def getHeartMaintenance(self):
@@ -164,12 +108,12 @@ class Session_day_subject_actvity(models.Model):
 
         p_set = self.session_day.session.parameterset
 
-        return self.calcMaintenance(p_set.heart_parameter_1,
-                                    p_set.heart_parameter_2,
-                                    p_set.heart_parameter_3,
-                                    self.heart_activity,
-                                    self.heart_activity,
-                                    15)
+        return calc_maintenance(p_set.heart_parameter_1,
+                               p_set.heart_parameter_2,
+                               p_set.heart_parameter_3,
+                               self.heart_activity,
+                               self.heart_activity,
+                               15)
 
     #get number of minutes for heart maintenance
     def getImmuneMaintenance(self):
@@ -177,12 +121,12 @@ class Session_day_subject_actvity(models.Model):
 
         p_set = self.session_day.session.parameterset
 
-        return self.calcMaintenance(p_set.immune_parameter_1,
-                                    p_set.immune_parameter_2,
-                                    p_set.immune_parameter_3,
-                                    self.immune_activity,
-                                    self.immune_activity,
-                                    240)
+        return calc_maintenance(p_set.immune_parameter_1,
+                               p_set.immune_parameter_2,
+                               p_set.immune_parameter_3,
+                               self.immune_activity,
+                               self.immune_activity,
+                               240)
 
     def heart_activity_formatted(self):
         '''
@@ -329,7 +273,7 @@ class Session_day_subject_actvity(models.Model):
         logger = logging.getLogger(__name__)
 
         #check that not maxed out
-        if self.heart_activity >= 0.99 :
+        if self.heart_activity >= 1.0 :
             logger.info('getTodaysHeartImprovmentMinutes already at max')
             return {"target_activity": '--',"target_minutes": '--',"target_bpm":'--'}
 
@@ -341,12 +285,12 @@ class Session_day_subject_actvity(models.Model):
 
         target_activity = round_half_away_from_zero(target_activity, 2)
 
-        target_minutes = self.calcMaintenance(p_set.heart_parameter_1,
-                                    p_set.heart_parameter_2,
-                                    p_set.heart_parameter_3,
-                                    self.heart_activity,
-                                    target_activity,                                   
-                                    15)
+        target_minutes = calc_maintenance(p_set.heart_parameter_1,
+                                         p_set.heart_parameter_2,
+                                         p_set.heart_parameter_3,
+                                         self.heart_activity,
+                                         target_activity,                                   
+                                         15)
 
         logger.info(f'getTodaysHeartImprovmentMinutes heart_activity {self.heart_activity} max_activity {max_activity} target_activity {target_activity} target_minutes {target_minutes}')
 
@@ -365,7 +309,7 @@ class Session_day_subject_actvity(models.Model):
         p_set = self.session_day.session.parameterset
 
         #check that not maxed out
-        if self.immune_activity >= 0.99 :
+        if self.immune_activity >= 1.0:
             logger.info('getTodaysHeartImprovmentMinutes already at max')
             return {"target_activity": '--',"target_hours": '--'}
 
@@ -375,12 +319,12 @@ class Session_day_subject_actvity(models.Model):
 
         target_activity = round_half_away_from_zero(target_activity, 2)
 
-        target_minutes = self.calcMaintenance(p_set.immune_parameter_1,
-                                    p_set.immune_parameter_2,
-                                    p_set.immune_parameter_3,
-                                    self.immune_activity,
-                                    target_activity,
-                                    240)
+        target_minutes = calc_maintenance(p_set.immune_parameter_1,
+                                         p_set.immune_parameter_2,
+                                         p_set.immune_parameter_3,
+                                         self.immune_activity,
+                                         target_activity,
+                                         240)
 
         logger.info(f'getTodaysimmuneImprovmentMinutes immune_activity {self.immune_activity} max_activity {max_activity} target_activity {target_activity} target_minutes {target_minutes}')
 
