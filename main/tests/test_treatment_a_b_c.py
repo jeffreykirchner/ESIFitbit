@@ -66,6 +66,11 @@ class SessionBlockTests(TestCase):
 
         Session_day_subject_actvity.objects.filter(session_day__session = session).update(fitbit_on_wrist_minutes = session.parameterset.minimum_wrist_minutes)
         
+        #store synced today
+        for subject in session.session_subjects.all():
+            subject.fitBitLastSynced = todaysDate()
+            subject.save()
+
     def test_block_length(self):
         '''test block level counts '''
 
@@ -285,6 +290,11 @@ class SessionABCPayments(TestCase):
 
         for paylevel in ParametersetPaylevel.objects.all():
             logger.info(f'Paylevels {paylevel.score} {paylevel.value}')
+        
+        #store synced today
+        for subject in session.session_subjects.all():
+            subject.fitBitLastSynced = todaysDate()
+            subject.save()
 
 
     def test_block_1_payments_day_1(self):

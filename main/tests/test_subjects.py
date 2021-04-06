@@ -58,6 +58,11 @@ class SubjectCompleteTestCase(TestCase):
 
         Session_day_subject_actvity.objects.filter(session_day__session = session).update(fitbit_on_wrist_minutes = session.parameterset.minimum_wrist_minutes)
         
+        #store synced today
+        for subject in session.session_subjects.all():
+            subject.fitBitLastSynced = todaysDate()
+            subject.save()
+
     def testPayMe(self):
         '''after Start PayMe '''
 
@@ -120,6 +125,11 @@ class SubjectLastDayTestCase(TestCase):
 
         Session_day_subject_actvity.objects.filter(session_day__session = session).update(fitbit_on_wrist_minutes = session.parameterset.minimum_wrist_minutes)
         
+        #store synced today
+        for subject in session.session_subjects.all():
+            subject.fitBitLastSynced = todaysDate()
+            subject.save()
+
     def testPayMe(self):
         '''after Start PayMe '''
 
@@ -186,6 +196,11 @@ class SubjectAfterStartTestCase(TestCase):
 
         session = Session.objects.first()
         self.session = session
+
+        #store synced today
+        for subject in session.session_subjects.all():
+            subject.fitBitLastSynced = todaysDate()
+            subject.save()
         
     def testPayMe(self):
         '''after Start PayMe '''
@@ -265,6 +280,24 @@ class SubjectAfterStartTestCase(TestCase):
         self.assertEquals("",r['message'])    
         session_day_subject_actvity = Session_day_subject_actvity.objects.get(session_day = session_day,session_subject = session_subject)
         self.assertTrue(session_day_subject_actvity.paypal_today)
+    
+    def test_not_synced_today(self):
+        '''
+        test the subject cannot press pay themselves if they have not synced their fitbit today
+        '''
+        session_subject = self.session.session_subjects.all().first()
+        session_day = self.session.session_days.all().first()
+        session_day_subject_actvity = session_subject.Session_day_subject_actvities.filter(session_day__period_number = 1).first()
+
+        session_subject.consent_required = False
+        session_subject.questionnaire1_required = False
+        session_subject.fitBitLastSynced = todaysDate() - timedelta(days = 1)
+
+        r = json.loads(payMe({},session_subject, session_day).content.decode("UTF-8"))    
+        self.assertEquals("Pay Error: No Fitbit sync today",r['message'])   
+
+        session_day_subject_actvity = session_subject.Session_day_subject_actvities.filter(session_day__period_number = 1).first()
+        self.assertFalse(session_day_subject_actvity.paypal_today) 
 
 #test subject before experiment starts
 class SubjectBeforeStartTestCase(TestCase):
@@ -299,6 +332,11 @@ class SubjectBeforeStartTestCase(TestCase):
         addSubject({},session.id)
 
         self.session = session
+
+        #store synced today
+        for subject in session.session_subjects.all():
+            subject.fitBitLastSynced = todaysDate()
+            subject.save()
         
     def testPayMe(self):
         '''Before Start PayMe '''
@@ -384,6 +422,11 @@ class SubjectInstructions(TestCase):
         addSubject({},self.session.id)
 
         self.session = Session.objects.get(id = self.session.id)
+
+        #store synced today
+        for subject in session.session_subjects.all():
+            subject.fitBitLastSynced = todaysDate()
+            subject.save()
     
     def test_three_x_three_one(self):
         '''
@@ -718,6 +761,11 @@ class SubjectPayments(TestCase):
         self.session.parameterset.block_3_fixed_pay_per_day = 5
         self.session.parameterset.save()
 
+        #store synced today
+        for subject in session.session_subjects.all():
+            subject.fitBitLastSynced = todaysDate()
+            subject.save()
+        
     
     def test_three_x_three_one(self):
         '''
