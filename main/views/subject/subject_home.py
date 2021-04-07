@@ -292,6 +292,13 @@ def payMe(data,session_subject,session_day):
                 message = "Pay Error: Wrist time too low."
                 logger.warning(message)
 
+    #check that fitbit has been synced today
+    if status == "success":
+        if not session_subject.fitbitSyncedToday():
+            status = "fail"
+            message = "Pay Error: No Fitbit sync today"
+            logger.warning(message)
+
     if status == "success":
         try:
             session_day_subject_actvity.paypal_today=True

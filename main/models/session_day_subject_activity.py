@@ -261,7 +261,7 @@ class Session_day_subject_actvity(models.Model):
 
         missed_days = self.session_subject.get_missed_checkins(period_number)
         daily_payment = self.session_subject.get_daily_payment_A_B_C(period_number)
-        self.payment_today = (block_length - missed_days) * daily_payment
+        self.payment_today = round_half_away_from_zero((block_length - missed_days) * daily_payment, 2)
         self.save() 
 
         logger.info(f'calc_a_b_c_block_payments payment {self.payment_today}, block length {block_length}, missed days {missed_days}, daily payment {daily_payment}')
