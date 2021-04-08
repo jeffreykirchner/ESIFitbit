@@ -119,12 +119,6 @@ USE_TZ = True
 #CSRF_COOKIE_SECURE = True
 #SESSION_COOKIE_SECURE = True
 
-#cron jobs
-CRON_CLASSES = [
-    "main.cron.checkStartNewDay",
-]
-
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 

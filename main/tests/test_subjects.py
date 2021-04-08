@@ -424,7 +424,7 @@ class SubjectInstructions(TestCase):
         self.session = Session.objects.get(id = self.session.id)
 
         #store synced today
-        for subject in session.session_subjects.all():
+        for subject in self.session.session_subjects.all():
             subject.fitBitLastSynced = todaysDate()
             subject.save()
     
@@ -762,7 +762,7 @@ class SubjectPayments(TestCase):
         self.session.parameterset.save()
 
         #store synced today
-        for subject in session.session_subjects.all():
+        for subject in self.session.session_subjects.all():
             subject.fitBitLastSynced = todaysDate()
             subject.save()
         
