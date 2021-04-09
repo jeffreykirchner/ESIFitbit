@@ -1,14 +1,14 @@
+import logging
+import json
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-import json
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-import logging
 from django.conf import settings
 
 from main.globals import todaysDate
-
-from main.models import Session,Parameterset,Session_day,Parameters,Consent_forms
+from main.models import Session, Parameterset, Session_day, Parameters, Consent_forms, InstructionSet
 
 @login_required
 def Staff_Home(request):
@@ -67,6 +67,7 @@ def createSession(data):
     s.consent_required = p.consentFormRequired
     s.questionnaire1_required = p.questionnaire1Required
     s.questionnaire2_required = p.questionnaire2Required
+    s.instruction_set = InstructionSet.objects.first()
 
     s.start_date = todaysDate().date()
     s.calcEndDate()
