@@ -43,7 +43,7 @@ class SessionBlockTests(TestCase):
         session.calcEndDate()
         session = Session.objects.get(id = session.id)
 
-        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'A'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'}]}
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'A'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'},{'name':'auto_pay','value':'1'}]}
 
         r = json.loads(updateSession(data,session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
@@ -264,7 +264,7 @@ class SessionABCPayments(TestCase):
         session = Session.objects.get(id = session.id)
         session.save()
 
-        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'A'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'}]}
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'A'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'},{'name':'auto_pay','value':'1'}]}
 
         r = json.loads(updateSession(data,session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
@@ -725,7 +725,7 @@ class SessionABCPayments(TestCase):
 
         start_date = todaysDate() - timedelta(days=7)
 
-        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'B'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'}]}
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'B'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'},{'name':'auto_pay','value':'1'}]}
 
         r = json.loads(updateSession(data, session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
@@ -789,7 +789,7 @@ class SessionABCPayments(TestCase):
 
         start_date = todaysDate() - timedelta(days=7)
 
-        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'C'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'}]}
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'C'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'},{'name':'auto_pay','value':'1'}]}
 
         r = json.loads(updateSession(data, session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")

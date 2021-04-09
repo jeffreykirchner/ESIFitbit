@@ -358,7 +358,6 @@ def startSession(data,id):
         logger.warning("startSession No Intructions")
         status = "fail"
 
-    #check for subjects in session before starting
     if status != "fail":
     
         if session.started == False:

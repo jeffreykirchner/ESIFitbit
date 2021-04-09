@@ -1,3 +1,6 @@
+'''
+staff home view
+'''
 import logging
 import json
 
@@ -12,6 +15,9 @@ from main.models import Session, Parameterset, Session_day, Parameters, Consent_
 
 @login_required
 def Staff_Home(request):
+    '''
+    stafff home view
+    '''
     logger = logging.getLogger(__name__) 
    
     
