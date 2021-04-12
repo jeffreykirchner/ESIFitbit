@@ -7,17 +7,19 @@ import requests
 
 from django.conf import settings
 
-def send_mass_email_service(user_list, message_subject, message_text):
+def send_mass_email_service(user_list, message_subject, message_text, memo):
     '''
     send mass email through ESI mass pay service
     user_list : [{email:email, variables:[{name:text},{name:text}}, ]
     message_subject : string subject header of message
     message_text : string message template, variables : [name]
+    memo : string note about message's purpose
     '''
 
     data = {"user_list" : user_list,
             "message_subject" : message_subject,
-            "message_text" : message_text}
+            "message_text" : message_text,
+            "memo" : memo}
 
     logger = logging.getLogger(__name__)
     logger.info(f"ESI mass email API: users: {user_list}, message_subject : {message_subject}, message_text : {message_text}")

@@ -251,7 +251,9 @@ class Session(models.Model):
                               "variables": [{"name" : "subject name", "text" : user.name},
                                             {"name" : "log in link", "text" : p.siteURL + "subjectHome/" + str(user.login_key)}] })
 
-        return main.globals.send_mass_email_service(user_list, self.invitation_text_subject, text)
+        memo = f'Session: {self.id}, send invitations'
+
+        return main.globals.send_mass_email_service(user_list, self.invitation_text_subject, text, memo)
 
     #send email canceling session
     def sendCancelation(self):
@@ -266,7 +268,9 @@ class Session(models.Model):
                               "variables": [{"name" : "subject name", "text" : user.name},
                                             {"name" : "log in link", "text" : p.siteURL + "subjectHome/" + str(user.login_key)}] })
 
-        return main.globals.send_mass_email_service(user_list, self.cancelation_text_subject, text)
+        memo = f'Session: {self.id}, send cancelations'
+
+        return main.globals.send_mass_email_service(user_list, self.cancelation_text_subject, text, memo)
 
     #return true if today's date past end date
     def complete(self):
