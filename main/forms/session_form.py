@@ -40,9 +40,13 @@ class SessionForm(forms.ModelForm):
                                                 choices=((1, 'Yes'), (0,'No')),
                                                 widget=forms.Select(attrs={"v-model" : "session.questionnaire2_required",
                                                                            "v-bind:disabled" : "session.editable === false"}))
+    
+    auto_pay = forms.ChoiceField(label='Auto Pay',
+                                 choices=((1, 'Yes'), (0,'No')),
+                                 widget=forms.Select(attrs={"v-model" : "session.auto_pay"}))
 
 
     class Meta:
         model = Session
         fields = ('title', 'start_date', 'treatment', 'instruction_set', 'consent_required',
-                  'questionnaire1_required', 'questionnaire2_required',)
+                  'questionnaire1_required', 'questionnaire2_required','auto_pay')

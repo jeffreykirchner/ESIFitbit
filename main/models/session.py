@@ -54,7 +54,9 @@ class Session(models.Model):
     invitation_text =  models.CharField(max_length=10000, default="")            #text sent to subjects in experiment invititation
     invitation_text_subject = models.CharField(max_length=1000, default="")      #email subject text for experiment invititation
 
-    treatment = models.CharField( max_length=100, choices=Treatment.choices,default=Treatment.ONE)    
+    treatment = models.CharField( max_length=100, choices=Treatment.choices,default=Treatment.ONE)    #payment system used
+
+    auto_pay = models.BooleanField(default=True)                                 #if true automaically send payments to subject via paypal
 
     consent_required = models.BooleanField(default=True, verbose_name='Consent Form Signed')                 #true if subject has done consent form  
     questionnaire1_required = models.BooleanField(default=True, verbose_name='Pre-questionnaire Complete')   #pre experiment questionnaire
@@ -519,6 +521,7 @@ class Session(models.Model):
             "questionnaire1_required" : 1 if self.questionnaire1_required else 0,
             "questionnaire2_required" : 1 if self.questionnaire2_required else 0,
             "payments_sent_yestery" : yesterday_session_day.payments_result_message if yesterday_session_day else "---",
+            "auto_pay" : 1 if self.auto_pay else 0,
         }
 
 #delete associated user model when profile is deleted

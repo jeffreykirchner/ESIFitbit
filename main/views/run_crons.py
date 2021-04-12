@@ -48,7 +48,7 @@ def do_paypal():
 
     parm = Parameters.objects.first()
 
-    #logger = logging.getLogger(__name__)
+    logger = logging.getLogger(__name__)
 
     yesterdays_date = todaysDate() - timedelta(days=1)
 
@@ -56,37 +56,39 @@ def do_paypal():
                                              .filter(payments_sent = False) \
                                              .filter(session__started = True) \
                                              .filter(session__soft_delete = False) \
+                                             .filter(session__auto_pay = True) \
                                              .prefetch_related("Session_day_subject_actvities_SD")
 
-    #logger.info(yesterdays_sessions)
+    logger.info(f'do_paypal: {yesterdays_sessions}')
 
     # build ppms request
-    #
 
     result_list = []
 
     for session_d in yesterdays_sessions:
-        payments_list = []
+        #check if auto pay enabled
+        if session_d.session.auto_pay: 
+            payments_list = []
 
-        for subject_activity in session_d.Session_day_subject_actvities_SD.all() \
-                                         .filter(session_subject__soft_delete = False) \
-                                         .select_related("session_subject") :
+            for subject_activity in session_d.Session_day_subject_actvities_SD.all() \
+                                            .filter(session_subject__soft_delete = False) \
+                                            .select_related("session_subject") :
 
-            if subject_activity.payment_today > 0:
+                if subject_activity.payment_today > 0:
 
-                payments_list.append({
-                    "email" : subject_activity.session_subject.contact_email,
-                    "amount" : subject_activity.payment_today,
-                    "note" : f'{subject_activity.session_subject.name}, {parm.paypal_email_body}',
-                    "memo" : f'SD_ID: {session_d.id}, U_ID: {subject_activity.session_subject.id}'
-                })
+                    payments_list.append({
+                        "email" : subject_activity.session_subject.contact_email,
+                        "amount" : subject_activity.payment_today,
+                        "note" : f'{subject_activity.session_subject.name}, {parm.paypal_email_body}',
+                        "memo" : f'SD_ID: {session_d.id}, U_ID: {subject_activity.session_subject.id}'
+                    })
 
-        if len(payments_list) > 0:
-            result = do_ppms(payments_list, session_d.id, parm.paypal_email_subject)
-            session_d.payments_result_message = result["error_message"]
-            session_d.save()
+            if len(payments_list) > 0:
+                result = do_ppms(payments_list, session_d.id, parm.paypal_email_subject)
+                session_d.payments_result_message = result["error_message"]
+                session_d.save()
 
-            result_list.append(result)
+                result_list.append(result)
 
     yesterdays_sessions.update(payments_sent = True)
 

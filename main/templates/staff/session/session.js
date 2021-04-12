@@ -27,6 +27,7 @@ var app = new Vue({
                     questionnaire1_required:true,
                     questionnaire2_required:true,
                     treatment:"",
+                    auto_pay:"",
                     parameterset:{id:"",
                                 number_of_days:"",
                                 number_of_players:"",

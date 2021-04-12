@@ -58,5 +58,14 @@
                 <span v-html="session.current_period"></span>
             </div>
         </div>
+        <div class="row">
+            <div class="col-lg-4 text-lg-right">
+                <u>Auto Pay</u>:
+            </div>
+            <div class="col-lg-8">
+                <span v-if="session.auto_pay === 1 || session.auto_pay === '1'">Yes</span>
+                <span v-else-if="session.auto_pay === 0 || session.auto_pay === '0'">No</span>
+            </div>
+        </div>
     </div>
 </div>
