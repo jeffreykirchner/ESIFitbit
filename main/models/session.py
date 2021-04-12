@@ -236,6 +236,7 @@ class Session(models.Model):
 
     #send email invitations to subject in the session
     def sendInvitations(self):
+
         p = Parameters.objects.first()
         text = self.invitation_text
 
@@ -244,7 +245,13 @@ class Session(models.Model):
         text = text.replace("[end date]", self.getEndDateString())
         text = text.replace("[contact email]", p.contactEmail)
 
-        return main.globals.sendMassInvitations(self.session_subjects.filter(soft_delete=False),self.invitation_text_subject,text)
+        user_list = []
+        for user in self.session_subjects.filter(soft_delete=False):
+            user_list.append({"email" : user.contact_email,
+                              "variables": [{"name" : "subject name", "text" : user.name},
+                                            {"name" : "log in link", "text" : p.siteURL + "subjectHome/" + str(user.login_key)}] })
+
+        return main.globals.send_mass_email_service(user_list, self.invitation_text_subject, text)
 
     #send email canceling session
     def sendCancelation(self):
@@ -253,7 +260,13 @@ class Session(models.Model):
 
         text = text.replace("[contact email]", p.contactEmail)
 
-        return main.globals.sendMassInvitations(self.session_subjects.filter(soft_delete=False),self.cancelation_text_subject,text)
+        user_list = []
+        for user in self.session_subjects.filter(soft_delete=False):
+            user_list.append({"email" : user.contact_email,
+                              "variables": [{"name" : "subject name", "text" : user.name},
+                                            {"name" : "log in link", "text" : p.siteURL + "subjectHome/" + str(user.login_key)}] })
+
+        return main.globals.send_mass_email_service(user_list, self.cancelation_text_subject, text)
 
     #return true if today's date past end date
     def complete(self):
