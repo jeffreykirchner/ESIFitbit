@@ -392,7 +392,7 @@ def sendInvitations(data,id):
     try:
         result = s.sendInvitations()
 
-        if result['errorMessage'] != "":
+        if result['error_message'] != "":
             s.invitations_sent=False
         else:
             s.invitations_sent=True
@@ -427,7 +427,7 @@ def sendCancelations(data,id):
     try:
         result = s.sendCancelation()
 
-        if result['errorMessage'] != "":
+        if result['error_message'] != "":
             s.canceled=False
         else:
             s.canceled=True

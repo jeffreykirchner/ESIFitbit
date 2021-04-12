@@ -78,18 +78,14 @@ LOGGING = {
 }
 
 #emails
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'   #log email to console
-EMAIL_HOST = 'exchange.chapman.edu'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-EMAIL_HOST_USER_NAME = 'ESI Recruiter, Chapman University'
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = os.environ['EMAIL_HOST_USER']
-
 FITBIT_CLIENT_ID = os.environ['FITBIT_CLIENT_ID']
 FITBIT_AUTHORIZATION = os.environ['FITBIT_AUTHORIZATION']
 
 PPMS_HOST = os.environ['PPMS_HOST']
 PPMS_USER_NAME = os.environ['PPMS_USER_NAME']
 PPMS_PASSWORD = os.environ['PPMS_PASSWORD']
+
+#email service
+EMAIL_MS_HOST = os.environ['EMAIL_MS_HOST']
+EMAIL_MS_USER_NAME = os.environ['EMAIL_MS_USER_NAME']
+EMAIL_MS_PASSWORD = os.environ['EMAIL_MS_PASSWORD']

@@ -45,14 +45,15 @@ jobs:
         DBNAME: github_actions
         DBPASS: postgres
         DBUSER: postgres
-        EMAIL_HOST_PASSWORD: abc
-        EMAIL_HOST_USER: abc
         FITBIT_AUTHORIZATION: abc
         FITBIT_CLIENT_ID: abc
         LOG_LOCATION: abc
         PPMS_HOST: abc
         PPMS_PASSWORD: abc
         PPMS_USER_NAME: abc
+        EMAIL_MS_HOST: abc
+        EMAIL_MS_USER_NAME: abc
+        EMAIL_MS_PASSWORD: abc
         SECRET_KEY: super_duper_secret_key
       run: |
         python manage.py migrate
