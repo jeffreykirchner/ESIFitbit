@@ -229,7 +229,7 @@ class SubjectAfterStartTestCase(TestCase):
         self.assertIn("Double payment attempt",r['message'])
 
         #cancel and reload 
-        r = json.loads(sendCancelations({'action': 'sendCancelations', 'cancelation_text_subject': 'ESI Fitbit study canceled.', 'cancelation_text': '[subject name],\r\n\r\nUnfortunately we had to cancel the online Fitbit study you have been participating in.\r\n\r\nNo further action is required on your part.\r\n\r\nIf you have any questions, do not reply to this email, please contact:\r\n[contact email]\r\n\r\nThank you for your understanding.'},session.id).content.decode("UTF-8"))
+        r = json.loads(sendCancelations({'action': 'sendCancelations', 'cancelation_text_subject': 'ESI Fitbit study canceled.', 'cancelation_text': '[subject name],\r\n\r\nUnfortunately we had to cancel the online Fitbit study you have been participating in.\r\n\r\nNo further action is required on your part.\r\n\r\nIf you have any questions, do not reply to this email, please contact:\r\n[contact email]\r\n\r\nThank you for your understanding.'},session.id,False).content.decode("UTF-8"))
         self.assertTrue(r['success'])
         session = Session.objects.get(id = session.id)
 
