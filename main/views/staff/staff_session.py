@@ -66,7 +66,7 @@ def Staff_Session(request,id):
             elif data["action"] == "downloadData":
                 return downloadData(data, id)
             elif data["action"] == "sendCancelations":
-                return sendCancelations(data, id)
+                return sendCancelations(data, id, True)
             elif data["action"] == "refreshSubjectTable":
                 return refreshSubjectTable(data, id)
             elif data["action"] == "downloadEarnings":
@@ -392,7 +392,7 @@ def sendInvitations(data,id):
     try:
         result = s.sendInvitations()
 
-        if result['errorMessage'] != "":
+        if result['error_message'] != "":
             s.invitations_sent=False
         else:
             s.invitations_sent=True
@@ -408,7 +408,7 @@ def sendInvitations(data,id):
                                 },safe=False)
 
 #send invitations to subjects
-def sendCancelations(data,id):
+def sendCancelations(data, id, send_email):
     logger = logging.getLogger(__name__) 
     logger.info("Send cancelation")
     logger.info(data)
@@ -425,12 +425,16 @@ def sendCancelations(data,id):
     result = ""
 
     try:
-        result = s.sendCancelation()
+        if send_email:
+            result = s.sendCancelation()
 
-        if result['errorMessage'] != "":
-            s.canceled=False
+            if result['error_message'] != "":
+                s.canceled=False
+            else:
+                s.canceled=True
         else:
             s.canceled=True
+
         s.save()
     except Exception  as e: 
         logger.info(e)

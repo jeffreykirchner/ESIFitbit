@@ -326,10 +326,10 @@ var app = new Vue({
 
                             if( response.data.success)
                             {
-                                if(response.data.result.errorMessage != "")
-                                    app.$data.emailResult = "Error: " + response.data.result.errorMessage;
+                                if(response.data.result.error_message != "")
+                                    app.$data.emailResult = "Error: " + response.data.result.error_message;
                                 else
-                                    app.$data.emailResult = response.data.result.mailCount + " email(s) were sent.";                                     
+                                    app.$data.emailResult = response.data.result.mail_count + " email(s) were sent.";                                     
                             }
                             else
                             {
@@ -405,10 +405,10 @@ var app = new Vue({
 
                             if( response.data.success)
                             {
-                                if(response.data.result.errorMessage != "")
-                                    app.$data.emailResultCancelation = "Error: " + response.data.result.errorMessage;
+                                if(response.data.result.error_message != "")
+                                    app.$data.emailResultCancelation = "Error: " + response.data.result.error_message;
                                 else
-                                    app.$data.emailResultCancelation = response.data.result.mailCount + " email(s) were sent.";                                     
+                                    app.$data.emailResultCancelation = response.data.result.mail_count + " email(s) were sent.";                                     
                             }
                             else
                             {
