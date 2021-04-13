@@ -1,5 +1,5 @@
 # from .models import *
-from .sendEmail import * 
+from .send_email import * 
 from .todaysDate import *
 from .likertScales import *
 from .randomHexColor import *
