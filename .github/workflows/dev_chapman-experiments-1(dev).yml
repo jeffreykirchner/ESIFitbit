@@ -14,6 +14,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:12.5
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github_actions
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
     - uses: actions/checkout@v2
 
@@ -31,6 +43,24 @@ jobs:
       run: pip install -r requirements.txt
       
     # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+    - name: Run tests
+      env:
+        ALLOWED_HOSTS: localhost 127.0.0.1
+        DBHOST: localhost
+        DBNAME: github_actions
+        DBPASS: postgres
+        DBUSER: postgres
+        FITBIT_AUTHORIZATION: abc
+        FITBIT_CLIENT_ID: abc
+        LOG_LOCATION: abc
+        PPMS_HOST: ${{secrets.PPMS_HOST}}
+        PPMS_PASSWORD: ${{secrets.PPMS_PASSWORD}}
+        PPMS_USER_NAME: ${{secrets.PPMS_USER_NAME}}
+        EMAIL_MS_HOST: abc
+        EMAIL_MS_USER_NAME: abc
+        EMAIL_MS_PASSWORD: abc
+        SECRET_KEY: super_duper_secret_key
+      run: python manage.py test
     
     - name: Upload artifact for deployment jobs
       uses: actions/upload-artifact@v2
