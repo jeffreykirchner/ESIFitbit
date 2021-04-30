@@ -41,7 +41,8 @@ jobs:
     
     - name: Install dependencies
       run: pip install -r requirements.txt
-
+      
+    # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
     - name: Run tests
       env:
         ALLOWED_HOSTS: localhost 127.0.0.1
@@ -88,4 +89,4 @@ jobs:
         with:
           app-name: 'chapman-experiments-1'
           slot-name: 'dev'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_DEV }}
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_947b166f622948a783c1c78b47d32db1 }}
