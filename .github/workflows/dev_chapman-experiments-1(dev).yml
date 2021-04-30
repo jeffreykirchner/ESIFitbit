@@ -1,5 +1,6 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
+# More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
 
 name: Build and deploy Python app to Azure Web App - chapman-experiments-1(dev)
 
@@ -10,42 +11,52 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
 
     - name: Set up Python version
       uses: actions/setup-python@v1
       with:
         python-version: '3.8'
 
-    - name: Build using AppService-Build
-      env:
-        ALLOWED_HOSTS: localhost 127.0.0.1
-        DBHOST: localhost
-        DBNAME: github_actions
-        DBPASS: postgres
-        DBUSER: postgres
-        FITBIT_AUTHORIZATION: abc
-        FITBIT_CLIENT_ID: abc
-        LOG_LOCATION: abc
-        PPMS_HOST: abc
-        PPMS_PASSWORD: abc
-        PPMS_USER_NAME: abc
-        EMAIL_MS_HOST: abc
-        EMAIL_MS_USER_NAME: abc
-        EMAIL_MS_PASSWORD: abc
-        SECRET_KEY: super_duper_secret_key
-      uses: azure/appservice-build@v2
+    - name: Create and start virtual environment
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+    
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+      
+    # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+    
+    - name: Upload artifact for deployment jobs
+      uses: actions/upload-artifact@v2
       with:
-        platform: python
-        platform-version: '3.8'
+        name: python-app
+        path: |
+          . 
+          !venv/
 
-    - name: 'Deploy to Azure Web App'
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'chapman-experiments-1'
-        slot-name: 'dev'
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_DEV }}
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'dev'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: python-app
+          path: .
+      
+      - name: 'Deploy to Azure Web App'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'chapman-experiments-1'
+          slot-name: 'dev'
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_947b166f622948a783c1c78b47d32db1 }}
