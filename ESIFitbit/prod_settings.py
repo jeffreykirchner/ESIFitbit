@@ -18,9 +18,6 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split()
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 
-
-#"
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -28,7 +25,7 @@ DATABASES = {
         'HOST': os.environ['DBHOST'] ,
         'USER': os.environ['DBUSER'],
         'PASSWORD': os.environ['DBPASS'],
-        'OPTIONS': {'sslmode': 'require'},
+        'OPTIONS': {'sslmode': 'prefer'},
     },
 }
 
