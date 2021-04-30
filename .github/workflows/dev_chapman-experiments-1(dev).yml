@@ -52,9 +52,9 @@ jobs:
         FITBIT_AUTHORIZATION: abc
         FITBIT_CLIENT_ID: abc
         LOG_LOCATION: abc
-        PPMS_HOST: abc
-        PPMS_PASSWORD: abc
-        PPMS_USER_NAME: abc
+        PPMS_HOST: ${{secrets.PPMS_HOST}}
+        PPMS_PASSWORD: ${{secrets.PPMS_PASSWORD}}
+        PPMS_USER_NAME: ${{secrets.PPMS_USER_NAME}}
         EMAIL_MS_HOST: abc
         EMAIL_MS_USER_NAME: abc
         EMAIL_MS_PASSWORD: abc
