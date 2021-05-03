@@ -143,11 +143,11 @@
                         </span>
                     </td>
                     <td class = "text-center m-1 p-1">
-                        <span v-if="s.todays_stats.pay_pal">
+                        <span v-if="s.todays_stats.pay_pal || s.todays_stats.missed_days==='---'">
                             [[s.todays_stats.missed_days]]    
                         </span>
                         <span v-else>
-                            ---
+                            ~[[s.todays_stats.missed_days]]
                         </span>
                     </td>
                     <td class = "text-center m-1 p-1">
