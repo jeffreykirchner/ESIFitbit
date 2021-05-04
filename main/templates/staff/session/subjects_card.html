@@ -80,6 +80,8 @@
                     <th scope="col" class = "text-center m-1 p-1">
                         Control
                     </th>
+                    <th scope="col" class = "text-center m-1 p-1">
+                    </th>
                 </tr>
             </thead>
 
@@ -178,11 +180,13 @@
                     <td class = "text-center m-1 p-1">
                         <button v-bind:id="'editSubject' + s.id" type="button" class="btn btn-outline-primary btn-sm" v-on:click = "showEditSubject(s.id,index)" title="Edit subject info">
                             <i class="far fa-edit"></i>  
-                        </button> 
+                        </button>                         
+                    </td>   
+                    <td class = "text-center m-1 p-1">    
                         <button v-bind:id="'deleteSubject' + s.id" type="button" class="btn btn-outline-danger btn-sm" v-on:click = "deleteSubject(s.id)" title="Delete subject">
                             <i class="fas fa-user-minus fa-xs"></i>  
-                        </button>
-                    </td>                            
+                        </button> 
+                    </td>                    
                 </tr>                                                    
             </tbody>
             
