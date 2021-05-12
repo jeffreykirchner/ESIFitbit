@@ -459,6 +459,7 @@ class Session(models.Model):
             notice_text = notice_text.replace("[immune pay]", f'{self.parameterset.getImmunePay(p_number_used):0.2f}')
 
         notice_text = notice_text.replace("[fixed pay]", f'{self.parameterset.get_fixed_pay(p_number_used):0.2f}')
+        notice_text = notice_text.replace("[fixed pay - 1]", f'{self.parameterset.get_fixed_pay(min(p_number_used - 1,1)):0.2f}')
 
         return notice_text
     
