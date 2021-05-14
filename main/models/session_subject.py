@@ -565,7 +565,7 @@ class Session_subject(models.Model):
                                                                    .filter(session_day__period_number__lte = period_number) \
                                                                    .aggregate(Avg('immune_activity'))
 
-        logger.info(f'get_average_heart_score {sleep_activity_average}, start period {start_period_number}, end period {period_number}')
+        logger.info(f'get_average_sleep_score {sleep_activity_average}, start period {start_period_number}, end period {period_number}')
 
         if not sleep_activity_average["immune_activity__avg"]:
             return -1
@@ -597,27 +597,41 @@ class Session_subject(models.Model):
         payment = 0
         parameterset = self.session.parameterset
 
-
         if self.session.treatment=="A":
             payment = float(parameterset.get_fixed_pay(period_number))
 
             if parameterset.getHeartPay(period_number) > 0:
-                payment = payment + self.get_average_heart_score(period_number) * float(parameterset.getHeartPay(period_number)) + \
-                                    self.get_average_sleep_score(period_number) * float(parameterset.getImmunePay(period_number))
+                heart_score = self.get_average_heart_score(period_number)
+                sleep_score = self.get_average_sleep_score(period_number)
 
-                logger.info(f'get_daily_payment_A heart score {self.get_average_heart_score(period_number)}, sleep score {self.get_average_sleep_score(period_number)}')
+                if heart_score < 0.0 :
+                    heart_score = 0.0
+                
+                if sleep_score < 0.0 :
+                    sleep_score = 0.0
+
+                payment = payment + heart_score * float(parameterset.getHeartPay(period_number)) + \
+                                    sleep_score * float(parameterset.getImmunePay(period_number))
+
+                logger.info(f'get_daily_payment_A heart score {heart_score}, sleep score {sleep_score}')
 
         elif self.session.treatment=="B" or self.session.treatment=="C":
             payment = float(parameterset.get_fixed_pay(period_number))
 
             if parameterset.getHeartPay(period_number) > 0:
                 heart_score = self.get_average_heart_score(period_number)
-                sleep_score = self.get_average_sleep_score(period_number) 
+                sleep_score = self.get_average_sleep_score(period_number)
+
+                if heart_score < 0.0 :
+                    heart_score = 0.0
+                
+                if sleep_score < 0.0 :
+                    sleep_score = 0.0
 
                 payment = payment + heart_score * float(parameterset.get_treatment_b_c_paylevel(heart_score)) + \
                                     sleep_score * float(parameterset.get_treatment_b_c_paylevel(sleep_score))
 
-                logger.info(f'get_daily_payment_B_C heart score {self.get_average_heart_score(period_number)}, sleep score {self.get_average_sleep_score(period_number)}')
+                logger.info(f'get_daily_payment_B_C heart score {heart_score}, sleep score {sleep_score}')
 
         return round_half_away_from_zero(payment, 2)
 
