@@ -6,3 +6,4 @@ ESIRecruiterEnv/*
 .vscode/*
 Notes.txt
 setup.sh
+db_dump

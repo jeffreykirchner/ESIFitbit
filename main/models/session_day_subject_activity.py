@@ -247,17 +247,6 @@ class Session_day_subject_actvity(models.Model):
         if period_number != end_period:
             logger.warning(f'calc_a_b_c_block_payments not last period {self}, end period {end_period}')
             return 0
-        
-        #block 1 one calculations
-        # if self.session_day.getCurrentHeartPay() == 0 or \
-        #    self.session_day.session.treatment == "A":
-
-           
-
-        # elif self.session_day.session.treatment == "B":
-        #     pass
-        # elif self.session_day.session.treatment == "C":
-        #     pass
 
         missed_days = self.session_subject.get_missed_checkins(period_number)
         daily_payment = self.session_subject.get_daily_payment_A_B_C(period_number)
@@ -463,11 +452,51 @@ class Session_day_subject_actvity(models.Model):
         # ["Session","Period","Block","Date","Subject ID", "Subject Code","Heart Activity Minutes",
         #                  "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
         #                  "Check In Today", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today"]
+        
+        heart_earnings = self.getTodaysHeartEarnings()
+        sleep_earnings = self.getTodaysImmuneEarnings()
+
         writer.writerow([f'{self.session_day.session.title}', self.session_day.period_number, self.session_day.session.parameterset.getBlock(self.session_day.period_number),
                          self.session_day.getDateStr(),self.session_subject.id_number, self.session_subject.contact_email, self.heart_activity_minutes,
                          self.immune_activity_minutes,self.heart_activity, self.immune_activity, self.check_in_today,
-                         self.paypal_today, self.session_day.session.parameterset.get_fixed_pay(self.session_day.period_number), self.getTodaysHeartEarnings(),
-                         self.getTodaysImmuneEarnings(), self.payment_today, self.fitbit_minutes_sedentary, self.fitbit_minutes_lightly_active,
+                         self.paypal_today, self.session_day.session.parameterset.get_fixed_pay(self.session_day.period_number), heart_earnings,
+                         sleep_earnings, self.payment_today, self.fitbit_minutes_sedentary, self.fitbit_minutes_lightly_active,
+                         self.fitbit_minutes_fairly_active, self.fitbit_minutes_very_active, self.fitbit_steps, self.fitbit_calories,
+                         self.fitbit_minutes_heart_out_of_range, self.fitbit_minutes_heart_fat_burn, self.fitbit_minutes_heart_cardio,
+                         self.fitbit_minutes_heart_peak, self.fitbit_min_heart_rate_zone_bpm, self.fitbit_on_wrist_minutes, last_login_str])
+    
+    def getCSVResponseABC(self,writer):
+        p = Parameters.objects.first()
+        tz = pytz.timezone(p.experimentTimeZone)
+        last_login_str = "No login" if not self.last_login else self.last_login.astimezone(tz).strftime("%#m/%#d/%Y %H:%M:%S %Z")
+        # ["Session","Period","Block","Date","Subject ID", "Subject Code","Heart Activity Minutes",
+        #                  "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
+        #                  "Check In Today", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today"]
+        
+        period_number = self.session_day.period_number
+        treatment =  self.session_subject.session.treatment
+
+        missed_days = self.session_subject.get_missed_checkins(period_number)
+
+        heart_average = self.session_subject.get_average_heart_score(period_number)
+
+        if treatment == "A":
+            heart_paylevel = self.session_subject.session.parameterset.getHeartPay(period_number)
+        else:
+            heart_paylevel = self.session_subject.session.parameterset.get_treatment_b_c_paylevel(heart_average)
+        
+        sleep_average = self.session_subject.get_average_sleep_score(period_number)
+
+        if treatment == "A":
+            sleep_paylevel = self.session_subject.session.parameterset.getImmunePay(period_number)
+        else:
+            sleep_paylevel = self.session_subject.session.parameterset.get_treatment_b_c_paylevel(sleep_average)
+
+        writer.writerow([f'{self.session_day.session.title}',period_number , self.session_day.session.parameterset.getBlock(period_number),
+                         self.session_day.getDateStr(),self.session_subject.id_number, self.session_subject.contact_email, self.heart_activity_minutes,
+                         self.immune_activity_minutes,self.heart_activity, self.immune_activity, self.check_in_today,
+                         self.paypal_today, missed_days, self.session_day.session.parameterset.get_fixed_pay(period_number), heart_average, heart_paylevel,
+                         sleep_average, sleep_paylevel, self.payment_today, self.fitbit_minutes_sedentary, self.fitbit_minutes_lightly_active,
                          self.fitbit_minutes_fairly_active, self.fitbit_minutes_very_active, self.fitbit_steps, self.fitbit_calories,
                          self.fitbit_minutes_heart_out_of_range, self.fitbit_minutes_heart_fat_burn, self.fitbit_minutes_heart_cardio,
                          self.fitbit_minutes_heart_peak, self.fitbit_min_heart_rate_zone_bpm, self.fitbit_on_wrist_minutes, last_login_str])
