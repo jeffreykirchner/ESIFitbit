@@ -288,12 +288,22 @@ class Session(models.Model):
         writer = csv.writer(csv_response)
 
         writer.writerow(["Subject Data"])
-        writer.writerow(["Session","Period","Block","Date","Subject ID", "Email","Heart Activity Minutes",
-                         "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
-                         "Fitbit Data Pulled", "Paid Today","Fixed Payment","Heart Payment","Immune Payment","Total Payment Today",
-                         "Minutes Sedentary","Minutes Lightly Active","Minutes Fairly Active","Minutes Very Active","Steps","Calories",
-                         "Heart Rate Minutes Out of Range","Heart Rate Minutes Fat Burn","Heart Rate Minutes Cardio",
-                         "Heart Rate Minutes Peak","Zone Minutes Minimum BPM","Time On Wrist","First Login Time"])
+
+        if self.treatment == "I" or self.treatment == "Base":
+
+            writer.writerow(["Session","Period","Block","Date","Subject ID", "Email","Heart Activity Minutes",
+                            "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
+                            "Fitbit Data Pulled", "Paid Today", "Fixed Payment","Heart Payment","Immune Payment","Total Payment Today",
+                            "Minutes Sedentary","Minutes Lightly Active","Minutes Fairly Active","Minutes Very Active","Steps","Calories",
+                            "Heart Rate Minutes Out of Range","Heart Rate Minutes Fat Burn","Heart Rate Minutes Cardio",
+                            "Heart Rate Minutes Peak","Zone Minutes Minimum BPM","Time On Wrist","First Login Time"])
+        else:
+             writer.writerow(["Session","Period","Block","Date","Subject ID", "Email","Heart Activity Minutes",
+                            "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
+                            "Fitbit Data Pulled", "Paid Today", "Missed Days", "Fixed Payment", "Average Heart Score","Heart Pay Level", "Average Immune Score", "Immune Pay Level", "Total Payment Today",
+                            "Minutes Sedentary","Minutes Lightly Active","Minutes Fairly Active","Minutes Very Active","Steps","Calories",
+                            "Heart Rate Minutes Out of Range","Heart Rate Minutes Fat Burn","Heart Rate Minutes Cardio",
+                            "Heart Rate Minutes Peak","Zone Minutes Minimum BPM","Time On Wrist","First Login Time"])
 
         sd_list = self.session_days.all().order_by('period_number')
 
