@@ -79,13 +79,41 @@
                             <div class="col-8" style="text-align: center;">
                                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                     <label class="btn btn-secondary active">
-                                        <input type="radio" name="options" id="option1" autocomplete="off" checked v-on:click="updateToogleState('heart')"> <i class="far fa-heart"></i>
+                                        <input type="radio" 
+                                               name="options" 
+                                               id="option1" 
+                                               autocomplete="off" 
+                                               checked v-on:click="updateToogleState('heart')"> 
+                                            <i class="far fa-heart"></i>
                                     </label>
+                                    {%if sleep_tracking%}
                                     <label class="btn btn-secondary">
-                                        <input type="radio" name="options" id="option2" autocomplete="off" v-on:click="updateToogleState('immune')"> <i class="fas fa-bed"></i>
+                                        <input type="radio" 
+                                               name="options" 
+                                               id="option2" 
+                                               autocomplete="off" 
+                                               v-on:click="updateToogleState('immune')"> 
+                                            <i class="fas fa-bed"></i>
                                     </label>
-                                    <label class="btn btn-secondary" v-bind:style="[(viewed_heart === false || viewed_immune === false) && session_day_subject_actvity.paypal_today ===false ? {'background-color': 'lightgrey' }:{}]">
-                                        <input type="radio" name="options" id="option2" autocomplete="off" v-on:click="updateToogleState('payment')"> <i class="fas fa-dollar-sign"></i>
+                                    {%endif%}
+                                    {%if show_group%}
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" 
+                                               name="options" 
+                                               id="option3" 
+                                               autocomplete="off" 
+                                               v-on:click="updateToogleState('group')"> 
+                                            <i class="fas fa-user-friends"></i>
+                                    </label>
+                                    {%endif%}
+                                    <label class="btn btn-secondary" 
+                                           v-bind:style="[(viewed_heart === false || viewed_immune === false || viewed_group == false) && session_day_subject_actvity.paypal_today ===false ? {'background-color': 'lightgrey' }:{}]">
+                                        <input type="radio" 
+                                               name="options" 
+                                               id="option2" 
+                                               autocomplete="off" 
+                                               v-on:click="updateToogleState('payment')"> 
+                                            <i class="fas fa-dollar-sign"></i>
                                     </label>                    
                                 </div>
                             </div>

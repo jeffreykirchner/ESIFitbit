@@ -7,6 +7,7 @@ import logging
 
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.core.serializers.json import DjangoJSONEncoder
 
 from main.models import Session_subject, Session_day_subject_actvity, Parameters
 from main.models import Session_subject_questionnaire1,Session_subject_questionnaire2
@@ -104,6 +105,10 @@ def Subject_Home(request, id_):
                                                        "session_subject" : session_subject,
                                                        "baseline_heart" : baseline_heart,
                                                        "baseline_sleep" : baseline_sleep,
+                                                       "sleep_tracking_json" : json.dumps(session.parameterset.sleep_tracking, cls=DjangoJSONEncoder),
+                                                       "show_group_json" : json.dumps(session.parameterset.show_group, cls=DjangoJSONEncoder),
+                                                       "sleep_tracking" : session.parameterset.sleep_tracking,
+                                                       "show_group" : session.parameterset.show_group,
                                                        "session_treatment" : session.treatment})
         else:
             logger.info("Error: subject Home, subject not found")

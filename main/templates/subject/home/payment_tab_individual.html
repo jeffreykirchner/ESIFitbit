@@ -20,7 +20,7 @@
     <div class="row mt">
         <div class="col" style="text-align: center;">+ (Heart Pay) x (Today's Heart Score)</div>
     </div>
-    <div class="row">
+    <div class="row" v-if="sleep_tracking">
         <div class="col" style="text-align: center;">+ (Sleep Pay) x (Today's Sleep Score)</div>
     </div>
     <div class="row mt-3">
@@ -29,11 +29,15 @@
     <div class="row">
         <div class="col" style="text-align: center;">+ $[[session_day_subject_actvity.current_heart_pay]] x [[session_day_subject_actvity.heart_activity]]</div>
     </div>
-    <div class="row">
+    <div class="row" v-if="sleep_tracking">
         <div class="col" style="text-align: center;">+ $[[session_day_subject_actvity.current_immune_pay]] x [[session_day_subject_actvity.immune_activity]]</div>
     </div>
     <div class="row mt-3">
-        <div class="col" style="text-align: center;">$[[session_day_subject_actvity.fixed_pay_per_day]] + $[[session_day_subject_actvity.current_heart_earnings]] + $[[session_day_subject_actvity.current_immune_earnings]] = $[[session_day_subject_actvity.current_total_earnings]]</div>
+        <div class="col" style="text-align: center;">
+            $[[session_day_subject_actvity.fixed_pay_per_day]]
+            <span v-if="sleep_tracking">+ $[[session_day_subject_actvity.current_heart_earnings]]</span>
+            + $[[session_day_subject_actvity.current_immune_earnings]] = $[[session_day_subject_actvity.current_total_earnings]]
+        </div>
     </div>
 </div>
 

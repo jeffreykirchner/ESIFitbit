@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 import logging
 import csv
+import json
 
 from django.db import models
 from django.dispatch import receiver
@@ -14,6 +15,7 @@ from django.utils.timezone import now
 from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.serializers.json import DjangoJSONEncoder
 
 import main
 
@@ -56,7 +58,7 @@ class Session(models.Model):
 
     treatment = models.CharField( max_length=100, choices=Treatment.choices,default=Treatment.ONE)    #payment system used
 
-    auto_pay = models.BooleanField(default=True)                                 #if true automaically send payments to subject via paypal
+    auto_pay = models.BooleanField(default=False)                                 #if true automaically send payments to subject via paypal
 
     consent_required = models.BooleanField(default=True, verbose_name='Consent Form Signed')                 #true if subject has done consent form  
     questionnaire1_required = models.BooleanField(default=True, verbose_name='Pre-questionnaire Complete')   #pre experiment questionnaire

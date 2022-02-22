@@ -1,17 +1,14 @@
 from datetime import datetime, timedelta
-from copy import copy
 
 import json
-import uuid
 import logging
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.contrib.auth.models import User
 from django.http import JsonResponse
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models.functions import Lower
 
-from main.globals import getRandomHexColor
 from main.globals import todaysDate
 
 from main.forms import Parameterset_form, SessionForm, Subject_form, Import_parameters_form, ParametersetPaylevelForm

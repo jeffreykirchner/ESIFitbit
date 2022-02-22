@@ -180,16 +180,18 @@
                 <span v-html="session.parameterset.minimum_wrist_minutes"></span>
             </div>
             <div class="col-md" style="text-align: right;">
-               
+                {{parameterset_form.sleep_tracking.label}}
             </div>
             <div class="col-md">
-               
+                <span v-if="session.parameterset.sleep_tracking">Yes</span>
+                <span v-else>No</span>
             </div>
             <div class="col-md" style="text-align: right;">
-               
+                {{parameterset_form.show_group.label}}
             </div>
             <div class="col-md">
-                
+                <span v-if="session.parameterset.show_group">Yes</span>
+                <span v-else>No</span>
             </div>
             <div class="col-md" style="text-align: right;">
                

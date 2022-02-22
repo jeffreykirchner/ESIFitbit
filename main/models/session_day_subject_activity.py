@@ -37,16 +37,21 @@ class Session_day_subject_actvity(models.Model):
     payment_today =  models.DecimalField(decimal_places=2, default=0, max_digits=6)                 #amount of money paid to subject today
 
     #fitbit metrics
+    #charge 3 metrics depriciated
     fitbit_minutes_sedentary = models.IntegerField(default=0)         #todays tracker sedentary minutes
     fitbit_minutes_lightly_active = models.IntegerField(default=0)    #todays tracker lightly active minutes
     fitbit_minutes_fairly_active = models.IntegerField(default=0)     #todays tracker fairly active minutes
     fitbit_minutes_very_active = models.IntegerField(default=0)       #todays tracker very active minutes
+
     fitbit_steps = models.IntegerField(default=0)                     #todays tracker steps
     fitbit_calories = models.IntegerField(default=0)                  #todays tracker calories
+
+    #charge 4 active zone minutes
     fitbit_minutes_heart_out_of_range = models.IntegerField(default=0)         #todays heart rate out of range
     fitbit_minutes_heart_fat_burn = models.IntegerField(default=0)             #todays heart rate lightly fat burn
     fitbit_minutes_heart_cardio = models.IntegerField(default=0)               #todays heart rate cardio
     fitbit_minutes_heart_peak = models.IntegerField(default=0)                 #todays heart rate peak
+
     fitbit_heart_time_series =  models.CharField(max_length = 100000, default = '')  #today's heart rate time series
     fitbit_immune_time_series =  models.CharField(max_length = 100000, default = '')  #today's sleep time series
 
@@ -391,36 +396,39 @@ class Session_day_subject_actvity(models.Model):
         logger = logging.getLogger(__name__)
 
         fitbitError = False
+        sleep_tracking = self.session_day.session.parameterset.sleep_tracking
 
-        self.fitbit_immune_time_series = self.session_subject.getFitbitSleep(self.session_day.date)
-        immune_activity_minutes = self.session_subject.getFibitImmuneMinutes(self.session_day.date)
+        if sleep_tracking:
+            self.fitbit_immune_time_series = self.session_subject.getFitbitSleep(self.session_day.date)
+            immune_activity_minutes = self.session_subject.getFibitImmuneMinutes(self.session_day.date)
 
-        if immune_activity_minutes !=-1:
+        #if immune_activity_minutes !=-1:
             #activites
-            self.fitbit_minutes_sedentary = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesSedentary")
-            self.fitbit_minutes_lightly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesLightlyActive")
-            self.fitbit_minutes_fairly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesFairlyActive")
-            self.fitbit_minutes_very_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesVeryActive")
-            self.fitbit_steps = self.session_subject.getFibitActivityMinutes(self.session_day.date,"steps")
-            self.fitbit_calories = self.session_subject.getFibitActivityMinutes(self.session_day.date,"calories")
+            # self.fitbit_minutes_sedentary = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesSedentary")
+            # self.fitbit_minutes_lightly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesLightlyActive")
+            # self.fitbit_minutes_fairly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesFairlyActive")
+            # self.fitbit_minutes_very_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesVeryActive")
+        self.fitbit_steps = self.session_subject.getFibitActivityMinutes(self.session_day.date, "steps")
+        self.fitbit_calories = self.session_subject.getFibitActivityMinutes(self.session_day.date, "calories")
 
         self.save()
 
         #old active minutes calculation
-        heart_activity_minutes =  self.fitbit_minutes_fairly_active +  self.fitbit_minutes_very_active
+        #heart_activity_minutes =  self.fitbit_minutes_fairly_active +  self.fitbit_minutes_very_active
 
-        if immune_activity_minutes >= 0:
-            self.immune_activity_minutes = immune_activity_minutes
-        else:
-            logger.warning(f"immune_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")
-            fitbitError=True
+        if sleep_tracking:
+            if immune_activity_minutes >= 0:
+                self.immune_activity_minutes = immune_activity_minutes
+            else:
+                logger.warning(f"immune_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")
+                fitbitError=True
         
         #old calculation
         #self.heart_activity_minutes = heart_activity_minutes
 
-        if heart_activity_minutes < 0:
-            logger.warning(f"heart_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")
-            fitbitError=True
+        # if heart_activity_minutes < 0:
+        #     logger.warning(f"heart_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")
+        #     fitbitError=True
 
         self.save()
 
