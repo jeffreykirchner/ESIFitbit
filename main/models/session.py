@@ -312,36 +312,38 @@ class Session(models.Model):
         for sd in sd_list:
             sd.getCSVResponse(writer)
 
-        writer.writerow([])
-        writer.writerow(["Pre Questionnaire"])
+        if self.questionnaire1_required:
+            writer.writerow([])
+            writer.writerow(["Pre Questionnaire"])
 
-        writer.writerow(['Session','Subject ID', 'Subject Code', 'Email', 'Consent Signature', 'Sleep Hours', 'Sleep Likert', 'Sleep Explanation','Exercise Minutes',
-                         'Exercise Likert', 'Exercise Explanation', 'Health Importance Likert',
-                         'Health Importance Explanation', 'Health Importance Actions', 'Health Satisfaction Likert',
-                         'Sleep Variation Likert', 'Sleep Variation Explanation',
-                         'Exercise Variation Likert', 'Exercise Variation Explanation', 'Full Name', 'Address Line 1', 'Address Line 2',
-                         'City', 'State', 'Zip Code', 'Birthdate', 'Attended'])
+            writer.writerow(['Session','Subject ID', 'Subject Code', 'Email', 'Consent Signature', 'Sleep Hours', 'Sleep Likert', 'Sleep Explanation','Exercise Minutes',
+                            'Exercise Likert', 'Exercise Explanation', 'Health Importance Likert',
+                            'Health Importance Explanation', 'Health Importance Actions', 'Health Satisfaction Likert',
+                            'Sleep Variation Likert', 'Sleep Variation Explanation',
+                            'Exercise Variation Likert', 'Exercise Variation Explanation', 'Full Name', 'Address Line 1', 'Address Line 2',
+                            'City', 'State', 'Zip Code', 'Birthdate', 'Attended'])
 
-        ss_list = self.session_subjects.order_by('id_number')
-        
-        for ss in ss_list:
-            if ss.Session_subject_questionnaire1.all():
-                ss.Session_subject_questionnaire1.first().getCSVResponse(writer)
+            ss_list = self.session_subjects.order_by('id_number')
+            
+            for ss in ss_list:
+                if ss.Session_subject_questionnaire1.all():
+                    ss.Session_subject_questionnaire1.first().getCSVResponse(writer)
 
-        writer.writerow([])
-        writer.writerow(["Post Questionnaire"])
+        if self.questionnaire2_required:
+            writer.writerow([])
+            writer.writerow(["Post Questionnaire"])
 
-        writer.writerow(['Session','Subject ID', 'Subject Code', 'Email', 
-                         'Sleep Change Post', 'Sleep Change Post Explanation',
-                         'Exercise Change Post', 'Exercise Changed Post Explanation',
-                         'Health Concern Post', 'Health Concern Post Explanation',
-                         'Holiday Break Explaination', 'Sex at Birth', 'Gender Identity', 'Gender Identity Self Describe'])
+            writer.writerow(['Session','Subject ID', 'Subject Code', 'Email', 
+                            'Sleep Change Post', 'Sleep Change Post Explanation',
+                            'Exercise Change Post', 'Exercise Changed Post Explanation',
+                            'Health Concern Post', 'Health Concern Post Explanation',
+                            'Holiday Break Explaination', 'Sex at Birth', 'Gender Identity', 'Gender Identity Self Describe'])
 
-        ss_list = self.session_subjects.filter(soft_delete=False).order_by('id_number')
-        
-        for ss in ss_list:
-            if ss.Session_subject_questionnaire2.all():
-                ss.Session_subject_questionnaire2.first().getCSVResponse(writer)
+            ss_list = self.session_subjects.filter(soft_delete=False).order_by('id_number')
+            
+            for ss in ss_list:
+                if ss.Session_subject_questionnaire2.all():
+                    ss.Session_subject_questionnaire2.first().getCSVResponse(writer)
 
         #parameters
         writer.writerow([])
@@ -354,7 +356,8 @@ class Session(models.Model):
                           'Block 1 day count','Block 2 day count','Block 3 day count', 
                           'Block 1 fixed pay', 'Block 2 fixed pay', 'Block 3 fixed pay', 'Minutes required on wrist',
                           'Y min heart','Y max heart','Y ticks heart','X min heart','X max heart','X ticks heart',  
-                          'Y min immune','Y max immune','Y ticks immune','X min immune','X max immune','X ticks immune'])
+                          'Y min immune','Y max immune','Y ticks immune','X min immune','X max immune','X ticks immune',
+                          'Sleep Tracking', 'Show Groups'])
 
         self.parameterset.getCSVResponse(writer,self.title,self.Treatment(self.treatment).label)
 

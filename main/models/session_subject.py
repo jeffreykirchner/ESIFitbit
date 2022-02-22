@@ -625,7 +625,7 @@ class Session_subject(models.Model):
                 if heart_score < 0.0 :
                     heart_score = 0.0
                 
-                if sleep_score < 0.0 :
+                if sleep_score < 0.0 or not parameterset.sleep_tracking:
                     sleep_score = 0.0
 
                 payment = payment + heart_score * float(parameterset.get_treatment_b_c_paylevel(heart_score)) + \
@@ -643,7 +643,7 @@ class Session_subject(models.Model):
         missed_checkins = self.get_missed_checkins(period_number)
         total_days = self.session.parameterset.get_block_day_count(period_number)
 
-        return round_half_away_from_zero((total_days - missed_checkins) * self.get_daily_payment_A_B_C(period_number),2)
+        return round_half_away_from_zero((total_days - missed_checkins) * self.get_daily_payment_A_B_C(period_number), 2)
 
     #return json object of class
     def json(self,get_fitbit_status,request_type):

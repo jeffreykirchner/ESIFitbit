@@ -2,6 +2,7 @@
 subject's daily activity
 '''
 from datetime import datetime, timedelta
+from django.conf import settings
 
 import pytz
 import uuid
@@ -396,35 +397,33 @@ class Session_day_subject_actvity(models.Model):
         logger = logging.getLogger(__name__)
 
         fitbitError = False
-        sleep_tracking = self.session_day.session.parameterset.sleep_tracking
+        #sleep_tracking = self.session_day.session.parameterset.sleep_tracking
 
-        if sleep_tracking:
-            self.fitbit_immune_time_series = self.session_subject.getFitbitSleep(self.session_day.date)
-            immune_activity_minutes = self.session_subject.getFibitImmuneMinutes(self.session_day.date)
+        self.fitbit_immune_time_series = self.session_subject.getFitbitSleep(self.session_day.date)
+        immune_activity_minutes = self.session_subject.getFibitImmuneMinutes(self.session_day.date)
 
-        #if immune_activity_minutes !=-1:
+        if immune_activity_minutes !=-1 and settings.DEBUG == False:
             #activites
-            # self.fitbit_minutes_sedentary = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesSedentary")
-            # self.fitbit_minutes_lightly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesLightlyActive")
-            # self.fitbit_minutes_fairly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesFairlyActive")
-            # self.fitbit_minutes_very_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesVeryActive")
-        self.fitbit_steps = self.session_subject.getFibitActivityMinutes(self.session_day.date, "steps")
-        self.fitbit_calories = self.session_subject.getFibitActivityMinutes(self.session_day.date, "calories")
+            self.fitbit_minutes_sedentary = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesSedentary")
+            self.fitbit_minutes_lightly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesLightlyActive")
+            self.fitbit_minutes_fairly_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesFairlyActive")
+            self.fitbit_minutes_very_active = self.session_subject.getFibitActivityMinutes(self.session_day.date,"minutesVeryActive")
+            self.fitbit_steps = self.session_subject.getFibitActivityMinutes(self.session_day.date, "steps")
+            self.fitbit_calories = self.session_subject.getFibitActivityMinutes(self.session_day.date, "calories")
 
         self.save()
 
         #old active minutes calculation
         #heart_activity_minutes =  self.fitbit_minutes_fairly_active +  self.fitbit_minutes_very_active
 
-        if sleep_tracking:
-            if immune_activity_minutes >= 0:
-                self.immune_activity_minutes = immune_activity_minutes
-            else:
-                logger.warning(f"immune_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")
-                fitbitError=True
+        if immune_activity_minutes >= 0:
+            self.immune_activity_minutes = immune_activity_minutes
+        else:
+            logger.warning(f"immune_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")
+            fitbitError=True
         
         #old calculation
-        #self.heart_activity_minutes = heart_activity_minutes
+        # self.heart_activity_minutes = heart_activity_minutes
 
         # if heart_activity_minutes < 0:
         #     logger.warning(f"heart_activity_minutes not found: session subject {self.session_subject} session day {self.session_day}")

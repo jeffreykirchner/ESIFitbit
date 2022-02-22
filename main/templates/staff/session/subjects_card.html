@@ -65,9 +65,11 @@
                     <th scope="col" class = "text-center m-1 p-1">
                         Heart Score                    
                     </th>
+                    {%if session.parameterset.sleep_tracking%}
                     <th scope="col" class = "text-center m-1 p-1">
                         Sleep Score                    
                     </th>
+                    {%endif%}
                     <th scope="col" class = "text-center m-1 p-1">
                         Wrist Time YDA|2DAY                     
                     </th>
@@ -155,9 +157,11 @@
                     <td class = "text-center m-1 p-1">
                         [[s.todays_stats.heart_score]] | [[s.todays_stats.heart_time]] | [[s.todays_stats.heart_bpm]]               
                     </td>
+                    {%if session.parameterset.sleep_tracking%}
                     <td class = "text-center m-1 p-1">
                         [[s.todays_stats.immune_score]] | [[s.todays_stats.immune_time]]                   
                     </td>
+                    {%endif%}
                     <td class = "text-center m-1 p-1">
                         [[s.todays_stats.wrist_time]]
                     </td>

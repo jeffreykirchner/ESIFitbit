@@ -538,7 +538,12 @@ var app = new Vue({
             if(app.$data.toggleState == 'immune')
             {
                 app.$data.viewed_immune = true;
-            }                    
+            } 
+            
+            if(app.$data.toggleState == 'group')
+            {
+                app.$data.viewed_group = true;
+            }
 
             Vue.nextTick(app.updateCanvases());    
         },

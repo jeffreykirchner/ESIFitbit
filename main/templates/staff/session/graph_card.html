@@ -8,9 +8,11 @@
                 <label class="btn btn-secondary active">
                     <input type="radio" name="options" id="option1" autocomplete="off" checked v-on:click="updateToogleState('heart')"> <i class="far fa-heart"></i>
                 </label>
+                {%if session.parameterset.sleep_tracking%}
                 <label class="btn btn-secondary">
                     <input type="radio" name="options" id="option2" autocomplete="off" v-on:click="updateToogleState('immune')"> <i class="fas fa-bed"></i>
-                </label>                    
+                </label>  
+                {%endif%}                  
             </div>
         </span>
                                                         

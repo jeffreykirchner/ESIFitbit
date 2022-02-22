@@ -89,6 +89,7 @@ def Staff_Session(request,id):
         parameterset_paylevel_form = ParametersetPaylevelForm()
         p = Parameters.objects.first()
         yesterdays_date = todaysDate() - timedelta(days=1)
+        session = Session.objects.get(id=id)
 
         #get list of form ids
         subject_form_ids=[]
@@ -100,6 +101,7 @@ def Staff_Session(request,id):
             paylevel_form_ids.append(i.html_name)
         
         return render(request,'staff/session.html',{'id' : id,
+                                                    'session' : session,
                                                     'parameterset_form' : parameterset_form,
                                                     'session_form' : session_form,
                                                     'subject_form' : subject_form,
