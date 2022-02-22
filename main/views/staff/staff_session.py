@@ -18,9 +18,6 @@ from main.models import Session,Parameterset, Session_subject, Session_day_subje
 @login_required
 def Staff_Session(request,id):
     logger = logging.getLogger(__name__) 
-   
-    
-    # logger.info("some info")
 
     if request.method == 'POST':     
 
