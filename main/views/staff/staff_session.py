@@ -10,6 +10,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models.functions import Lower
 
 from main.globals import todaysDate
+from main.globals import getRandomHexColor
 
 from main.forms import Parameterset_form, SessionForm, Subject_form, Import_parameters_form, ParametersetPaylevelForm
 from main.models import Session,Parameterset, Session_subject, Session_day_subject_actvity, Parameters, ParametersetPaylevel
