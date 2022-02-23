@@ -80,6 +80,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'ESIFitbit.context_processors.get_debug',
+                'ESIFitbit.context_processors.get_auth_account_url',
+                'ESIFitbit.context_processors.get_auth_password_reset_url',
             ],
         },
     },
