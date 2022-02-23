@@ -2,11 +2,11 @@
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 
-var app = new Vue({
+var app = Vue.createApp({
 
     delimiters: ['[[', ']]'],
-    el: '#root',        
-    data:{
+  
+    data() {return {
         session_day_subject_actvity:{heart_activity:"--",
                                      immune_activity:"--",
                                      current_heart_pay:"--",
@@ -83,7 +83,7 @@ var app = new Vue({
         },
         group_list : [],
         
-    },
+    }},
 
     methods:{
 
@@ -626,10 +626,10 @@ var app = new Vue({
         {%endif%}
     },
 
-    mounted: function(){
+    mounted(){
         {%if status == "success" %}
             this.getSessionDaySubject();      
             $('#hideHelpBox').on("hidden.bs.modal", this.hideHelpBox);   
         {%endif%}             
     },
-});
+}).mount('#app');

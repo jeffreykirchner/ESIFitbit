@@ -8,18 +8,18 @@
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
         axios.defaults.xsrfCookieName = "csrftoken";
 
-        var app = new Vue({
+        var app = Vue.createApp({
         
             delimiters: ['[[', ']]'],
-            el: '#root',        
-            data:{
+                  
+            data() {return {
                 sessions:[],
                 createSessionButtonText : 'Create Session <i class="fas fa-plus"></i>',
                 dateSortButtonText: 'Date <i class="fas fa-sort"></i>',
                 titleSortButtonText: 'Title <i class="fas fa-sort"></i>',
                 helpTitle:"Create Session Help",
                 helpText:`{{help_text|safe}}`,
-            },
+            }},
 
             methods:{
 
@@ -103,10 +103,10 @@
                             
             },
 
-            mounted: function(){
+            mounted(){
                 this.getSessions();                      
             },
-        });
+        }).mount('#app');;
 
     });
 
