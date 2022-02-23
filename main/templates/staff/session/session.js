@@ -1,11 +1,11 @@
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 
-var app = new Vue({
+var app = Vue.createApp({
 
     delimiters: ['[[', ']]'],
-    el: '#root',        
-    data:{
+      
+    data() {return {
         sessionParametersBeforeEdit:{},                     //store session before editing to restore if canceled
         current_paylevel:{id : "",
                            score : "",
@@ -96,7 +96,7 @@ var app = new Vue({
         last_refresh:"",
         auto_refresh:"Off",
         timeouts:[],
-    },
+    }},
 
     methods:{
 
@@ -1189,7 +1189,7 @@ var app = new Vue({
         },
     },
 
-    mounted: function(){
+    mounted(){
         this.getSession();        
         $('#editSessionParametersModal').on("hidden.bs.modal", this.hideEditParameters);  
         $('#editSessionModal').on("hidden.bs.modal", this.hideEditSession);   
@@ -1201,4 +1201,4 @@ var app = new Vue({
         $('#copySubjectModal').on("hidden.bs.modal", this.hideCopySubject); 
         $('#editSessionParametersPaylevelModal').on("hidden.bs.modal", this.hideEditPaylevel); 
     },
-});
+}).mount('#app');

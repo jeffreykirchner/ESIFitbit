@@ -38,7 +38,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -47,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'crispy_forms',
     'main',
+    'django.contrib.admin',
 ]
 
 MIDDLEWARE = [
@@ -80,6 +80,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'ESIFitbit.context_processors.get_debug',
+                'ESIFitbit.context_processors.get_auth_account_url',
+                'ESIFitbit.context_processors.get_auth_password_reset_url',
             ],
         },
     },

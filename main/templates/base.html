@@ -25,9 +25,10 @@
         
 
         {%if DEBUG%}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.js" integrity="sha256-NSuqgY2hCZJUN6hDMFfdxvkexI7+iLxXQbL540RQ/c4=" crossorigin="anonymous"></script>
+        <!-- <script src="https://unpkg.com/vue@3.0.5"></script> -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.26/vue.global.min.js" integrity="sha512-MXAAS+HimUKBNq7JH7RtQDLg9dM+dh4+nED1e29hydWOzkj1IOl+rf0SlCyXnlJS5Acb+wHJUAEGCfKyooCiAg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         {%else%}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js" integrity="sha256-ngFW3UnAN0Tnm76mDuu7uUtYEcG3G5H1+zioJw3t+68=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.26/vue.global.prod.min.js" integrity="sha512-yY2w8QVShzoLAachKPHtZRjXZeQOi9rQ2dYEYLf+lelt+TvZVOm/AlqVX6xFrjiy6wKDxgqvT1RL3BjxPdq/UA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         {%endif%}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js" integrity="sha512-DZqqY3PiOvTP9HkjIWgjO6ouCbq+dxqWoJZ/Q+zPYNHmlnI2dQnbJ5bxAHpAMw+LXRm4D72EIRXzvcHQtE8/VQ==" crossorigin="anonymous"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -57,7 +58,7 @@
         {%endblock head%}        
     </head>
     <body style="font-size:16px"> 
-        {%if user.is_staff%}
+        {%if user.is_authenticated%}
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
            
                 <a class="navbar-brand" href="{% url 'staff_home' %}">
@@ -69,7 +70,7 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                {% if user.is_staff %}
+                {% if user.is_authenticated %}
                     <ul class="navbar-nav mr-auto">                                             
                         <li class="nav-item active">
                                     
@@ -83,13 +84,14 @@
 
                     </ul>                     
 
-                    <div class="nav-item dropdown my-2 my-lg-0">
+                    <div class="nav-item dropdown my-2 my-lg-0">                       
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Menu
+                            {{request.user.last_name}}, {{request.user.first_name}}
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="{% url 'admin:index' %}"  data-placement="bottom" title="Admin Panel"><i class="fas fa-cogs fa-fw"></i> Admin</a>
                             <a class="dropdown-item" href="{% url 'logout'%}"><i class="fas fa-sign-out-alt fa-fw"></i> Log Out</a>
+                            <a class="dropdown-item" href="{{ESI_AUTH_ACCOUNT_URL}}"><i class="far fa-user"></i> Profile</a>
                         </div>
                     </div>
 
@@ -110,7 +112,7 @@
         </nav>
         {%endif%}
 
-        <div class="container-fluid mt-4" id="root">                    
+        <div class="container-fluid mt-4" id="app">                    
             {%block content%}
             {%endblock content%}
 

@@ -5,16 +5,16 @@
 
         <span class="float-right">
             [[last_refresh]]
-            <button class="btn btn-outline-primary" type="button" v-on:click = "refreshSubjectTableClick()" title="Refresh the subjects table.">
+            <button class="btn btn-outline-primary mr-2" type="button" v-on:click = "refreshSubjectTableClick()" title="Refresh the subjects table.">
                 <span v-html = "refreshSubjectTableButtonText"></span>
             </button>
-            <button class="btn btn-outline-primary" type="button" v-on:click = "showFitbitStatus()" title="Test and show Fitbit connection status.">
+            <button class="btn btn-outline-primary mr-2" type="button" v-on:click = "showFitbitStatus()" title="Test and show Fitbit connection status.">
                 <span v-html = "showFitbitStatusButtonText"></span>
             </button>
-            <button class="btn btn-outline-primary" type="button" v-bind:disabled = "session.started" v-on:click ="showUploadParameters('subjects')" title="Upload a list of subjects from the Recruiter.">
+            <button class="btn btn-outline-primary mr-2" type="button" v-bind:disabled = "session.started" v-on:click ="showUploadParameters('subjects')" title="Upload a list of subjects from the Recruiter.">
                 Upload  <i class="fas fa-upload"></i>
             </button>
-            <button class="btn btn-outline-success" type="button" v-on:click = "showCopySubject()" v-bind:disabled = "session.started" title="Copy subject from another session.">
+            <button class="btn btn-outline-success mr-2" type="button" v-on:click = "showCopySubject()" v-bind:disabled = "session.started" title="Copy subject from another session.">
                 Copy Subject <i class="far fa-copy"></i>
             </button>
             <button class="btn btn-outline-success" type="button" v-on:click = "addSubject()" v-bind:disabled = "session.started" title="Add new subject to the session.">
@@ -111,17 +111,17 @@
                         </button>
                     </td>
                     <td class = "text-center text-nowrap m-1 p-1">
-                        <span v-if="s.consent_required === false" style="color:green">
+                        <span v-if="s.consent_required === false" class="mr-1" style="color:green">
                             <i class="far fa-check-circle"></i>
                         </span>
-                        <span v-else style="color:red">
+                        <span v-else class="mr-1" style="color:red">
                             <i class="far fa-times-circle"></i>
                         </span>
 
-                        <span v-if="s.questionnaire1_required === false" style="color:green">
+                        <span v-if="s.questionnaire1_required === false" class="mr-1" style="color:green">
                             <i class="far fa-check-circle"></i>
                         </span>
-                        <span v-else style="color:red">
+                        <span v-else class="mr-1" style="color:red">
                             <i class="far fa-times-circle"></i>
                         </span>
 
@@ -134,14 +134,14 @@
 
                     </td>
                     <td class = "text-center text-nowrap m-1 p-1">
-                        <span v-if="s.todays_stats.check_in" style="color:green">
+                        <span v-if="s.todays_stats.check_in" class="mr-1" style="color:green">
                             <i class="far fa-check-circle"></i>
                         </span>
                         <span v-else style="color:red">
                             <i class="far fa-times-circle"></i>
                         </span>
 
-                        <span v-if="s.todays_stats.pay_pal" style="color:green">
+                        <span v-if="s.todays_stats.pay_pal" class="mr-1" style="color:green">
                             <i class="far fa-check-circle"></i>
                         </span>
                         <span v-else style="color:red">

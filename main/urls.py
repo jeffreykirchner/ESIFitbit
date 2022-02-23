@@ -10,7 +10,12 @@ from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
     #admin site
-    re_path(r'^admin/login/$', RedirectView.as_view(url=settings.LOGIN_URL, permanent=True, query_string=True)),    
+    # re_path(r'^admin/login/$', RedirectView.as_view(url=settings.LOGIN_URL, permanent=True, query_string=True)),    
+    #auth
+    re_path(r'^admin/login/$', views.LoginView.as_view()),
+    re_path(r'^admin/logout/', views.logout_view),
+    path('accounts/login/', views.LoginView.as_view(), name='login'),
+    path('accounts/logout/', views.logout_view, name='logout'),
 
     #account control
     path('',views.Home,name='home'),                         #direct user by subject type
