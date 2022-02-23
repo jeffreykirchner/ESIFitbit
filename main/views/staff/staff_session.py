@@ -12,8 +12,19 @@ from django.db.models.functions import Lower
 from main.globals import todaysDate
 from main.globals import getRandomHexColor
 
-from main.forms import Parameterset_form, SessionForm, Subject_form, Import_parameters_form, ParametersetPaylevelForm
-from main.models import Session,Parameterset, Session_subject, Session_day_subject_actvity, Parameters, ParametersetPaylevel
+from main.forms import Parameterset_form
+from main.forms import SessionForm
+from main.forms import Subject_form
+from main.forms import Import_parameters_form
+from main.forms import ParametersetPaylevelForm
+from main.forms import ParametersetTimeBlockForm
+
+from main.models import Session
+from main.models import Parameterset
+from main.models import Session_subject
+from main.models import Session_day_subject_actvity
+from main.models import Parameters
+from main.models import ParametersetPaylevel
 
 @login_required
 def Staff_Session(request,id):
@@ -78,6 +89,12 @@ def Staff_Session(request,id):
                 return remove_pay_level(data, id)
             elif data["action"] == "updatePaylevel":
                 return update_pay_level(data, id)
+            elif data["action"] == "addTimeBlock":
+                return add_time_block(data, id)
+            elif data["action"] == "removeTimeBlock":
+                return remove_time_block(data, id)
+            elif data["action"] == "updateTimeBlock":
+                return update_time_block(data, id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -87,9 +104,11 @@ def Staff_Session(request,id):
         subject_form = Subject_form()
         import_parameters_form = Import_parameters_form()
         parameterset_paylevel_form = ParametersetPaylevelForm()
+        parameterset_time_block_form = ParametersetTimeBlockForm()
         p = Parameters.objects.first()
         yesterdays_date = todaysDate() - timedelta(days=1)
         session = Session.objects.get(id=id)
+
 
         #get list of form ids
         subject_form_ids=[]
@@ -102,12 +121,14 @@ def Staff_Session(request,id):
         
         return render(request,'staff/session.html',{'id' : id,
                                                     'session' : session,
+                                                    'session_json' : json.dumps(session.json(), cls=DjangoJSONEncoder),
                                                     'parameterset_form' : parameterset_form,
                                                     'session_form' : session_form,
                                                     'subject_form' : subject_form,
                                                     'help_text' : p.manualHelpText,
                                                     'import_parameters_form' : import_parameters_form,
                                                     'parameterset_paylevel_form' : parameterset_paylevel_form,
+                                                    'parameterset_time_block_form' : parameterset_time_block_form,
                                                     'subject_form_ids' : subject_form_ids,
                                                     'paylevel_form_ids' : paylevel_form_ids,
                                                     'yesterdays_date' : yesterdays_date.date().strftime("%Y-%m-%d")})     
@@ -712,6 +733,56 @@ def update_pay_level(data, id):
     logger = logging.getLogger(__name__) 
     logger.info("Update pay level")
     logger.info(data)
+
+    session = Session.objects.get(id=id)
+
+    form_data_dict = {}
+
+    for field in data["formData"]:            
+        form_data_dict[field["name"]] = field["value"]
+
+    form = ParametersetPaylevelForm(form_data_dict, instance=ParametersetPaylevel.objects.get(id = data["id"]))
+
+    if form.is_valid():
+        #print("valid form")                
+        form.save()           
+            
+        return JsonResponse({"status":"success","parameterset" : session.parameterset.json()} ,safe=False)                         
+                                
+    else:
+        logger.info("Invalid parameterset form")
+        return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
+
+def add_time_block(data, id):
+    '''
+    add new time block
+    '''
+    logger = logging.getLogger(__name__) 
+    logger.info(f"Add time block: {data}")
+
+    session=Session.objects.get(id=id)
+    session.parameterset.add_time_block()
+
+    return JsonResponse({"parameterset" : session.parameterset.json()} ,safe=False)
+
+def remove_time_block(data, id):
+    '''
+    remove last time block
+    '''
+    logger = logging.getLogger(__name__) 
+    logger.info(f"Remove time block: {data}")
+
+    session=Session.objects.get(id=id)
+    session.parameterset.remove_time_block()
+
+    return JsonResponse({"parameterset" : session.parameterset.json()} ,safe=False)
+
+def update_time_block(data, id):
+    '''
+    update existing time block
+    '''
+    logger = logging.getLogger(__name__) 
+    logger.info(f"update time block: {data}")
 
     session = Session.objects.get(id=id)
 

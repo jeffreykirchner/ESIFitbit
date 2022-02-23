@@ -580,6 +580,9 @@ class Session_subject(models.Model):
         
         start_period_number = self.session.parameterset.get_block_first_period(period_number)
 
+        if not start_period_number:
+            return 0
+
         missed_count = self.Session_day_subject_actvities.filter(paypal_today = False) \
                                                          .filter(session_day__period_number__gte = start_period_number) \
                                                          .filter(session_day__period_number__lte = period_number) \
@@ -643,6 +646,9 @@ class Session_subject(models.Model):
 
         missed_checkins = self.get_missed_checkins(period_number)
         total_days = self.session.parameterset.get_block_day_count(period_number)
+
+        if not total_days:
+            return 0
 
         return round_half_away_from_zero((total_days - missed_checkins) * self.get_daily_payment_A_B_C(period_number), 2)
 

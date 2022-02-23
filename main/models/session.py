@@ -223,7 +223,7 @@ class Session(models.Model):
 
     #return total number of days of session
     def numberOfDays(self):
-        return self.parameterset.block_1_day_count+self.parameterset.block_2_day_count+self.parameterset.block_3_day_count+1
+        return self.parameterset.get_total_number_of_periods()
     
     #calc and store end date
     def calcEndDate(self):

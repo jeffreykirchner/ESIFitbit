@@ -8,61 +8,9 @@ var app = Vue.createApp({
     data() {return {
         sessionParametersBeforeEdit:{},                     //store session before editing to restore if canceled
         current_paylevel:{id : "",
-                           score : "",
-                           value : ""},
-        session:{title:"",                                  //session and parameter set values
-                    start_date:"",
-                    end_date:"",
-                    started:false,
-                    instruction_set:{id:0,title:""},
-                    invitations_sent:false,
-                    invitation_text:"",
-                    invitation_text_subject:"",
-                    cancelation_text:"",
-                    cancelation_text_subject:"",
-                    email_list:"",
-                    current_period:"",
-                    complete:false,
-                    consent_required:true,
-                    questionnaire1_required:true,
-                    questionnaire2_required:true,
-                    treatment:"",
-                    auto_pay:"",
-                    parameterset:{id:"",
-                                number_of_days:"",
-                                number_of_players:"",
-
-                                heart_activity_inital:"",
-                                heart_parameter_1:"",
-                                heart_parameter_2:"",
-                                heart_parameter_3:"",
-
-                                immune_activity_inital:"",
-                                immune_parameter_1:"",
-                                immune_parameter_2:"",
-                                immune_parameter_3:"",
-
-                                block_1_heart_pay:"",
-                                block_2_heart_pay:"",
-                                block_3_heart_pay:"",
-
-                                block_1_immune_pay:"",
-                                block_2_immune_pay:"",
-                                block_3_immune_pay:"",
-
-                                block_1_fixed_pay_per_day:"",
-                                block_2_fixed_pay_per_day:"",
-                                block_3_fixed_pay_per_day:"",
-
-                                minimum_wrist_minutes:"",
-
-                                block_1_day_count:"",
-                                block_2_day_count:"",
-                                block_3_day_count:"",
-
-                                pay_levels:[],
-                            }
-                },
+                          score : "",
+                          value : ""},
+        session:{{session_json|safe}},
         session_subjects:[],              //list of subjects in this session 
         cancelModal:false,                //if modal is canceled reload old values
         currentSubject:{},                //current subject being edited
@@ -149,7 +97,7 @@ var app = Vue.createApp({
             }
         },
 
-        //create new experient
+        //add subject to session
         addSubject:function(){                    
             app.$data.addSubjectButtonText ='<i class="fas fa-spinner fa-spin"></i>';
             axios.post('/session/{{id}}/', {
@@ -159,6 +107,50 @@ var app = Vue.createApp({
                             app.updateSubjects(response);    
                             app.updateSession(response);      
                             app.$data.addSubjectButtonText = 'Add Subject <i class="fas fa-plus"></i>';                                        
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });                        
+        },
+
+        //add subject to session
+        addTimeBlock:function(){                    
+            axios.post('/session/{{id}}/', {
+                            action :"addTimeBlock" ,                                                                                                                                                                
+                        })
+                        .then(function (response) {    
+                           
+                            app.$data.session.parameterset = response.data.parameterset;                                           
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });                        
+        },
+
+        //add subject to session
+        removeTimeBlock:function(){                   
+            axios.post('/session/{{id}}/', {
+                            action :"removeTimeBlock" ,                                                                                                                                                                
+                        })
+                        .then(function (response) {    
+                           
+                            app.$data.session.parameterset = response.data.parameterset;                                         
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });                        
+        },
+
+        //add subject to session
+        updateTimeBlock:function(){                    
+            // app.$data.addSubjectButtonText ='<i class="fas fa-spinner fa-spin"></i>';
+            axios.post('/session/{{id}}/', {
+                            action :"updateTimeBlock" ,                                                                                                                                                                
+                        })
+                        .then(function (response) {    
+                           
+                            app.updateSession(response);      
+                            // app.$data.addSubjectButtonText = 'Add Subject <i class="fas fa-plus"></i>';                                        
                         })
                         .catch(function (error) {
                             console.log(error);
@@ -721,7 +713,7 @@ var app = Vue.createApp({
             //$('parameterFileUpload').val("");
             app.$data.upload_file_name = app.$data.upload_file.name;
 
-            },
+        },
 
         //import parameters
         importParameters:function(){                   

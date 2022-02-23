@@ -42,61 +42,10 @@ class Parameterset_form(forms.ModelForm):
     immune_parameter_3 = forms.DecimalField(label='Sleep P3',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.immune_parameter_3"}))
-
-    block_1_fixed_pay_per_day = forms.DecimalField(label='Block 1 Fixed Pay ($)',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_1_fixed_pay_per_day"}))
-    
-    block_2_fixed_pay_per_day = forms.DecimalField(label='Block 2 Fixed Pay ($)',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_2_fixed_pay_per_day"}))
-
-    block_3_fixed_pay_per_day = forms.DecimalField(label='Block 3 Fixed Pay ($)',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_3_fixed_pay_per_day"}))
     
     minimum_wrist_minutes = forms.DecimalField(label='Minimum Wrist Minutes',
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.minimum_wrist_minutes"}))
-    
-    block_1_heart_pay = forms.DecimalField(label='Block 1 Heart Pay ($)',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_1_heart_pay"}))
-    
-    block_2_heart_pay = forms.DecimalField(label='Block 2 Heart Pay ($)',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_2_heart_pay"}))
-
-    block_3_heart_pay = forms.DecimalField(label='Block 3 Heart Pay ($)',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_3_heart_pay"}))
-    
-    block_1_immune_pay = forms.DecimalField(label='Block 1 Sleep Pay ($)',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_1_immune_pay"}))
-    
-    block_2_immune_pay = forms.DecimalField(label='Block 2 Sleep Pay ($)',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_2_immune_pay"}))
-
-    block_3_immune_pay = forms.DecimalField(label='Block 3 Sleep Pay ($)',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_3_immune_pay"}))
-
-    block_1_day_count = forms.DecimalField(label='Block 1 Days',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_1_day_count",
-                                                            "v-bind:disabled" :"session.editable === false"}))
-    
-    block_2_day_count = forms.DecimalField(label='Block 2 Days',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_2_day_count",
-                                                            "v-bind:disabled" :"session.editable === false"}))
-
-    block_3_day_count = forms.DecimalField(label='Block 3 Days',
-                            min_value=0,
-                            widget=forms.NumberInput(attrs={"v-model":"session.parameterset.block_3_day_count",
-                                                            "v-bind:disabled" :"session.editable === false"}))
 
     y_min_heart = forms.DecimalField(label='Heart Y Minimum',
                             min_value=0,
