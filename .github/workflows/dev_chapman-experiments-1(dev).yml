@@ -59,6 +59,12 @@ jobs:
         EMAIL_MS_HOST: abc
         EMAIL_MS_USER_NAME: abc
         EMAIL_MS_PASSWORD: abc
+        ESI_AUTH_URL : abc
+        ESI_AUTH_ACCOUNT_URL : abc
+        ESI_AUTH_PASSWORD_RESET_URL : abc
+        ESI_AUTH_USERNAME : abc
+        ESI_AUTH_PASS : abc
+        ESI_AUTH_APP : abc
         SECRET_KEY: super_duper_secret_key
       run: python manage.py test
     
