@@ -293,14 +293,14 @@ class Session(models.Model):
 
         if self.treatment == "I" or self.treatment == "Base":
 
-            writer.writerow(["Session","Period","Block","Date","Subject ID", "Email","Heart Activity Minutes",
+            writer.writerow(["Session","Period","Block","Date", "Group", "Subject ID", "Email","Heart Activity Minutes",
                             "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
                             "Fitbit Data Pulled", "Paid Today", "Fixed Payment","Heart Payment","Immune Payment","Total Payment Today",
                             "Minutes Sedentary","Minutes Lightly Active","Minutes Fairly Active","Minutes Very Active","Steps","Calories",
                             "Heart Rate Minutes Out of Range","Heart Rate Minutes Fat Burn","Heart Rate Minutes Cardio",
                             "Heart Rate Minutes Peak","Zone Minutes Minimum BPM","Time On Wrist","First Login Time"])
         else:
-             writer.writerow(["Session","Period","Block","Date","Subject ID", "Email","Heart Activity Minutes",
+             writer.writerow(["Session","Period","Block","Date", "Group", "Subject ID", "Email","Heart Activity Minutes",
                             "Immune Activity Minutes","Heart Activity Score","Immune Activity Score",
                             "Fitbit Data Pulled", "Paid Today", "Missed Days", "Fixed Payment", "Average Heart Score","Heart Pay Level", "Average Immune Score", "Immune Pay Level", "Total Payment Today",
                             "Minutes Sedentary","Minutes Lightly Active","Minutes Fairly Active","Minutes Very Active","Steps","Calories",

@@ -81,6 +81,8 @@ var app = new Vue({
             paylevel_heart : "---",
             paylevel_sleep : "---",
         },
+        group_list : [],
+        
     },
 
     methods:{
@@ -120,7 +122,8 @@ var app = new Vue({
                             app.$data.fitbitError = response.data.fitbitError;       
                             app.$data.fitBitLastSynced = response.data.fitBitLastSynced;      
                             app.$data.fitbitSyncedToday = response.data.fitbitSyncedToday;   
-                            app.$data.baseline_payment = response.data.baseline_payment;            
+                            app.$data.baseline_payment = response.data.baseline_payment;
+                            app.$data.group_list = response.data.group_list;    
 
                             if(!app.$data.soft_delete)
                             {

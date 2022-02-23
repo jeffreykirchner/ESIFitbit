@@ -130,6 +130,9 @@
                         <div v-show="toggleState==='immune'">
                             {%include "subject/home/immune_tab.html"%}
                         </div>  
+                        <div v-show="toggleState==='group'">
+                            {%include "subject/home/group_tab.html"%}
+                        </div>
                         <div v-show="toggleState==='payment'">
                             {%if session_treatment == "I"%}
                                 {%include "subject/home/payment_tab_individual.html"%}       
@@ -138,7 +141,7 @@
                             {%endif%}       
                         </div>
 
-                        <div v-show="toggleState != 'payment'">
+                        <div v-show="toggleState == 'heart' || toggleState == 'immune'">
                             {%include "subject/home/chart.html"%}                           
                         </div>
                         <div v-show="toggleState==='heart'">

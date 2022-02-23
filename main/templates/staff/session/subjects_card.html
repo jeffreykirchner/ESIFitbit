@@ -37,6 +37,11 @@
                     <th scope="col" class = "text-center m-1 p-1">
                         Color
                     </th>
+                    {%if session.parameterset.show_group%}
+                    <th scope="col" class = "text-center m-1 p-1">
+                        Group
+                    </th>
+                    {%endif%}
                     <th scope="col" class = "text-center m-1 p-1">
                         Login Link                    
                     </th>
@@ -89,18 +94,23 @@
 
             <tbody id="subjectList">                                                  
                 <tr v-for="(s,index) in session_subjects" v-bind:key="s.id">                                                                          
-                    <td class = "m-1 p-1"> 
+                    <td class = "m-1 p-1 text-nowrap"> 
                         [[s.name]]                                     
                     </td>
-                    <td class = "text-center m-1 p-1">
+                    <td class = "text-center text-nowrap m-1 p-1">
                         <span  v-bind:style="{ color: s.display_color}"><i class="fas fa-palette"></i></span>
                     </td>
-                    <td class = "text-center m-1 p-1"> 
+                    {%if session.parameterset.show_group%}
+                    <td class = "text-center text-nowrap m-1 p-1"> 
+                        [[s.group_number]]                                     
+                    </td>
+                    {%endif%}
+                    <td class = "text-center text-nowrap m-1 p-1"> 
                         <button type="button" class="btn btn-outline-primary btn-sm" v-on:click = "copySubjectLinkToClipboard(s.login_url)" title="Copy subject login URL">
                             <i class="far fa-copy"></i>   
                         </button>
                     </td>
-                    <td class = "text-center m-1 p-1">
+                    <td class = "text-center text-nowrap m-1 p-1">
                         <span v-if="s.consent_required === false" style="color:green">
                             <i class="far fa-check-circle"></i>
                         </span>
@@ -123,7 +133,7 @@
                         </span>
 
                     </td>
-                    <td class = "text-center m-1 p-1">
+                    <td class = "text-center text-nowrap m-1 p-1">
                         <span v-if="s.todays_stats.check_in" style="color:green">
                             <i class="far fa-check-circle"></i>
                         </span>
@@ -138,7 +148,7 @@
                             <i class="far fa-times-circle"></i>
                         </span>
                     </td>
-                    <td class = "text-center m-1 p-1">
+                    <td class = "text-center text-nowrap m-1 p-1">
                         <span v-if="s.todays_stats.pay_pal">
                             [[s.todays_stats.earnings]]  
                         </span>
@@ -146,7 +156,7 @@
                             ---
                         </span>
                     </td>
-                    <td class = "text-center m-1 p-1">
+                    <td class = "text-center text-nowrap m-1 p-1">
                         <span v-if="s.todays_stats.pay_pal || s.todays_stats.missed_days==='---'">
                             [[s.todays_stats.missed_days]]    
                         </span>
@@ -154,21 +164,21 @@
                             ~[[s.todays_stats.missed_days]]
                         </span>
                     </td>
-                    <td class = "text-center m-1 p-1">
+                    <td class = "text-center text-nowrap m-1 p-1">
                         [[s.todays_stats.heart_score]] | [[s.todays_stats.heart_time]] | [[s.todays_stats.heart_bpm]]               
                     </td>
                     {%if session.parameterset.sleep_tracking%}
-                    <td class = "text-center m-1 p-1">
+                    <td class = "text-center text-nowrap m-1 p-1">
                         [[s.todays_stats.immune_score]] | [[s.todays_stats.immune_time]]                   
                     </td>
                     {%endif%}
-                    <td class = "text-center m-1 p-1">
+                    <td class = "text-center text-nowrap m-1 p-1">
                         [[s.todays_stats.wrist_time]]
                     </td>
-                    <td class = "text-center m-1 p-1">
+                    <td class = "text-center text-nowrap m-1 p-1">
                         [[s.fitBit_last_synced]]
                     </td>
-                    <td class = "text-center m-1 p-1">                                        
+                    <td class = "text-center text-nowrap m-1 p-1">                                        
                         <a :href="s.fitBit_Link">Setup</span></a>
 
                         <span v-if = "s.get_fitbit_status === false">
@@ -181,12 +191,12 @@
                             <i class="far fa-times-circle"></i>
                         </span>                             
                     </td>                               
-                    <td class = "text-center m-1 p-1">
+                    <td class = "text-center text-nowrap m-1 p-1">
                         <button v-bind:id="'editSubject' + s.id" type="button" class="btn btn-outline-primary btn-sm" v-on:click = "showEditSubject(s.id,index)" title="Edit subject info">
                             <i class="far fa-edit"></i>  
                         </button>                         
                     </td>   
-                    <td class = "text-center m-1 p-1">    
+                    <td class = "text-center text-nowrap m-1 p-1">    
                         <button v-bind:id="'deleteSubject' + s.id" type="button" class="btn btn-outline-danger btn-sm" v-on:click = "deleteSubject(s.id)" title="Delete subject">
                             <i class="fas fa-user-minus fa-xs"></i>  
                         </button> 

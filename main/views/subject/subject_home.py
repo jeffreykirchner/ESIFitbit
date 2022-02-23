@@ -455,6 +455,8 @@ def getSessionDaySubject(data,session_subject,session_day):
         if p_number>1:
             if session_day_subject_actvity_previous_day.fitbit_on_wrist_minutes < ps.minimum_wrist_minutes :
                 fitbit_time_requirement_met = False
+        
+        group_list = session_subject.get_group_list_json()
 
         return JsonResponse({"status" : status,
                             "fitbitError" : fitbitError,
@@ -478,6 +480,7 @@ def getSessionDaySubject(data,session_subject,session_day):
                             "treatment_A_B_C" : get_treatment_a_b_c_json(session_day, session_subject, p_number, ps),
                             "session_day_subject_actvity" : session_day_subject_actvity.json(),
                             "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
+                            "group_list" : group_list,
                             "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)
 
 def get_treatment_a_b_c_json(session_day, session_subject, p_number, parameter_set):
