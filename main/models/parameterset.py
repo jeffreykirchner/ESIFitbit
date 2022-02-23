@@ -67,6 +67,9 @@ class Parameterset(models.Model):
     x_max_immune = models.IntegerField(default = 12)
     x_ticks_immune = models.IntegerField(default = 6)
 
+    sleep_tracking = models.BooleanField(default=True)  #enable sleep tracking
+    show_group = models.BooleanField(default=False)     #show group information
+
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
 
@@ -131,6 +134,9 @@ class Parameterset(models.Model):
             self.x_min_immune = data.get("x_min_immune")
             self.x_max_immune = data.get("x_max_immune")
             self.x_ticks_immune = data.get("x_ticks_immune")
+
+            self.sleep_tracking =  data.get("sleep_tracking")
+            self.show_group = data.get("show_group")
 
             #remove any old pay levels
             self.paylevels.all().delete()
@@ -206,7 +212,10 @@ class Parameterset(models.Model):
         self.x_max_immune = data.x_max_immune
         self.x_ticks_immune = data.x_ticks_immune
 
-         #remove any old pay levels
+        self.sleep_tracking = data.sleep_tracking
+        self.show_group = data.show_group
+
+        #remove any old pay levels
         self.paylevels.all().delete()
 
         for paylevel in data.paylevels.all():
@@ -218,8 +227,6 @@ class Parameterset(models.Model):
 
             new_paylevel.save()
 
-
-        self.save()
 
         self.save()
 
@@ -237,6 +244,9 @@ class Parameterset(models.Model):
 
     #return the current maximum payment for heart activty
     def getImmunePay(self, period):
+
+        if not self.sleep_tracking:
+            return 0
 
         if period <= self.block_1_day_count + 1:
             return self.block_1_immune_pay
@@ -368,7 +378,8 @@ class Parameterset(models.Model):
                           self.block_1_fixed_pay_per_day,self.block_2_fixed_pay_per_day, self.block_3_fixed_pay_per_day,
                           self.minimum_wrist_minutes,
                           self.y_min_heart,self.y_max_heart,self.y_ticks_heart,self.x_min_heart,self.x_max_heart,self.x_ticks_heart,
-                          self.y_min_immune,self.y_max_immune,self.y_ticks_immune,self.x_min_immune,self.x_max_immune,self.x_ticks_immune])
+                          self.y_min_immune,self.y_max_immune,self.y_ticks_immune,self.x_min_immune,self.x_max_immune,self.x_ticks_immune,
+                          self.sleep_tracking, self.show_group])
 
     def get_csv_response_pay_level(self, writer):
         '''
@@ -428,6 +439,9 @@ class Parameterset(models.Model):
             "x_min_immune":self.x_min_immune,
             "x_max_immune":self.x_max_immune,
             "x_ticks_immune":self.x_ticks_immune,
+
+            "sleep_tracking":1 if  self.sleep_tracking else 0,
+            "show_group":1 if  self.show_group else 0,
 
             "pay_levels" : [pl.json() for pl in self.paylevels.all()],
         }

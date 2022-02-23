@@ -12,6 +12,12 @@ payMe:function(){
         return;
     }
 
+    if(!app.$data.viewed_group)
+    {
+        alert("Please view the Group tab before payment.")
+        return;
+    }
+
     app.$data.payMeButtonText = '<i class="fas fa-spinner fa-spin"></i>';
 
     axios.post('/subjectHome/{{id}}/', {

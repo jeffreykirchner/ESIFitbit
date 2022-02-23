@@ -7,6 +7,7 @@ import logging
 
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.core.serializers.json import DjangoJSONEncoder
 
 from main.models import Session_subject, Session_day_subject_actvity, Parameters
 from main.models import Session_subject_questionnaire1,Session_subject_questionnaire2
@@ -104,6 +105,10 @@ def Subject_Home(request, id_):
                                                        "session_subject" : session_subject,
                                                        "baseline_heart" : baseline_heart,
                                                        "baseline_sleep" : baseline_sleep,
+                                                       "sleep_tracking_json" : json.dumps(session.parameterset.sleep_tracking, cls=DjangoJSONEncoder),
+                                                       "show_group_json" : json.dumps(session.parameterset.show_group, cls=DjangoJSONEncoder),
+                                                       "sleep_tracking" : session.parameterset.sleep_tracking,
+                                                       "show_group" : session.parameterset.show_group,
                                                        "session_treatment" : session.treatment})
         else:
             logger.info("Error: subject Home, subject not found")
@@ -450,6 +455,8 @@ def getSessionDaySubject(data,session_subject,session_day):
         if p_number>1:
             if session_day_subject_actvity_previous_day.fitbit_on_wrist_minutes < ps.minimum_wrist_minutes :
                 fitbit_time_requirement_met = False
+        
+        group_list = session_subject.get_group_list_json()
 
         return JsonResponse({"status" : status,
                             "fitbitError" : fitbitError,
@@ -473,6 +480,7 @@ def getSessionDaySubject(data,session_subject,session_day):
                             "treatment_A_B_C" : get_treatment_a_b_c_json(session_day, session_subject, p_number, ps),
                             "session_day_subject_actvity" : session_day_subject_actvity.json(),
                             "session_day_subject_actvity_previous": session_day_subject_actvity_previous_day.json() if session_day_subject_actvity_previous_day else None,
+                            "group_list" : group_list,
                             "graph_parameters" : session_day.session.parameterset.json_graph(),},safe=False)
 
 def get_treatment_a_b_c_json(session_day, session_subject, p_number, parameter_set):

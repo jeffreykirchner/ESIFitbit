@@ -13,10 +13,10 @@
         <div class="col text-center">Daily Pay =</div>
     </div>
     <div class="row mt-1">
-        <div class="col text-center">Fixed Pay + (Heart Pay x Average Heart Score) + (Sleep Pay x Average Sleep Score) = </div>
+        <div class="col text-center">Fixed Pay + (Heart Pay x Average Heart Score)<span v-if="sleep_tracking"> + (Sleep Pay x Average Sleep Score)<span> = </div>
     </div>
     <div class="row mt-1">
-        <div class="col text-center">$[[session_day_subject_actvity.fixed_pay_per_day]] + ($[[session_day_subject_actvity.current_heart_pay]] x [[treatment_A_B_C.average_heart_score]]) + ($[[session_day_subject_actvity.current_immune_pay]] x [[treatment_A_B_C.average_sleep_score]]) =</div>
+        <div class="col text-center">$[[session_day_subject_actvity.fixed_pay_per_day]] + ($[[session_day_subject_actvity.current_heart_pay]] x [[treatment_A_B_C.average_heart_score]]) <span v-if="sleep_tracking">+ ($[[session_day_subject_actvity.current_immune_pay]] x [[treatment_A_B_C.average_sleep_score]]) </span>=</div>
     </div>
     <div class="row mt-1">
         <div class="col" style="text-align: center;">$[[treatment_A_B_C.current_daily_pay]]</div>

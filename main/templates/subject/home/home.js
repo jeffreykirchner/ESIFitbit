@@ -8,19 +8,19 @@ var app = new Vue({
     el: '#root',        
     data:{
         session_day_subject_actvity:{heart_activity:"--",
-                                        immune_activity:"--",
-                                        current_heart_pay:"--",
-                                        current_immmune_pay:"--",
-                                        current_heart_earnings:"--",
-                                        current_immune_earnings:"--",
-                                        current_total_earnings:"--",
-                                        heart_maintenance_minutes:"--",
-                                        immune_maintenance_hours:"--", 
-                                        heart_improvment_minutes:{target_activity: "--",target_minutes:"--" , target_bpm:"--"},
-                                        immune_improvment_hours:{target_activity: "--",target_hours:"--"},   
-                                        time_on_wrist:"--",
+                                     immune_activity:"--",
+                                     current_heart_pay:"--",
+                                     current_immmune_pay:"--",
+                                     current_heart_earnings:"--",
+                                     current_immune_earnings:"--",
+                                     current_total_earnings:"--",
+                                     heart_maintenance_minutes:"--",
+                                     immune_maintenance_hours:"--", 
+                                     heart_improvment_minutes:{target_activity: "--",target_minutes:"--" , target_bpm:"--"},
+                                     immune_improvment_hours:{target_activity: "--",target_hours:"--"},   
+                                     time_on_wrist:"--",
 
-                                        },
+                                    },
         session_day_subject_actvity_previous:{heart_activity_minutes:"--",
                                                 immune_activity_hours:"--",
                                                 time_on_wrist:"--",},
@@ -35,6 +35,8 @@ var app = new Vue({
         toggleState:"heart",
         session_complete:false,
         session_canceled:false,
+        sleep_tracking:{{sleep_tracking_json|safe}},
+        show_group:{{show_group_json|safe}},
         fitbitError:false,
         consent_required:false,
         consent_signature:"",
@@ -62,6 +64,7 @@ var app = new Vue({
         session_treatment:"",
         viewed_heart:false,
         viewed_immune:false,
+        viewed_group:false,
         payment_toggle_background : "lightgrey",
         payment_available : true,
         soft_delete:false,
@@ -78,6 +81,8 @@ var app = new Vue({
             paylevel_heart : "---",
             paylevel_sleep : "---",
         },
+        group_list : [],
+        
     },
 
     methods:{
@@ -117,7 +122,8 @@ var app = new Vue({
                             app.$data.fitbitError = response.data.fitbitError;       
                             app.$data.fitBitLastSynced = response.data.fitBitLastSynced;      
                             app.$data.fitbitSyncedToday = response.data.fitbitSyncedToday;   
-                            app.$data.baseline_payment = response.data.baseline_payment;            
+                            app.$data.baseline_payment = response.data.baseline_payment;
+                            app.$data.group_list = response.data.group_list;    
 
                             if(!app.$data.soft_delete)
                             {
@@ -137,13 +143,22 @@ var app = new Vue({
                                 app.$data.viewed_heart = false;
                             }
 
-                            if(app.$data.toggleState == 'immune')
+                            if(app.$data.toggleState == 'immune' || !app.$data.sleep_tracking )
                             {
                                 app.$data.viewed_immune = true;
                             }
                             else
                             {
                                 app.$data.viewed_immune = false;
+                            }
+
+                            if(app.$data.toggleState == 'group' || !app.$data.show_group )
+                            {
+                                app.$data.viewed_group = true;
+                            }
+                            else
+                            {
+                                app.$data.viewed_group = false;
                             }
                                                                     
                         })
@@ -526,7 +541,12 @@ var app = new Vue({
             if(app.$data.toggleState == 'immune')
             {
                 app.$data.viewed_immune = true;
-            }                    
+            } 
+            
+            if(app.$data.toggleState == 'group')
+            {
+                app.$data.viewed_group = true;
+            }
 
             Vue.nextTick(app.updateCanvases());    
         },

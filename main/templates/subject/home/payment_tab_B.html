@@ -1,6 +1,6 @@
 <div class="row mt-2">
     <div class="col text-center">
-        Your daily pay rates for Heart and Sleep Scores are adjusted according to your average level of effort: 
+        Your daily pay rates for Heart <span v-if="sleep_tracking">and Sleep </span>Scores are adjusted according to your average level of effort: 
     </div>
 </div>
 <div class="row justify-content-center mt-2">
@@ -47,13 +47,13 @@
     <div class="row mt-1">
         <div class="col text-center"> 
             <span v-if = "session_day_subject_actvity.fixed_pay_per_day > 0">Fixed Pay + </span>
-            (Heart Pay x Average Heart Score) + (Sleep Pay x Average Sleep Score) = 
+            (Heart Pay x Average Heart Score) <span v-if="sleep_tracking">+ (Sleep Pay x Average Sleep Score) </span>= 
         </div>
     </div>
     <div class="row mt-1">
         <div class="col text-center"> 
             <span v-if = "session_day_subject_actvity.fixed_pay_per_day > 0">$[[session_day_subject_actvity.fixed_pay_per_day]] + </span>
-            ($[[treatment_A_B_C.paylevel_heart]] x [[treatment_A_B_C.average_heart_score]]) + ($[[treatment_A_B_C.paylevel_sleep]] x [[treatment_A_B_C.average_sleep_score]]) =
+            ($[[treatment_A_B_C.paylevel_heart]] x [[treatment_A_B_C.average_heart_score]]) <span v-if="sleep_tracking">+ ($[[treatment_A_B_C.paylevel_sleep]] x [[treatment_A_B_C.average_sleep_score]]) </span>=
         </div>
     </div>
     <div class="row mt-1">

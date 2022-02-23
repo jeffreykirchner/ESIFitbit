@@ -41,7 +41,8 @@ class Session_subject(models.Model):
     questionnaire1_required = models.BooleanField(default=True,verbose_name = 'Pre-questionnaire Complete')   #pre experiment questionnaire
     questionnaire2_required = models.BooleanField(default=True,verbose_name = 'Post-questionnaire Complete')   #post experiment questionnaire          
 
-    display_color = models.CharField(max_length = 300,default = '#000000',verbose_name = 'Graph Color')                                       
+    display_color = models.CharField(max_length = 300, default = '#000000', verbose_name = 'Graph Color')                                       
+    group_number = models.IntegerField(default = 1, verbose_name="Group Number")
 
     #fitbit    
     fitBitAccessToken = models.CharField(max_length=1000, default="",verbose_name = 'FitBit Access Token')
@@ -625,7 +626,7 @@ class Session_subject(models.Model):
                 if heart_score < 0.0 :
                     heart_score = 0.0
                 
-                if sleep_score < 0.0 :
+                if sleep_score < 0.0 or not parameterset.sleep_tracking:
                     sleep_score = 0.0
 
                 payment = payment + heart_score * float(parameterset.get_treatment_b_c_paylevel(heart_score)) + \
@@ -643,7 +644,21 @@ class Session_subject(models.Model):
         missed_checkins = self.get_missed_checkins(period_number)
         total_days = self.session.parameterset.get_block_day_count(period_number)
 
-        return round_half_away_from_zero((total_days - missed_checkins) * self.get_daily_payment_A_B_C(period_number),2)
+        return round_half_away_from_zero((total_days - missed_checkins) * self.get_daily_payment_A_B_C(period_number), 2)
+
+    #get list of group members in json
+    def get_group_list_json(self):
+        if not self.session.parameterset.show_group:
+            return []
+
+        session_subjects_group=[]
+
+        session_subjects_group.append(self.jsonGroup())
+
+        for i in self.session.session_subjects.filter(group_number=self.group_number).exclude(id=self.id).order_by('id_number'):
+             session_subjects_group.append(i.jsonGroup())
+
+        return session_subjects_group
 
     #return json object of class
     def json(self,get_fitbit_status,request_type):
@@ -680,6 +695,7 @@ class Session_subject(models.Model):
             "address_state":q1.address_state if q1 else "---",
             "address_zip_code":q1.address_zip_code if q1 else "---",
             "birthdate" : q1.birthdate.strftime("%#m/%#d/%Y") if q1 and q1.birthdate else "---",
+            "group_number" : self.group_number,
         }
     
     #get json object of current stats to show on server
@@ -756,6 +772,31 @@ class Session_subject(models.Model):
 
         return [sdsa.immune_activity_minutes/60 for sdsa in sdsa_list]
 
+    #return json for group info
+    def jsonGroup(self):
+
+        sada = self.Session_day_subject_actvities.filter(session_day__date = todaysDate().date()).first()
+        sada_yesterday = sada.getPreviousActivityDay()
+
+        if sada_yesterday:
+
+            immune_activity_minutes=int(sada_yesterday.immune_activity_minutes)
+            immune_activity_hours = f'{math.floor(immune_activity_minutes/60)}hrs {immune_activity_minutes%60}mins'
+
+            return {"heart_score":sada_yesterday.heart_activity_formatted(),
+                    "heart_min":f'{int(sada_yesterday.heart_activity_minutes)}mins',
+                    "id":sada_yesterday.id,
+                    "sleep_score":sada_yesterday.immune_activity_formatted(),
+                    "sleep_hours":immune_activity_hours,
+                    }
+        else:
+             return {"heart_score":"---",
+                     "heart_min":"---",
+                     "id":sada.id,
+                     "sleep_score":"---",
+                     "sleep_hours":"---",
+                     }
+       
     #take fitbit api url and return response
     def getFitbitInfo(self,url):
         logger = logging.getLogger(__name__)        

@@ -146,6 +146,14 @@ class Parameterset_form(forms.ModelForm):
                             min_value=0,
                             widget=forms.NumberInput(attrs={"v-model":"session.parameterset.x_ticks_immune"}))
 
+    sleep_tracking = forms.ChoiceField(label='Sleep Tracking',
+                                       choices=((1, 'Yes'), (0, 'No')),
+                                       widget=forms.Select(attrs={"v-model" : "session.parameterset.sleep_tracking"}))
+    
+    show_group = forms.ChoiceField(label='Show Groups',
+                                   choices=((1, 'Yes'), (0, 'No')),
+                                   widget=forms.Select(attrs={"v-model" : "session.parameterset.show_group"}))
+
     class Meta:
         model=Parameterset
         fields = ('__all__')
