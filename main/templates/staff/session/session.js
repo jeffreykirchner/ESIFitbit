@@ -7,9 +7,8 @@ var app = Vue.createApp({
       
     data() {return {
         sessionParametersBeforeEdit:{},                     //store session before editing to restore if canceled
-        current_paylevel:{id : "",
-                          score : "",
-                          value : ""},
+        current_paylevel:{{pay_level_json|safe}},
+        current_time_block:{{time_block_json|safe}},
         session:{{session_json|safe}},
         session_subjects:[],              //list of subjects in this session 
         cancelModal:false,                //if modal is canceled reload old values
@@ -41,6 +40,7 @@ var app = Vue.createApp({
         earningsDownloadDate:"{{yesterdays_date}}",
         subject_form_ids:{{subject_form_ids|safe}},
         paylevel_form_ids:{{paylevel_form_ids|safe}},
+        time_block_form_ids:{{time_block_form_ids|safe}},
         last_refresh:"",
         auto_refresh:"Off",
         timeouts:[],
@@ -143,18 +143,62 @@ var app = Vue.createApp({
 
         //add subject to session
         updateTimeBlock:function(){                    
-            // app.$data.addSubjectButtonText ='<i class="fas fa-spinner fa-spin"></i>';
+            app.$data.cancelModal=true;
+
             axios.post('/session/{{id}}/', {
-                            action :"updateTimeBlock" ,                                                                                                                                                                
-                        })
-                        .then(function (response) {    
-                           
-                            app.updateSession(response);      
-                            // app.$data.addSubjectButtonText = 'Add Subject <i class="fas fa-plus"></i>';                                        
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });                        
+                action :"updateTimeBlock" ,      
+                formData : $("#editTimeBlockForm").serializeArray(),  
+                id : app.$data.current_time_block.id,                                                                                                                                                        
+            })
+            .then(function (response) {     
+                status=response.data.status;                               
+
+                app.clearMainFormErrors();
+
+                if(status=="success")
+                {
+                    app.$data.cancelModal=false;
+                    app.$data.session.parameterset = response.data.parameterset;       
+                    $('#editSessionParametersetTimeBlockModal').modal('toggle');      
+                } 
+                else
+                {                      
+                    app.displayErrors(response.data.errors);
+                }                                   
+            })
+            .catch(function (error) {
+                console.log(error);
+            });                       
+        },
+
+        //show edit parameters modal
+        showEditTimeBlock:function(index){
+            app.clearMainFormErrors();
+
+            app.$data.timeBlockBeforeEdit = Object.assign({}, app.$data.session.parameterset.time_blocks[index]);
+            app.$data.current_time_block_index = index
+
+            time_block = app.$data.session.parameterset.time_blocks[index];
+
+            app.$data.current_time_block = time_block;
+            
+            app.$data.cancelModal=true;
+
+            $('#editSessionParametersetTimeBlockModal').modal('show');                   
+        },
+
+        //fire when edit experiment model hides, cancel action if nessicary
+        hideEditTimeBlock:function(){
+            if(app.$data.cancelModal)
+            {
+                index = app.$data.current_time_block_index;
+
+                if(index != -1)
+                {
+                    Object.assign(app.session.parameterset.time_blocks[index], app.$data.timeBlockBeforeEdit);
+                    app.$data.timeBlockBeforeEdit=null;
+                }
+            }
         },
 
         //refresh subject table click
@@ -928,6 +972,13 @@ var app = Vue.createApp({
                 $("#id_" + s[i]).attr("class","form-control");
                 $("#id_errors_" + s[i]).remove();
             }
+
+            s = app.time_block_form_ids;
+            for(var i in s)
+            {
+                $("#id_" + s[i]).attr("class","form-control");
+                $("#id_errors_" + s[i]).remove();
+            }
         },       
         
         //graphs
@@ -1192,5 +1243,6 @@ var app = Vue.createApp({
         $('#hideUploadParameters').on("hidden.bs.modal", this.hideEditSubject); 
         $('#copySubjectModal').on("hidden.bs.modal", this.hideCopySubject); 
         $('#editSessionParametersPaylevelModal').on("hidden.bs.modal", this.hideEditPaylevel); 
+        $('#editSessionParametersetTimeBlockModal').on("hidden.bs.modal", this.hideEditTimeBlock);
     },
 }).mount('#app');

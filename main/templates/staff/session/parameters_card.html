@@ -95,39 +95,39 @@
             </div>                            
         </div>
         <div class="row justify-content-center mb-1" v-for="(b,index) in session.parameterset.time_blocks" v-bind:key="b.id">
-            <div class="col-md-auto text-right">
+            <div class="col-md text-right text-nowrap">
                 Block [[index+1]]
             </div>
 
-            <div class="col-md-auto text-right">
-                {{parameterset_time_block_form.day_count.label}}
+            <div class="col-md text-right text-nowrap">
+                {{parameterset_time_block_form.day_count.label}}:
             </div>
-            <div class="col-md-auto">
+            <div class="col-md text-nowrap">
                 [[b.day_count]]
             </div>
 
-            <div class="col-md-auto text-right">
+            <div class="col-md text-right text-nowrap">
                 {{parameterset_time_block_form.fixed_pay_per_day.label}}:
             </div>
-            <div class="col-md-auto">
+            <div class="col-md text-nowrap">
                 [[b.fixed_pay_per_day]]
             </div>
 
-            <div class="col-md-auto text-right">
+            <div class="col-md text-right text-nowrap">
                 {{parameterset_time_block_form.heart_pay.label}}:
             </div>
-            <div class="col-md-auto">
+            <div class="col-md text-nowrap">
                [[b.heart_pay]]
             </div>
 
-            <div class="col-md-auto text-right">
+            <div class="col-md text-right text-nowrap">
                 {{parameterset_time_block_form.immune_pay.label}}:
             </div>
-            <div class="col-md-auto">
+            <div class="col-md">
                 [[b.immune_pay]]
             </div>
-            <div class="col-md-auto">
-                <button class="btn btn-outline-primary btn-sm" type="button" v-on:click = "showTimeBlock(index)" v-show="session.started===false"> 
+            <div class="col-md text-nowrap">
+                <button class="btn btn-outline-primary btn-sm" type="button" v-on:click = "showEditTimeBlock(index)" v-show="session.started===false"> 
                     <i class="far fa-edit"></i>
                 </button>
             </div>
@@ -139,7 +139,7 @@
                 <button class="btn btn-outline-danger btn-sm mr-2" 
                         type="button" 
                         v-on:click = "removeTimeBlock()" 
-                        v-bind:disabled = "session.parameterset.time_blocks.count <= 1"
+                        v-bind:disabled = "session.parameterset.time_blocks.length <= 1"
                         v-show="session.started == false"> 
                     Remove Time Block  <i class="far fa-trash-alt"></i>
                 </button>

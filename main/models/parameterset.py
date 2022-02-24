@@ -213,8 +213,6 @@ class Parameterset(models.Model):
             new_time_block = main.models.ParametersetTimeBlock()
 
             new_time_block.parameterset = self
-            new_time_block.save()
-
             new_time_block.setup(time_block)
 
         self.save()
@@ -282,11 +280,16 @@ class Parameterset(models.Model):
     #get period's time block
     def getBlock(self, period):
 
+        logger = logging.getLogger(__name__)
+        #logger.info(f'Get Block for period: {period}')
+
         period_counter = 1
         block_number = 1
 
         for b in self.time_blocks.all():
+            #logger.info(b)
             if period <= period_counter + b.day_count:
+               #logger.info(f'Get Block found: {b}')
                return b
             else:
                 period_counter += b.day_count
@@ -363,7 +366,7 @@ class Parameterset(models.Model):
         if self.getBlock(period) == self.time_blocks.all().last():
             return
 
-        if self.get_block_first_period(period) - 2 == period:
+        if self.get_block_first_period(period+2) == period+2:
            return True
         
         return False

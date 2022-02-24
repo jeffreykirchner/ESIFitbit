@@ -140,22 +140,23 @@ class Session(models.Model):
         #logger.info(d_end)     
 
         #add days for block 1
-        for i in range(self.parameterset.block_1_day_count):   
-            self.addSessionDay(d_start.date(),tempPeriod)
-            d_start += timedelta(days=1)
-            tempPeriod+=1
+        for j in self.parameterset.time_blocks.all():
+            for i in range(j.day_count):   
+                self.addSessionDay(d_start.date(), tempPeriod)
+                d_start += timedelta(days=1)
+                tempPeriod+=1
 
         #add days for block 2
-        for i in range(self.parameterset.block_2_day_count):   
-            self.addSessionDay(d_start.date(),tempPeriod)
-            d_start += timedelta(days=1)
-            tempPeriod+=1 
+        # for i in range(self.parameterset.block_2_day_count):   
+        #     self.addSessionDay(d_start.date(),tempPeriod)
+        #     d_start += timedelta(days=1)
+        #     tempPeriod+=1 
         
-        #add days for block 3
-        for i in range(self.parameterset.block_3_day_count):   
-            self.addSessionDay(d_start.date(),tempPeriod)
-            d_start += timedelta(days=1)
-            tempPeriod+=1 
+        # #add days for block 3
+        # for i in range(self.parameterset.block_3_day_count):   
+        #     self.addSessionDay(d_start.date(),tempPeriod)
+        #     d_start += timedelta(days=1)
+        #     tempPeriod+=1 
 
 
         # while d_start <= d_end:
@@ -405,15 +406,17 @@ class Session(models.Model):
         logger = logging.getLogger(__name__)
 
         session_day = self.getCurrentSessionDay()
-        current_block = 1
+        current_block_number = 1
+
+        # logger.info(session_day)
 
         if session_day:
-            current_block = self.parameterset.getBlock(session_day.period_number)
+            current_block_number = self.parameterset.getBlock(session_day.period_number).block_number
         
-        if current_block == 1:
+        if current_block_number == 1:
             return TimeBlock.ONE
         
-        if current_block == 2:
+        if current_block_number == 2:
             return TimeBlock.TWO
         
         return TimeBlock.THREE
@@ -423,12 +426,12 @@ class Session(models.Model):
         get the next time block
         '''
 
-        current_block = self.parameterset.getBlock(p_number)
+        current_block_number = self.parameterset.getBlock(p_number).block_number
         
-        if current_block == 1:
+        if current_block_number == 1:
             return TimeBlock.ONE
         
-        if current_block == 2:
+        if current_block_number == 2:
             return TimeBlock.TWO
         
         return TimeBlock.THREE

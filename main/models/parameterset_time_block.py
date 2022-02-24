@@ -30,7 +30,7 @@ class ParametersetTimeBlock(models.Model):
     updated= models.DateTimeField(auto_now= True)
 
     def __str__(self):
-        return str(self.id)
+        return f'id:{self.id}, parameterset: {self.parameterset}, block number: {self.block_number}'
 
     class Meta:
         verbose_name = 'Study Parameter Set Time Block'
@@ -80,6 +80,7 @@ class ParametersetTimeBlock(models.Model):
 
     #return json object of class
     def json(self):
+        
         return{
 
             "id":self.id,

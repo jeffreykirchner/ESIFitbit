@@ -25,6 +25,9 @@ from main.models import Session_subject
 from main.models import Session_day_subject_actvity
 from main.models import Parameters
 from main.models import ParametersetPaylevel
+from main.models import ParametersetTimeBlock
+
+import main
 
 @login_required
 def Staff_Session(request,id):
@@ -118,10 +121,16 @@ def Staff_Session(request,id):
         paylevel_form_ids=[]
         for i in parameterset_paylevel_form:
             paylevel_form_ids.append(i.html_name)
+
+        time_block_form_ids=[]
+        for i in parameterset_time_block_form:
+            time_block_form_ids.append(i.html_name)
         
         return render(request,'staff/session.html',{'id' : id,
                                                     'session' : session,
                                                     'session_json' : json.dumps(session.json(), cls=DjangoJSONEncoder),
+                                                    'time_block_json' : json.dumps(main.models.ParametersetTimeBlock().json(), cls=DjangoJSONEncoder),
+                                                    'pay_level_json' : json.dumps(main.models.ParametersetPaylevel().json(), cls=DjangoJSONEncoder),
                                                     'parameterset_form' : parameterset_form,
                                                     'session_form' : session_form,
                                                     'subject_form' : subject_form,
@@ -131,6 +140,7 @@ def Staff_Session(request,id):
                                                     'parameterset_time_block_form' : parameterset_time_block_form,
                                                     'subject_form_ids' : subject_form_ids,
                                                     'paylevel_form_ids' : paylevel_form_ids,
+                                                    'time_block_form_ids' : time_block_form_ids,
                                                     'yesterdays_date' : yesterdays_date.date().strftime("%Y-%m-%d")})     
 
 #get list of experiment sessions
@@ -149,7 +159,7 @@ def getSession(data,id):
 #get session json object
 def getSessionJSON(id):
     logger = logging.getLogger(__name__) 
-    logger.info("Get Session JSON")
+    #logger.info("Get Session JSON")
 
     s=Session.objects.get(id=id)
 
@@ -791,7 +801,7 @@ def update_time_block(data, id):
     for field in data["formData"]:            
         form_data_dict[field["name"]] = field["value"]
 
-    form = ParametersetPaylevelForm(form_data_dict, instance=ParametersetPaylevel.objects.get(id = data["id"]))
+    form = ParametersetTimeBlockForm(form_data_dict, instance=ParametersetTimeBlock.objects.get(id=data["id"]))
 
     if form.is_valid():
         #print("valid form")                

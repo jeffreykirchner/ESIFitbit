@@ -121,6 +121,10 @@ class SubjectLastDayTestCase(TestCase):
         self.assertEqual(r['status'],"success")
 
         session = Session.objects.first()
+        session.parameterset.add_time_block()
+        session.parameterset.add_time_block()
+        session.parameterset.add_time_block()
+
         self.session = session
 
         Session_day_subject_actvity.objects.filter(session_day__session = session).update(fitbit_on_wrist_minutes = session.parameterset.minimum_wrist_minutes)
@@ -422,6 +426,9 @@ class SubjectInstructions(TestCase):
         addSubject({},self.session.id)
 
         self.session = Session.objects.get(id = self.session.id)
+        self.session.parameterset.add_time_block()
+        self.session.parameterset.add_time_block()
+        self.session.parameterset.add_time_block()
 
         #store synced today
         for subject in self.session.session_subjects.all():
@@ -439,9 +446,9 @@ class SubjectInstructions(TestCase):
 
         #logger.info(self.session.instruction_set)
 
-        session.parameterset.block_1_day_count = 3
-        session.parameterset.block_2_day_count = 3
-        session.parameterset.block_3_day_count = 3
+        session.parameterset.time_blocks.filter(block_number=1).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=2).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=3).update(day_count=3)
 
         session.parameterset.save()
         session.calcEndDate()
@@ -481,9 +488,9 @@ class SubjectInstructions(TestCase):
 
         #logger.info(self.session.instruction_set)
 
-        session.parameterset.block_1_day_count = 3
-        session.parameterset.block_2_day_count = 3
-        session.parameterset.block_3_day_count = 3
+        session.parameterset.time_blocks.filter(block_number=1).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=2).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=3).update(day_count=3)
 
         session.parameterset.save()
 
@@ -532,9 +539,9 @@ class SubjectInstructions(TestCase):
 
         #logger.info(self.session.instruction_set)
 
-        session.parameterset.block_1_day_count = 3
-        session.parameterset.block_2_day_count = 3
-        session.parameterset.block_3_day_count = 3
+        session.parameterset.time_blocks.filter(block_number=1).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=2).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=3).update(day_count=3)
 
         session.parameterset.save()
 
@@ -583,9 +590,9 @@ class SubjectInstructions(TestCase):
 
         #logger.info(self.session.instruction_set)
 
-        session.parameterset.block_1_day_count = 3
-        session.parameterset.block_2_day_count = 3
-        session.parameterset.block_3_day_count = 3
+        session.parameterset.time_blocks.filter(block_number=1).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=2).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=3).update(day_count=3)
 
         session.parameterset.save()
 
@@ -634,9 +641,9 @@ class SubjectInstructions(TestCase):
 
         #logger.info(self.session.instruction_set)
 
-        session.parameterset.block_1_day_count = 3
-        session.parameterset.block_2_day_count = 3
-        session.parameterset.block_3_day_count = 3
+        session.parameterset.time_blocks.filter(block_number=1).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=2).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=3).update(day_count=3)
 
         session.parameterset.save()
 
@@ -685,9 +692,12 @@ class SubjectInstructions(TestCase):
 
         #logger.info(self.session.instruction_set)
 
-        session.parameterset.block_1_day_count = 14
-        session.parameterset.block_2_day_count = 0
-        session.parameterset.block_3_day_count = 0
+        session.parameterset.time_blocks.filter(block_number=1).update(day_count=14)
+        session.parameterset.time_blocks.filter(block_number=2).update(day_count=0)
+        session.parameterset.time_blocks.filter(block_number=3).update(day_count=0)
+
+        session.parameterset.remove_time_block()
+        session.parameterset.remove_time_block()
 
         session.parameterset.save()
 
