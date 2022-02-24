@@ -117,16 +117,15 @@ class SubjectLastDayTestCase(TestCase):
         addSubject({},session.id)
         addSubject({},session.id)
 
-        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.session = Session.objects.first()
+        self.session.parameterset.add_time_block()
+        self.session.parameterset.add_time_block()
+
+        r = json.loads(startSession({},self.session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
 
-        session = Session.objects.first()
-        session.parameterset.add_time_block()
-        session.parameterset.add_time_block()
-        session.parameterset.add_time_block()
-
-        self.session = session
-
+        self.session = Session.objects.first()
+        
         Session_day_subject_actvity.objects.filter(session_day__session = session).update(fitbit_on_wrist_minutes = session.parameterset.minimum_wrist_minutes)
         
         #store synced today
@@ -146,6 +145,7 @@ class SubjectLastDayTestCase(TestCase):
 
         session_subject.consent_required = False
         session_subject.questionnaire1_required = False
+        session_subject.questionnaire2_required = True  
 
         session_subject.save()
 
@@ -326,7 +326,6 @@ class SubjectBeforeStartTestCase(TestCase):
 
         session = Session.objects.first()
         logger.info(f"Session start date {session.start_date} end date {session.end_date}")
-
 
         addSubject({},session.id)
         addSubject({},session.id)
@@ -766,9 +765,15 @@ class SubjectPayments(TestCase):
         addSubject({},self.session.id)
 
         self.session = Session.objects.get(id = self.session.id)
-        self.session.parameterset.block_1_fixed_pay_per_day = 3
-        self.session.parameterset.block_2_fixed_pay_per_day = 4
-        self.session.parameterset.block_3_fixed_pay_per_day = 5
+
+        self.session.parameterset.add_time_block()
+        self.session.parameterset.add_time_block()
+        self.session.parameterset.add_time_block()
+
+        self.session.parameterset.time_blocks.filter(block_number=1).update(day_count=3)
+        self.session.parameterset.time_blocks.filter(block_number=2).update(day_count=4)
+        self.session.parameterset.time_blocks.filter(block_number=3).update(day_count=5)
+
         self.session.parameterset.save()
 
         #store synced today
@@ -785,9 +790,9 @@ class SubjectPayments(TestCase):
 
         session = self.session
 
-        session.parameterset.block_1_day_count = 3
-        session.parameterset.block_2_day_count = 3
-        session.parameterset.block_3_day_count = 3
+        session.parameterset.time_blocks.filter(block_number=1).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=2).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=3).update(day_count=3)
 
         session.parameterset.save()
         session.calcEndDate()
@@ -799,9 +804,10 @@ class SubjectPayments(TestCase):
         logger.info(f"Session start date {session.start_date} end date {session.end_date}")
 
         #check for correct base payments block 1
-        self.assertEqual(session.parameterset.get_fixed_pay(session.getCurrentSessionDay().period_number), session.parameterset.block_1_fixed_pay_per_day)
-        self.assertEqual(session.parameterset.getHeartPay(session.getCurrentSessionDay().period_number), session.parameterset.block_1_heart_pay)
-        self.assertEqual(session.parameterset.getImmunePay(session.getCurrentSessionDay().period_number), session.parameterset.block_1_immune_pay)
+        time_block_1 = session.parameterset.time_blocks.filter(block_number=2).first()
+        self.assertEqual(session.parameterset.get_fixed_pay(session.getCurrentSessionDay().period_number), time_block_1.fixed_pay_per_day)
+        self.assertEqual(session.parameterset.getHeartPay(session.getCurrentSessionDay().period_number), time_block_1.heart_pay)
+        self.assertEqual(session.parameterset.getImmunePay(session.getCurrentSessionDay().period_number), time_block_1.immune_pay)
     
     def test_three_x_three_two(self):
         '''
@@ -811,9 +817,9 @@ class SubjectPayments(TestCase):
 
         session = self.session
 
-        session.parameterset.block_1_day_count = 3
-        session.parameterset.block_2_day_count = 3
-        session.parameterset.block_3_day_count = 3
+        session.parameterset.time_blocks.filter(block_number=1).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=2).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=3).update(day_count=3)
         session.parameterset.save()
 
         start_date = todaysDate() - timedelta(4)
@@ -836,9 +842,10 @@ class SubjectPayments(TestCase):
         logger.info(f"Session start date {session.start_date} end date {session.end_date}")
 
         #check for correct base payments block 2
-        self.assertEqual(session.parameterset.get_fixed_pay(session.getCurrentSessionDay().period_number), session.parameterset.block_2_fixed_pay_per_day)
-        self.assertEqual(session.parameterset.getHeartPay(session.getCurrentSessionDay().period_number), session.parameterset.block_2_heart_pay)
-        self.assertEqual(session.parameterset.getImmunePay(session.getCurrentSessionDay().period_number), session.parameterset.block_2_immune_pay)
+        time_block_2 = session.parameterset.time_blocks.filter(block_number=2).first()
+        self.assertEqual(session.parameterset.get_fixed_pay(session.getCurrentSessionDay().period_number), time_block_2.fixed_pay_per_day)
+        self.assertEqual(session.parameterset.getHeartPay(session.getCurrentSessionDay().period_number), time_block_2.heart_pay)
+        self.assertEqual(session.parameterset.getImmunePay(session.getCurrentSessionDay().period_number), time_block_2.immune_pay)
 
     def test_three_x_three_three(self):
         '''
@@ -848,9 +855,9 @@ class SubjectPayments(TestCase):
 
         session = self.session
 
-        session.parameterset.block_1_day_count = 3
-        session.parameterset.block_2_day_count = 3
-        session.parameterset.block_3_day_count = 3
+        session.parameterset.time_blocks.filter(block_number=1).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=2).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=3).update(day_count=3)
         session.parameterset.save()
 
         start_date = todaysDate() - timedelta(7)
@@ -873,9 +880,10 @@ class SubjectPayments(TestCase):
         logger.info(f"Session start date {session.start_date} end date {session.end_date}")
 
         #check for correct base payments block 3
-        self.assertEqual(session.parameterset.get_fixed_pay(session.getCurrentSessionDay().period_number), session.parameterset.block_3_fixed_pay_per_day)
-        self.assertEqual(session.parameterset.getHeartPay(session.getCurrentSessionDay().period_number), session.parameterset.block_3_heart_pay)
-        self.assertEqual(session.parameterset.getImmunePay(session.getCurrentSessionDay().period_number), session.parameterset.block_3_immune_pay)
+        time_block_3 = session.parameterset.time_blocks.filter(block_number=3).first()
+        self.assertEqual(session.parameterset.get_fixed_pay(session.getCurrentSessionDay().period_number), time_block_3.fixed_pay_per_day)
+        self.assertEqual(session.parameterset.getHeartPay(session.getCurrentSessionDay().period_number), time_block_3.heart_pay)
+        self.assertEqual(session.parameterset.getImmunePay(session.getCurrentSessionDay().period_number), time_block_3.immune_pay)
 
     def test_three_x_three_total_payment(self):
         '''
@@ -885,9 +893,9 @@ class SubjectPayments(TestCase):
 
         session = self.session
 
-        session.parameterset.block_1_day_count = 3
-        session.parameterset.block_2_day_count = 3
-        session.parameterset.block_3_day_count = 3
+        session.parameterset.time_blocks.filter(block_number=1).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=2).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=3).update(day_count=3)
         session.parameterset.save()
 
         parameterset = session.parameterset
@@ -937,8 +945,10 @@ class SubjectPayments(TestCase):
         self.assertEqual(float(session_subject_activity_2day.heart_activity),round_half_away_from_zero(0.458584,2))
         self.assertEqual(float(session_subject_activity_2day.immune_activity),round_half_away_from_zero(0.6832,2))
 
+        time_block_3 = parameterset.time_blocks.filter(block_number=3).first()
+
         self.assertEqual(round_half_away_from_zero(float(session_subject_activity_2day.getTodaysTotalEarnings()),2),
-                          round_half_away_from_zero(float(parameterset.block_3_fixed_pay_per_day + 
-                                parameterset.block_3_heart_pay * session_subject_activity_2day.heart_activity +
-                                parameterset.block_3_immune_pay * session_subject_activity_2day.immune_activity)
+                          round_half_away_from_zero(float(time_block_3.fixed_pay_per_day + 
+                                time_block_3.heart_pay * session_subject_activity_2day.heart_activity +
+                                time_block_3.immune_pay * session_subject_activity_2day.immune_activity)
                                ,2))

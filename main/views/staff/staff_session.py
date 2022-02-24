@@ -359,10 +359,10 @@ def backFillSessionDays(data,id):
                                 },safe=False)
 
 #activate session and fill in session days
-def startSession(data,id):
+def startSession(data, id):
     logger = logging.getLogger(__name__) 
-    logger.info("Start session")
-    logger.info(data)
+    logger.info(f"Start session, data: {data}, id:{id}")
+    # logger.info(data)
 
     status = "success"
 
