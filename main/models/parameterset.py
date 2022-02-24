@@ -302,7 +302,13 @@ class Parameterset(models.Model):
         '''
         b = self.getBlock(period)
 
-        return b.day_count if b else None
+        if not b:
+            return None
+        
+        if b.block_number==1:
+            return b.day_count+1
+
+        return b.day_count
     
     def get_block_first_period(self, period):
         '''

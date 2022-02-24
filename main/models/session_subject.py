@@ -540,6 +540,9 @@ class Session_subject(models.Model):
 
         start_period_number = self.session.parameterset.get_block_first_period(period_number)
 
+        if not start_period_number:
+            return -1
+
         heart_activity_average = self.Session_day_subject_actvities.filter(paypal_today = True) \
                                                                    .filter(session_day__period_number__gte = start_period_number) \
                                                                    .filter(session_day__period_number__lte = period_number) \

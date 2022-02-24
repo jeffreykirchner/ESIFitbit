@@ -35,9 +35,17 @@ class SessionBlockTests(TestCase):
 
         start_date = todaysDate()
 
-        session.parameterset.block_1_day_count = 3
-        session.parameterset.block_2_day_count = 3
-        session.parameterset.block_3_day_count = 5
+        # session.parameterset.block_1_day_count = 3
+        # session.parameterset.block_2_day_count = 3
+        # session.parameterset.block_3_day_count = 5
+
+        session.parameterset.add_time_block()
+        session.parameterset.add_time_block()
+        session.parameterset.add_time_block()
+
+        session.parameterset.time_blocks.filter(block_number=1).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=2).update(day_count=3)
+        session.parameterset.time_blocks.filter(block_number=3).update(day_count=5)
 
         session.parameterset.save()
         session.calcEndDate()
@@ -115,8 +123,8 @@ class SessionBlockTests(TestCase):
 
         #check on block 1 daily payments
         session_subject = session.session_subjects.first()
-        self.assertEqual(session.parameterset.block_1_fixed_pay_per_day, session_subject.get_daily_payment_A_B_C(1))
-        self.assertEqual(session.parameterset.block_1_fixed_pay_per_day, session_subject.get_daily_payment_A_B_C(4))
+        self.assertEqual(session.parameterset.time_blocks.all().first().fixed_pay_per_day, session_subject.get_daily_payment_A_B_C(1))
+        self.assertEqual(session.parameterset.time_blocks.all().first().fixed_pay_per_day, session_subject.get_daily_payment_A_B_C(4))
 
 
     def test_subject_averages(self):
