@@ -32,6 +32,8 @@ class SubjectCompleteTestCase(TestCase):
 
         #set sessoin start to tomorrow
         session = Session.objects.first()
+        session.parameterset.add_time_block()
+        session.parameterset.add_time_block()
 
         start_date = todaysDate()-timedelta(days=4)
 
@@ -108,7 +110,8 @@ class SubjectLastDayTestCase(TestCase):
         self.assertEqual(r['status'],"success")
 
         session = Session.objects.first()
-        logger.info(f"Session start date {session.start_date} end date {session.end_date}")
+        session.parameterset.add_time_block()
+        session.parameterset.add_time_block()
 
         addSubject({},session.id)
         addSubject({},session.id)
@@ -118,11 +121,11 @@ class SubjectLastDayTestCase(TestCase):
         addSubject({},session.id)
 
         self.session = Session.objects.first()
-        self.session.parameterset.add_time_block()
-        self.session.parameterset.add_time_block()
 
         r = json.loads(startSession({},self.session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
+
+        logger.info(f"Session start date {session.start_date} end date {session.end_date}")
 
         self.session = Session.objects.first()
         
@@ -177,6 +180,8 @@ class SubjectAfterStartTestCase(TestCase):
 
         #set sessoin start to tomorrow
         session = Session.objects.first()
+        session.parameterset.add_time_block()
+        session.parameterset.add_time_block()
 
         start_date = todaysDate()
 
@@ -316,6 +321,8 @@ class SubjectBeforeStartTestCase(TestCase):
 
         #set sessoin start to tomorrow
         session = Session.objects.first()
+        session.parameterset.add_time_block()
+        session.parameterset.add_time_block()
 
         start_date = todaysDate() + timedelta(days=1)
 
@@ -425,7 +432,6 @@ class SubjectInstructions(TestCase):
         addSubject({},self.session.id)
 
         self.session = Session.objects.get(id = self.session.id)
-        self.session.parameterset.add_time_block()
         self.session.parameterset.add_time_block()
         self.session.parameterset.add_time_block()
 
@@ -766,7 +772,6 @@ class SubjectPayments(TestCase):
 
         self.session = Session.objects.get(id = self.session.id)
 
-        self.session.parameterset.add_time_block()
         self.session.parameterset.add_time_block()
         self.session.parameterset.add_time_block()
 

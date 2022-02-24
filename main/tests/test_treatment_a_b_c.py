@@ -41,7 +41,6 @@ class SessionBlockTests(TestCase):
 
         session.parameterset.add_time_block()
         session.parameterset.add_time_block()
-        session.parameterset.add_time_block()
 
         session.parameterset.time_blocks.filter(block_number=1).update(day_count=3)
         session.parameterset.time_blocks.filter(block_number=2).update(day_count=3)
@@ -260,12 +259,14 @@ class SessionABCPayments(TestCase):
 
         #set sessoin start to tomorrow
         session = Session.objects.first()
+        session.parameterset.add_time_block()
+        session.parameterset.add_time_block()
 
         start_date = todaysDate()
 
-        session.parameterset.block_1_day_count = 3
-        session.parameterset.block_2_day_count = 3
-        session.parameterset.block_3_day_count = 5
+        session.parameterset.time_blocks.filter(block_number=1).update(day_count=3, heart_pay=0, immune_pay=0)
+        session.parameterset.time_blocks.filter(block_number=2).update(day_count=3, heart_pay=8, immune_pay=8)
+        session.parameterset.time_blocks.filter(block_number=3).update(day_count=5, heart_pay=16, immune_pay=16)
 
         session.parameterset.save()
         session.calcEndDate()
@@ -915,8 +916,11 @@ class SessionABCPayments(TestCase):
         self.assertEqual(r['status'],"success")
         session = Session.objects.get(id = session.id)
 
-        session.parameterset.block_2_fixed_pay_per_day = 0
-        session.parameterset.save()
+        time_block_2 = session.parameterset.time_blocks.get(block_number=2)
+        time_block_2.fixed_pay_per_day = 0
+        time_block_2.save()
+
+        session = Session.objects.get(id=session.id)
 
         start_sleep = 0.2
         start_heart = 0.1
