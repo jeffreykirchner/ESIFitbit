@@ -5,6 +5,7 @@ import logging
 
 from django.db import models
 from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 
 import main.models
 
@@ -82,15 +83,20 @@ class InstructionSet(models.Model):
         '''
         copy instruction pages
         '''
-
-        for page in self.instruction_set_pages.all():
-            page.text = i_set.get_page_text(page.time_block, page.page_type)
-            page.save()
+        try:
+            for page in self.instruction_set_pages.all():
+                page.text = i_set.get_page_text(page.time_block, page.page_type)
+                page.save()
+        except ObjectDoesNotExist:
+            pass
         
-        for notice in self.instruction_set_notices.all():
-            notice.text = i_set.get_notice_text(notice.time_block, notice.notice_type)
-            notice.title = i_set.get_notice_title(notice.time_block, notice.notice_type)
-            notice.save()
+        try:
+            for notice in self.instruction_set_notices.all():
+                notice.text = i_set.get_notice_text(notice.time_block, notice.notice_type)
+                notice.title = i_set.get_notice_title(notice.time_block, notice.notice_type)
+                notice.save()
+        except ObjectDoesNotExist:
+            pass
     
     def json(self):
         '''

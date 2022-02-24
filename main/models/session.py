@@ -22,7 +22,11 @@ import main
 from main.models import Parameterset
 from main.models import InstructionSet
 from main.models import Parameters
-from main.globals import todaysDate, TimeBlock, NoticeType
+
+from main.globals import todaysDate
+from main.globals import TimeBlock 
+from main.globals import NoticeType
+
 class Session(models.Model):
     '''
     session model
@@ -406,35 +410,22 @@ class Session(models.Model):
         logger = logging.getLogger(__name__)
 
         session_day = self.getCurrentSessionDay()
-        current_block_number = 1
 
         # logger.info(session_day)
 
         if session_day:
-            current_block_number = self.parameterset.getBlock(session_day.period_number).block_number
+            return self.parameterset.getBlock(session_day.period_number).get_time_block_global()
         
-        if current_block_number == 1:
-            return TimeBlock.ONE
-        
-        if current_block_number == 2:
-            return TimeBlock.TWO
-        
-        return TimeBlock.THREE
+        logger.info(f"get_current_block: session day not found")
+
+        return None
     
     def get_next_block(self, p_number):
         '''
         get the next time block
         '''
 
-        current_block_number = self.parameterset.getBlock(p_number).block_number
-        
-        if current_block_number == 1:
-            return TimeBlock.ONE
-        
-        if current_block_number == 2:
-            return TimeBlock.TWO
-        
-        return TimeBlock.THREE
+        return self.parameterset.getBlock(p_number).get_time_block_global()
         
     def get_instruction_text(self, page_type):
         '''

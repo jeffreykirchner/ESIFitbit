@@ -9,6 +9,7 @@ from django.db.utils import IntegrityError
 from decimal import Decimal
 
 from main.models import Parameterset
+from main.globals import TimeBlock 
 
 import main
 
@@ -77,6 +78,30 @@ class ParametersetTimeBlock(models.Model):
         self.block_number = data.block_number
 
         self.save()
+    
+    def get_time_block_global(self):
+        '''
+        return the time block global
+        '''
+        logger = logging.getLogger(__name__)
+
+        logger.info(f"get_time_block_global: {self.block_number}")
+        
+        if self.block_number == 1:
+            return TimeBlock.ONE
+        elif self.block_number == 2:
+            return TimeBlock.TWO
+        elif self.block_number == 3:
+            return TimeBlock.THREE
+        elif self.block_number == 4:
+            return TimeBlock.FOUR
+        elif self.block_number == 5:
+            return TimeBlock.FIVE
+        elif self.block_number == 6:
+            return TimeBlock.SIX
+        
+        return None
+
 
     #return json object of class
     def json(self):
