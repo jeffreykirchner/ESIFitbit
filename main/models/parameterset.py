@@ -3,6 +3,7 @@ parameter set model
 '''
 import math
 import logging
+import re
 
 from django.db import models
 from django.db.utils import IntegrityError
@@ -29,27 +30,27 @@ class Parameterset(models.Model):
     immune_parameter_2 = models.DecimalField(decimal_places=5, default=4.0, max_digits=20)
     immune_parameter_3 = models.DecimalField(decimal_places=5, default=4.0, max_digits=20)
 
-    #heartEarnings $ = block_N_heart_pay * heartActivityToday
-    block_1_heart_pay = models.DecimalField(decimal_places=2, default=0.00, max_digits=6)
-    block_2_heart_pay = models.DecimalField(decimal_places=2, default=8.00, max_digits=6)
-    block_3_heart_pay = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
+    # #heartEarnings $ = block_N_heart_pay * heartActivityToday
+    # block_1_heart_pay = models.DecimalField(decimal_places=2, default=0.00, max_digits=6)
+    # block_2_heart_pay = models.DecimalField(decimal_places=2, default=8.00, max_digits=6)
+    # block_3_heart_pay = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
 
-    #immuneEarnings $ = block_N_immune_pay * immuneActivityToday
-    block_1_immune_pay = models.DecimalField(decimal_places=2, default=0.00, max_digits=6)
-    block_2_immune_pay = models.DecimalField(decimal_places=2, default=8.00, max_digits=6)
-    block_3_immune_pay = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
+    # #immuneEarnings $ = block_N_immune_pay * immuneActivityToday
+    # block_1_immune_pay = models.DecimalField(decimal_places=2, default=0.00, max_digits=6)
+    # block_2_immune_pay = models.DecimalField(decimal_places=2, default=8.00, max_digits=6)
+    # block_3_immune_pay = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
 
-    #fixed pay per day $
-    block_1_fixed_pay_per_day = models.DecimalField(decimal_places=2, default=3.00, max_digits=6)
-    block_2_fixed_pay_per_day = models.DecimalField(decimal_places=2, default=3.00, max_digits=6)
-    block_3_fixed_pay_per_day = models.DecimalField(decimal_places=2, default=3.00, max_digits=6)
+    # #fixed pay per day $
+    # block_1_fixed_pay_per_day = models.DecimalField(decimal_places=2, default=3.00, max_digits=6)
+    # block_2_fixed_pay_per_day = models.DecimalField(decimal_places=2, default=3.00, max_digits=6)
+    # block_3_fixed_pay_per_day = models.DecimalField(decimal_places=2, default=3.00, max_digits=6)
 
     minimum_wrist_minutes = models.IntegerField(default = 1080)
 
     #number of days for each time block
-    block_1_day_count = models.IntegerField(default = 1)
-    block_2_day_count = models.IntegerField(default = 1)
-    block_3_day_count = models.IntegerField(default = 1)
+    # block_1_day_count = models.IntegerField(default = 1)
+    # block_2_day_count = models.IntegerField(default = 1)
+    # block_3_day_count = models.IntegerField(default = 1)
 
     #heart graph self
     y_min_heart = models.IntegerField(default=0)
@@ -89,76 +90,69 @@ class Parameterset(models.Model):
         '''
         message = "Parameters loaded successfully."
 
-        try:
+        # try:
 
-            self.consent_form = main.models.Consent_forms.objects.get(id=data.get("consent_form"))
+        self.consent_form = main.models.Consent_forms.objects.get(id=data.get("consent_form"))
 
-            self.heart_activity_inital = data.get("heart_activity_inital")
-            self.heart_parameter_1 = data.get("heart_parameter_1")
-            self.heart_parameter_2 = data.get("heart_parameter_2")
-            self.heart_parameter_3 = data.get("heart_parameter_3")
+        self.heart_activity_inital = data.get("heart_activity_inital")
+        self.heart_parameter_1 = data.get("heart_parameter_1")
+        self.heart_parameter_2 = data.get("heart_parameter_2")
+        self.heart_parameter_3 = data.get("heart_parameter_3")
 
-            self.immune_activity_inital = data.get("immune_activity_inital")
-            self.immune_parameter_1 = data.get("immune_parameter_1")
-            self.immune_parameter_2 = data.get("immune_parameter_2")
-            self.immune_parameter_3 = data.get("immune_parameter_3")
+        self.immune_activity_inital = data.get("immune_activity_inital")
+        self.immune_parameter_1 = data.get("immune_parameter_1")
+        self.immune_parameter_2 = data.get("immune_parameter_2")
+        self.immune_parameter_3 = data.get("immune_parameter_3")
 
-            self.block_1_heart_pay = data.get("block_1_heart_pay")
-            self.block_2_heart_pay = data.get("block_2_heart_pay")
-            self.block_3_heart_pay = data.get("block_3_heart_pay")
+        self.minimum_wrist_minutes = data.get("minimum_wrist_minutes")
 
-            self.block_1_immune_pay = data.get("block_1_immune_pay")
-            self.block_2_immune_pay = data.get("block_2_immune_pay")
-            self.block_3_immune_pay = data.get("block_3_immune_pay")
+        self.y_min_heart = data.get("y_min_heart")
+        self.y_max_heart = data.get("y_max_heart")
+        self.y_ticks_heart = data.get("y_ticks_heart")
+        self.x_min_heart = data.get("x_min_heart")
+        self.x_max_heart = data.get("x_max_heart")
+        self.x_ticks_heart = data.get("x_ticks_heart")
 
-            self.block_1_day_count = data.get("block_1_day_count")
-            self.block_2_day_count = data.get("block_2_day_count")
-            self.block_3_day_count = data.get("block_3_day_count")
+        self.y_min_immune = data.get("y_min_immune")
+        self.y_max_immune = data.get("y_max_immune")
+        self.y_ticks_immune = data.get("y_ticks_immune")
+        self.x_min_immune = data.get("x_min_immune")
+        self.x_max_immune = data.get("x_max_immune")
+        self.x_ticks_immune = data.get("x_ticks_immune")
 
-            self.block_1_fixed_pay_per_day = data.get("block_1_fixed_pay_per_day")
-            self.block_2_fixed_pay_per_day = data.get("block_2_fixed_pay_per_day")
-            self.block_3_fixed_pay_per_day = data.get("block_3_fixed_pay_per_day")
+        self.sleep_tracking =  data.get("sleep_tracking")
+        self.show_group = data.get("show_group")
 
-            self.minimum_wrist_minutes = data.get("minimum_wrist_minutes")
+        # pay levels
+        self.paylevels.all().delete()
 
-            self.y_min_heart = data.get("y_min_heart")
-            self.y_max_heart = data.get("y_max_heart")
-            self.y_ticks_heart = data.get("y_ticks_heart")
-            self.x_min_heart = data.get("x_min_heart")
-            self.x_max_heart = data.get("x_max_heart")
-            self.x_ticks_heart = data.get("x_ticks_heart")
+        paylevel_list = data.get("pay_levels", -1)
 
-            self.y_min_immune = data.get("y_min_immune")
-            self.y_max_immune = data.get("y_max_immune")
-            self.y_ticks_immune = data.get("y_ticks_immune")
-            self.x_min_immune = data.get("x_min_immune")
-            self.x_max_immune = data.get("x_max_immune")
-            self.x_ticks_immune = data.get("x_ticks_immune")
+        if paylevel_list != -1:
+            for paylevel in paylevel_list:
+                new_paylevel = main.models.ParametersetPaylevel()
 
-            self.sleep_tracking =  data.get("sleep_tracking")
-            self.show_group = data.get("show_group")
+                new_paylevel.parameterset = self
+                new_paylevel.score = paylevel["score"]
+                new_paylevel.value = paylevel["value"]
 
-            #remove any old pay levels
-            self.paylevels.all().delete()
+                new_paylevel.save()
+        
+        #time blocks
+        self.time_blocks.all().delete()
+        time_block_list = data.get("time_blocks", -1)
+        if time_block_list != -1:
+            for time_block in time_block_list:
+                new_time_block = main.models.ParametersetTimeBlock()
 
-            paylevel_list = data.get("pay_levels", -1)
+                new_time_block.parameterset = self
+                new_time_block.setup_from_dict(time_block)
 
-            if paylevel_list != -1:
-                for paylevel in paylevel_list:
-                    new_paylevel = main.models.ParametersetPaylevel()
+        self.save()
 
-                    new_paylevel.parameterset = self
-                    new_paylevel.score = paylevel["score"]
-                    new_paylevel.value = paylevel["value"]
-
-                    new_paylevel.save()
-
-
-            self.save()
-
-        except IntegrityError as err:
-            message = f"Failed to load parameter set: {err}"
-            #logger.info(message)
+        # except IntegrityError as err:
+        #     message = f"Failed to load parameter set: {err}"
+        #     #logger.info(message)
 
         return message
 
@@ -180,22 +174,6 @@ class Parameterset(models.Model):
         self.immune_parameter_2 = data.immune_parameter_2
         self.immune_parameter_3 = data.immune_parameter_3
 
-        self.block_1_heart_pay = data.block_1_heart_pay
-        self.block_2_heart_pay = data.block_2_heart_pay
-        self.block_3_heart_pay = data.block_3_heart_pay
-
-        self.block_1_immune_pay = data.block_1_immune_pay
-        self.block_2_immune_pay = data.block_2_immune_pay
-        self.block_3_immune_pay = data.block_3_immune_pay
-
-        self.block_1_day_count = data.block_1_day_count
-        self.block_2_day_count = data.block_2_day_count
-        self.block_3_day_count = data.block_3_day_count
-
-        self.block_1_fixed_pay_per_day = data.block_1_fixed_pay_per_day
-        self.block_2_fixed_pay_per_day = data.block_2_fixed_pay_per_day
-        self.block_3_fixed_pay_per_day = data.block_3_fixed_pay_per_day
-
         self.minimum_wrist_minutes = data.minimum_wrist_minutes
 
         self.y_min_heart = data.y_min_heart
@@ -215,7 +193,7 @@ class Parameterset(models.Model):
         self.sleep_tracking = data.sleep_tracking
         self.show_group = data.show_group
 
-        #remove any old pay levels
+        #pay levels
         self.paylevels.all().delete()
 
         for paylevel in data.paylevels.all():
@@ -226,7 +204,14 @@ class Parameterset(models.Model):
             new_paylevel.value = paylevel.value
 
             new_paylevel.save()
+        
+        #time blocks
+        self.time_blocks.all().delete()
+        for time_block in data.time_blocks.all():
+            new_time_block = main.models.ParametersetTimeBlock()
 
+            new_time_block.parameterset = self
+            new_time_block.setup(time_block)
 
         self.save()
 
@@ -235,12 +220,23 @@ class Parameterset(models.Model):
         return the maximum heart payment given period
         '''
 
-        if period<=self.block_1_day_count+1:
-            return self.block_1_heart_pay
-        elif period<=self.block_2_day_count+self.block_1_day_count+1:
-            return self.block_2_heart_pay
-        else:
-            return self.block_3_heart_pay
+        b = self.getBlock(period)
+
+        return b.heart_pay if b else None
+
+    def get_total_number_of_periods(self):
+        '''
+        return the total number of periods
+        '''
+        if self.time_blocks.all().count() == 0:
+            return 0
+        
+        period_count = 1
+
+        for b in self.time_blocks.all():
+            period_count += b.day_count
+
+        return period_count
 
     #return the current maximum payment for heart activty
     def getImmunePay(self, period):
@@ -248,21 +244,15 @@ class Parameterset(models.Model):
         if not self.sleep_tracking:
             return 0
 
-        if period <= self.block_1_day_count + 1:
-            return self.block_1_immune_pay
-        elif period <= self.block_2_day_count + self.block_1_day_count + 1:
-            return self.block_2_immune_pay
-        else:
-            return self.block_3_immune_pay
+        b = self.getBlock(period)
+
+        return b.immune_pay if b else None
     
     def get_fixed_pay(self, period):
 
-        if period <= self.block_1_day_count + 1:
-            return self.block_1_fixed_pay_per_day
-        elif period <= self.block_2_day_count + self.block_1_day_count + 1:
-            return self.block_2_fixed_pay_per_day
-        else:
-            return self.block_3_fixed_pay_per_day
+        b = self.getBlock(period)
+
+        return b.fixed_pay_per_day if b else None
 
     def get_treatment_b_c_paylevel(self, score):
         '''
@@ -286,74 +276,102 @@ class Parameterset(models.Model):
         return 0
 
     #get period's time block
-    def getBlock(self,period):
-        if period <= self.block_1_day_count + 1:
-            return 1
-        elif period <= self.block_2_day_count + self.block_1_day_count + 1:
-            return 2
-        else:
-            return 3
+    def getBlock(self, period):
+
+        logger = logging.getLogger(__name__)
+        #logger.info(f'Get Block for period: {period}')
+
+        period_counter = 1
+        block_number = 1
+
+        for b in self.time_blocks.all():
+            #logger.info(b)
+            if period <= period_counter + b.day_count:
+               #logger.info(f'Get Block found: {b}')
+               return b
+            else:
+                period_counter += b.day_count
+        
+        return None
     
     def get_block_day_count(self, period):
         '''
         get number of days in time block that period falls in
         '''
-        if period <= self.block_1_day_count + 1:
-            return self.block_1_day_count + 1
-        elif period <= self.block_2_day_count + self.block_1_day_count + 1:
-            return self.block_2_day_count
-        else:
-            return self.block_3_day_count
+        b = self.getBlock(period)
+
+        if not b:
+            return None
+        
+        if b.block_number==1:
+            return b.day_count+1
+
+        return b.day_count
     
     def get_block_first_period(self, period):
         '''
         return the first period of block that given period falls in
         '''
-        if period <= self.block_1_day_count + 1:
-            return 1
-        elif period <= self.block_2_day_count + self.block_1_day_count + 1:
-            return self.block_1_day_count + 2
-        else:
-            return self.block_1_day_count + self.block_2_day_count + 2
+
+        b = self.getBlock(period)
+
+        if not b:
+            return None
+
+        period_counter = 1
+        
+        if b.block_number==1:
+            return period_counter
+
+        block_list = self.time_blocks.filter(block_number__lt=b.block_number)
+
+        for b in block_list:
+            period_counter += b.day_count
+
+        return period_counter + 1
     
     def get_block_last_period(self, period):
         '''
         return the last period of block that given period falls in
         '''
-        if period <= self.block_1_day_count + 1:
-            return self.block_1_day_count + 1
-        elif period <= self.block_2_day_count + self.block_1_day_count + 1:
-            return self.block_2_day_count + self.block_1_day_count + 1
-        else:
-            return self.block_1_day_count + self.block_2_day_count + self.block_3_day_count + 1
+        b = self.getBlock(period)
 
-    #return true if block 2 or 3 starts today
-    def getBlockChangeToday(self,period):
+        if not b:
+            return None
 
-        #start of block 2
-        if period == self.block_1_day_count + 1 + 1:
-            return True
+        period_counter = 1
+        
+        block_list = self.time_blocks.filter(block_number__lte=b.block_number)
 
-        #start of block 3
-        if period == self.block_2_day_count + self.block_1_day_count + 1 + 1:
-            return True
+        for b in block_list:
+            period_counter += b.day_count
+        
+        return period_counter
+        
+    #return true if block greater 1 starts today
+    def getBlockChangeToday(self, period):
+
+        b = self.getBlock(period)
+
+        if not b:
+            return None
+        
+        if b.block_number == 1:
+            return 
+
+        if self.get_block_first_period(period) == period:
+           return True
         
         return False
 
     #return true if time block changes in two days
-    def getBlockChangeInTwoDays(self,period):
-        
-        #check that not last block
-        if period + 2 > self.block_1_day_count + self.block_2_day_count + self.block_3_day_count + 1:
-            return False
+    def getBlockChangeInTwoDays(self, period):
 
-        #check block 2 start
-        if period == self.block_1_day_count + 1 - 1:
-            return True
+        if self.getBlock(period) == self.time_blocks.all().last():
+            return
 
-        #check block 3 start
-        if period == self.block_2_day_count + self.block_1_day_count + 1 - 1:
-            return True
+        if self.get_block_first_period(period+2) == period+2:
+           return True
         
         return False
 
@@ -372,14 +390,17 @@ class Parameterset(models.Model):
         writer.writerow([title,treatment,
                           self.heart_activity_inital,self.heart_parameter_1,self.heart_parameter_2,self.heart_parameter_3,
                           self.immune_activity_inital,self.immune_parameter_1,self.immune_parameter_2,self.immune_parameter_3,
-                          self.block_1_heart_pay,self.block_2_heart_pay,self.block_3_heart_pay,
-                          self.block_1_immune_pay,self.block_2_immune_pay,self.block_3_immune_pay,
-                          self.block_1_day_count,self.block_2_day_count,self.block_3_day_count,
-                          self.block_1_fixed_pay_per_day,self.block_2_fixed_pay_per_day, self.block_3_fixed_pay_per_day,
                           self.minimum_wrist_minutes,
                           self.y_min_heart,self.y_max_heart,self.y_ticks_heart,self.x_min_heart,self.x_max_heart,self.x_ticks_heart,
                           self.y_min_immune,self.y_max_immune,self.y_ticks_immune,self.x_min_immune,self.x_max_immune,self.x_ticks_immune,
                           self.sleep_tracking, self.show_group])
+    
+    def get_csv_response_time_blocks(self, writer):
+        '''
+        get cvs version fo time blocks
+        '''
+        for time_block in self.time_blocks.all():
+            time_block.get_csv_response(writer)
 
     def get_csv_response_pay_level(self, writer):
         '''
@@ -389,6 +410,28 @@ class Parameterset(models.Model):
         for pay_level in self.paylevels.all():
             writer.writerow([start_score, pay_level.score,"$" + str(pay_level.value)])
             start_score = pay_level.score + Decimal("0.01")
+
+    def add_time_block(self):
+        '''
+        add new time block to parameter set
+        '''
+
+        time_block = main.models.ParametersetTimeBlock()
+
+        time_block.parameterset = self
+        time_block.block_number = self.time_blocks.all().last().block_number + 1 if self.time_blocks.all().last() else 1
+
+        time_block.save()
+    
+    def remove_time_block(self):
+        '''
+        remove last time block
+        '''
+
+        if self.time_blocks.all().count() <= 1:
+            return
+        
+        self.time_blocks.all().last().delete()
 
     #return json object of class
     def json(self):
@@ -408,23 +451,7 @@ class Parameterset(models.Model):
             "immune_parameter_2":self.immune_parameter_2,
             "immune_parameter_3":self.immune_parameter_3,
 
-            "block_1_heart_pay":self.block_1_heart_pay,
-            "block_2_heart_pay":self.block_2_heart_pay,
-            "block_3_heart_pay":self.block_3_heart_pay,
-
-            "block_1_immune_pay":self.block_1_immune_pay,
-            "block_2_immune_pay":self.block_2_immune_pay,
-            "block_3_immune_pay":self.block_3_immune_pay,
-
-            "block_1_fixed_pay_per_day":self.block_1_fixed_pay_per_day,
-            "block_2_fixed_pay_per_day":self.block_2_fixed_pay_per_day,
-            "block_3_fixed_pay_per_day":self.block_3_fixed_pay_per_day,
-
             "minimum_wrist_minutes":self.minimum_wrist_minutes,
-
-            "block_1_day_count":self.block_1_day_count,
-            "block_2_day_count":self.block_2_day_count,
-            "block_3_day_count":self.block_3_day_count,
 
             "y_min_heart":self.y_min_heart,
             "y_max_heart":self.y_max_heart,
@@ -444,6 +471,8 @@ class Parameterset(models.Model):
             "show_group":1 if  self.show_group else 0,
 
             "pay_levels" : [pl.json() for pl in self.paylevels.all()],
+
+            "time_blocks" : [tb.json() for tb in self.time_blocks.all()],
         }
 
     def json_graph(self):

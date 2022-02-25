@@ -61,6 +61,7 @@ def createSession(data):
     ps = Parameterset()
     ps.consent_form=Consent_forms.objects.all().last()
     ps.save()
+    ps.add_time_block()
 
     #create session
     s = Session()

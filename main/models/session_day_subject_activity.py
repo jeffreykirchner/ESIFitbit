@@ -463,7 +463,7 @@ class Session_day_subject_actvity(models.Model):
         heart_earnings = self.getTodaysHeartEarnings()
         sleep_earnings = self.getTodaysImmuneEarnings()
 
-        writer.writerow([f'{self.session_day.session.title}', self.session_day.period_number, self.session_day.session.parameterset.getBlock(self.session_day.period_number),
+        writer.writerow([f'{self.session_day.session.title}', self.session_day.period_number, self.session_day.session.parameterset.getBlock(self.session_day.period_number).block_number,
                          self.session_day.getDateStr(),self.session_subject.group_number,self.session_subject.id_number, self.session_subject.contact_email, self.heart_activity_minutes,
                          self.immune_activity_minutes,self.heart_activity, self.immune_activity, self.check_in_today,
                          self.paypal_today, self.session_day.session.parameterset.get_fixed_pay(self.session_day.period_number), heart_earnings,
@@ -499,7 +499,7 @@ class Session_day_subject_actvity(models.Model):
         else:
             sleep_paylevel = self.session_subject.session.parameterset.get_treatment_b_c_paylevel(sleep_average)
 
-        writer.writerow([f'{self.session_day.session.title}',period_number , self.session_day.session.parameterset.getBlock(period_number),
+        writer.writerow([f'{self.session_day.session.title}',period_number , self.session_day.session.parameterset.getBlock(period_number).block_number,
                          self.session_day.getDateStr(),self.session_subject.group_number,self.session_subject.id_number, self.session_subject.contact_email, self.heart_activity_minutes,
                          self.immune_activity_minutes,self.heart_activity, self.immune_activity, self.check_in_today,
                          self.paypal_today, missed_days, self.session_day.session.parameterset.get_fixed_pay(period_number), heart_average, heart_paylevel,

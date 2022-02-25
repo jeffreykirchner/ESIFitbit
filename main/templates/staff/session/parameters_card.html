@@ -89,115 +89,93 @@
         </div>
 
         <!-- time blocks -->
-        <div class="row mt-2 border-top">
-            <div class="col" style="text-align: center;">
-               Earnings<sub>T</sub> ($) = FixedPay<sub>B</sub> + (HeartPay<sub>B</sub> * HeartActivity<sub>T</sub>) + (ImmunePay<sub>B</sub> * ImmuneActivity<sub>T</sub>)
+        <div class="row justify-content-center mt-2 mb-2 border-top">
+            <div class="col text-center">
+               Earnings<sub>T</sub> ($) = FixedPay<sub>B</sub> + (HeartPay<sub>B</sub> * HeartActivity<sub>T</sub>) + (SleepPay<sub>B</sub> * SleepActivity<sub>T</sub>)
             </div>                            
         </div>
+        <div class="row justify-content-center mb-1" v-for="(b,index) in session.parameterset.time_blocks" v-bind:key="b.id">
+            <div class="col-md text-right text-nowrap">
+                Block [[index+1]]
+            </div>
+
+            <div class="col-md text-right text-nowrap">
+                {{parameterset_time_block_form.day_count.label}}:
+            </div>
+            <div class="col-md text-nowrap">
+                [[b.day_count]]
+            </div>
+
+            <div class="col-md text-right text-nowrap">
+                {{parameterset_time_block_form.fixed_pay_per_day.label}}:
+            </div>
+            <div class="col-md text-nowrap">
+                [[b.fixed_pay_per_day]]
+            </div>
+
+            <div class="col-md text-right text-nowrap">
+                {{parameterset_time_block_form.heart_pay.label}}:
+            </div>
+            <div class="col-md text-nowrap">
+               [[b.heart_pay]]
+            </div>
+
+            <div class="col-md text-right text-nowrap">
+                {{parameterset_time_block_form.immune_pay.label}}:
+            </div>
+            <div class="col-md">
+                [[b.immune_pay]]
+            </div>
+            <div class="col-md text-nowrap">
+                <button class="btn btn-outline-primary btn-sm" type="button" v-on:click = "showEditTimeBlock(index)" v-show="session.started===false || true"> 
+                    <i class="far fa-edit"></i>
+                </button>
+            </div>
+            
+        </div>
+
         <div class="row mt-4">
-            <div class="col-md-2" style="text-align: right;">
-                {{parameterset_form.block_1_fixed_pay_per_day.label}}:
-            </div>
-            <div class="col-md">
-                <span v-html="session.parameterset.block_1_fixed_pay_per_day"></span>
-            </div>
-            <div class="col-md-2" style="text-align: right;">
-                {{parameterset_form.block_1_heart_pay.label}}:
-            </div>
-            <div class="col-md">
-                <span v-html="session.parameterset.block_1_heart_pay"></span>
-            </div>
-            <div class="col-md-2" style="text-align: right;">
-                {{parameterset_form.block_1_immune_pay.label}}:
-            </div>
-            <div class="col-md">
-                <span v-html="session.parameterset.block_1_immune_pay"></span>
-            </div>
-            <div class="col-md-2" style="text-align: right;">
-                {{parameterset_form.block_1_day_count.label}}:
-            </div>
-            <div class="col-md">
-                <span v-html="session.parameterset.block_1_day_count"></span>
+            <div class="col text-right">
+                <button class="btn btn-outline-danger btn-sm mr-2" 
+                        type="button" 
+                        v-on:click = "removeTimeBlock()" 
+                        v-bind:disabled = "session.parameterset.time_blocks.length <= 1"
+                        v-show="session.started == false || true">
+                    Remove Time Block  <i class="far fa-trash-alt"></i>
+                </button>
+
+                <button class="btn btn-outline-success btn-sm" type="button" v-on:click = "addTimeBlock()" v-show="session.started == false || true"> 
+                    Add Time Block <i class="fas fa-plus"></i>
+                </button>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-2" style="text-align: right;">
-                {{parameterset_form.block_2_fixed_pay_per_day.label}}:
-            </div>
-            <div class="col-md">
-                <span v-html="session.parameterset.block_2_fixed_pay_per_day"></span>
-            </div>
-            <div class="col-md-2" style="text-align: right;">
-                {{parameterset_form.block_2_heart_pay.label}}:
-            </div>
-            <div class="col-md">
-                <span v-html="session.parameterset.block_2_heart_pay"></span>
-            </div>
-            <div class="col-md-2" style="text-align: right;">
-                {{parameterset_form.block_2_immune_pay.label}}:
-            </div>
-            <div class="col-md">
-                <span v-html="session.parameterset.block_2_immune_pay"></span>
-            </div>
-            <div class="col-md-2" style="text-align: right;">
-                {{parameterset_form.block_2_day_count.label}}:
-            </div>
-            <div class="col-md">
-                <span v-html="session.parameterset.block_2_day_count"></span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-2" style="text-align: right;">
-                {{parameterset_form.block_3_fixed_pay_per_day.label}}:
-            </div>
-            <div class="col-md">
-                <span v-html="session.parameterset.block_3_fixed_pay_per_day"></span>
-            </div>
-            <div class="col-md-2" style="text-align: right;">
-                {{parameterset_form.block_3_heart_pay.label}}:
-            </div>
-            <div class="col-md">
-                <span v-html="session.parameterset.block_3_heart_pay"></span>
-            </div>
-            <div class="col-md-2" style="text-align: right;">
-                {{parameterset_form.block_3_immune_pay.label}}:
-            </div>
-            <div class="col-md">
-                <span v-html="session.parameterset.block_3_immune_pay"></span>
-            </div>
-            <div class="col-md-2" style="text-align: right;">
-                {{parameterset_form.block_3_day_count.label}}:
-            </div>
-            <div class="col-md">
-                <span v-html="session.parameterset.block_3_day_count"></span>
-            </div>
-        </div>
+        
         <div class="row mt-4">
-            <div class="col-md-2" style="text-align: right;">
+            <div class="col-md-2 text-right">
                 {{parameterset_form.minimum_wrist_minutes.label}}:
             </div>
             <div class="col-md">
                 <span v-html="session.parameterset.minimum_wrist_minutes"></span>
             </div>
-            <div class="col-md" style="text-align: right;">
+            <div class="col-md text-right">
                 {{parameterset_form.sleep_tracking.label}}
             </div>
             <div class="col-md">
                 <span v-if="session.parameterset.sleep_tracking">Yes</span>
                 <span v-else>No</span>
             </div>
-            <div class="col-md" style="text-align: right;">
+            <div class="col-md text-right">
                 {{parameterset_form.show_group.label}}
             </div>
             <div class="col-md">
                 <span v-if="session.parameterset.show_group">Yes</span>
                 <span v-else>No</span>
             </div>
-            <div class="col-md" style="text-align: right;">
+            <div class="col-md text-right">
                
             </div>
             <div class="col-md">
-                
+               
             </div>
         </div>
 
@@ -249,15 +227,15 @@
 
         <!-- graphs self -->
         <div class="row mt-2 border-top">
-            <div class="col" style="text-align: Center;">
+            <div class="col text-center">
                 Heart Graph: Self
             </div>
-            <div class="col" style="text-align: Center;">
+            <div class="col text-center">
                 Immune Graph: Self
             </div>
         </div>
         <div class="row">
-            <div class="col" style="text-align: right;">
+            <div class="col text-right">
                 {{parameterset_form.y_min_heart.label}}:
             </div>
             <div class="col">
@@ -285,13 +263,13 @@
              </div>
         </div>
         <div class="row">
-            <div class="col" style="text-align: right;">
+            <div class="col text-right">
                 {{parameterset_form.y_ticks_heart.label}}:
             </div>
             <div class="col">
                 <span v-html="session.parameterset.y_ticks_heart"></span>
             </div>
-            <div class="col" style="text-align: right;">
+            <div class="col text-right">
                 {{parameterset_form.y_ticks_immune.label}}:
              </div>
              <div class="col">
@@ -299,13 +277,13 @@
              </div>
         </div>
         <div class="row">
-            <div class="col" style="text-align: right;">
+            <div class="col text-right">
                 {{parameterset_form.x_min_heart.label}}:
             </div>
             <div class="col">
                 <span v-html="session.parameterset.x_min_heart"></span>
             </div>
-            <div class="col" style="text-align: right;">
+            <div class="col text-right">
                 {{parameterset_form.x_min_immune.label}}:
              </div>
              <div class="col">
@@ -313,13 +291,13 @@
              </div>
         </div>
         <div class="row">
-            <div class="col" style="text-align: right;">
+            <div class="col text-right">
                 {{parameterset_form.x_max_heart.label}}:
             </div>
             <div class="col">
                 <span v-html="session.parameterset.x_max_heart"></span>
             </div>
-            <div class="col" style="text-align: right;">
+            <div class="col text-right">
                 {{parameterset_form.x_max_immune.label}}:
              </div>
              <div class="col">
@@ -327,13 +305,13 @@
              </div>
         </div>
         <div class="row">
-            <div class="col" style="text-align: right;">
+            <div class="col text-right">
                 {{parameterset_form.x_ticks_heart.label}}:
             </div>
             <div class="col">
                 <span v-html="session.parameterset.x_ticks_heart"></span>
             </div>
-            <div class="col" style="text-align: right;">
+            <div class="col text-right">
                 {{parameterset_form.x_ticks_immune.label}}:
              </div>
              <div class="col">

@@ -198,7 +198,7 @@ def acceptConsentForm(data,session_subject):
 def payMe(data,session_subject,session_day):
     logger = logging.getLogger(__name__)
     if session_day:
-        logger.info(f"Pay subject: subject {session_subject.name} id {session_subject.id} session day {session_day.id} date {session_day.date}")
+        logger.info(f"Pay subject: subject name {session_subject.name}, subject id {session_subject.id}, session day {session_day.id}, date {session_day.date}, session id {session_subject.session.id}")
     else:
         logger.info(f"Pay subject: subject {session_subject.id} session_day none")
     logger.info(data)
