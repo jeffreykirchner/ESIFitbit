@@ -144,7 +144,7 @@
                     Remove Time Block  <i class="far fa-trash-alt"></i>
                 </button>
 
-                <button class="btn btn-outline-success btn-sm" type="button" v-on:click = "addTimeBlock()" v-show="session.started == false"> 
+                <button class="btn btn-outline-success btn-sm" type="button" v-on:click = "addTimeBlock()" v-show="session.started == false" v-bind:disabled="session.parameterset.time_blocks.length>=6"> 
                     Add Time Block <i class="fas fa-plus"></i>
                 </button>
             </div>

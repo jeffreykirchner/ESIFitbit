@@ -1,6 +1,7 @@
 '''
 instruction set page
 '''
+from tinymce.models import HTMLField
 
 from django.db import models
 
@@ -17,8 +18,8 @@ class InstructionSetNotice(models.Model):
     time_block = models.CharField(max_length=100, choices=TimeBlock.choices)            #which time block page should be shown in       
     notice_type = models.CharField(max_length=100, choices=NoticeType.choices)          #which page tab to show on  
 
-    title = models.CharField(verbose_name="Title", max_length = 500,default = "")            #header text of notice
-    text = models.CharField(verbose_name="Page Text", max_length = 50000,default = "")       #text of instructions
+    title = models.CharField(verbose_name="Title", max_length = 500,default = "")       #header text of notice
+    text = HTMLField(verbose_name="Page Text", default = "")                            #text of instructions
 
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
