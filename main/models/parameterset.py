@@ -90,71 +90,69 @@ class Parameterset(models.Model):
         '''
         message = "Parameters loaded successfully."
 
-        try:
+        # try:
 
-            self.consent_form = main.models.Consent_forms.objects.get(id=data.get("consent_form"))
+        self.consent_form = main.models.Consent_forms.objects.get(id=data.get("consent_form"))
 
-            self.heart_activity_inital = data.get("heart_activity_inital")
-            self.heart_parameter_1 = data.get("heart_parameter_1")
-            self.heart_parameter_2 = data.get("heart_parameter_2")
-            self.heart_parameter_3 = data.get("heart_parameter_3")
+        self.heart_activity_inital = data.get("heart_activity_inital")
+        self.heart_parameter_1 = data.get("heart_parameter_1")
+        self.heart_parameter_2 = data.get("heart_parameter_2")
+        self.heart_parameter_3 = data.get("heart_parameter_3")
 
-            self.immune_activity_inital = data.get("immune_activity_inital")
-            self.immune_parameter_1 = data.get("immune_parameter_1")
-            self.immune_parameter_2 = data.get("immune_parameter_2")
-            self.immune_parameter_3 = data.get("immune_parameter_3")
+        self.immune_activity_inital = data.get("immune_activity_inital")
+        self.immune_parameter_1 = data.get("immune_parameter_1")
+        self.immune_parameter_2 = data.get("immune_parameter_2")
+        self.immune_parameter_3 = data.get("immune_parameter_3")
 
-            self.minimum_wrist_minutes = data.get("minimum_wrist_minutes")
+        self.minimum_wrist_minutes = data.get("minimum_wrist_minutes")
 
-            self.y_min_heart = data.get("y_min_heart")
-            self.y_max_heart = data.get("y_max_heart")
-            self.y_ticks_heart = data.get("y_ticks_heart")
-            self.x_min_heart = data.get("x_min_heart")
-            self.x_max_heart = data.get("x_max_heart")
-            self.x_ticks_heart = data.get("x_ticks_heart")
+        self.y_min_heart = data.get("y_min_heart")
+        self.y_max_heart = data.get("y_max_heart")
+        self.y_ticks_heart = data.get("y_ticks_heart")
+        self.x_min_heart = data.get("x_min_heart")
+        self.x_max_heart = data.get("x_max_heart")
+        self.x_ticks_heart = data.get("x_ticks_heart")
 
-            self.y_min_immune = data.get("y_min_immune")
-            self.y_max_immune = data.get("y_max_immune")
-            self.y_ticks_immune = data.get("y_ticks_immune")
-            self.x_min_immune = data.get("x_min_immune")
-            self.x_max_immune = data.get("x_max_immune")
-            self.x_ticks_immune = data.get("x_ticks_immune")
+        self.y_min_immune = data.get("y_min_immune")
+        self.y_max_immune = data.get("y_max_immune")
+        self.y_ticks_immune = data.get("y_ticks_immune")
+        self.x_min_immune = data.get("x_min_immune")
+        self.x_max_immune = data.get("x_max_immune")
+        self.x_ticks_immune = data.get("x_ticks_immune")
 
-            self.sleep_tracking =  data.get("sleep_tracking")
-            self.show_group = data.get("show_group")
+        self.sleep_tracking =  data.get("sleep_tracking")
+        self.show_group = data.get("show_group")
 
-            # pay levels
-            self.paylevels.all().delete()
+        # pay levels
+        self.paylevels.all().delete()
 
-            paylevel_list = data.get("pay_levels", -1)
+        paylevel_list = data.get("pay_levels", -1)
 
-            if paylevel_list != -1:
-                for paylevel in paylevel_list:
-                    new_paylevel = main.models.ParametersetPaylevel()
+        if paylevel_list != -1:
+            for paylevel in paylevel_list:
+                new_paylevel = main.models.ParametersetPaylevel()
 
-                    new_paylevel.parameterset = self
-                    new_paylevel.score = paylevel["score"]
-                    new_paylevel.value = paylevel["value"]
+                new_paylevel.parameterset = self
+                new_paylevel.score = paylevel["score"]
+                new_paylevel.value = paylevel["value"]
 
-                    new_paylevel.save()
-            
-            #time blocks
-            self.time_blocks.all().delete()
-            time_block_list = data.get("time_blocks", -1)
-            if time_block_list != -1:
-                for time_block in time_block_list:
-                    new_time_block = main.models.ParametersetTimeBlock()
+                new_paylevel.save()
+        
+        #time blocks
+        self.time_blocks.all().delete()
+        time_block_list = data.get("time_blocks", -1)
+        if time_block_list != -1:
+            for time_block in time_block_list:
+                new_time_block = main.models.ParametersetTimeBlock()
 
-                    new_time_block.parameterset = self
-                    new_time_block.save()
+                new_time_block.parameterset = self
+                new_time_block.setup_from_dict(time_block)
 
-                    new_time_block.setup_from_dict(time_block)
+        self.save()
 
-            self.save()
-
-        except IntegrityError as err:
-            message = f"Failed to load parameter set: {err}"
-            #logger.info(message)
+        # except IntegrityError as err:
+        #     message = f"Failed to load parameter set: {err}"
+        #     #logger.info(message)
 
         return message
 
@@ -392,14 +390,17 @@ class Parameterset(models.Model):
         writer.writerow([title,treatment,
                           self.heart_activity_inital,self.heart_parameter_1,self.heart_parameter_2,self.heart_parameter_3,
                           self.immune_activity_inital,self.immune_parameter_1,self.immune_parameter_2,self.immune_parameter_3,
-                          self.block_1_heart_pay,self.block_2_heart_pay,self.block_3_heart_pay,
-                          self.block_1_immune_pay,self.block_2_immune_pay,self.block_3_immune_pay,
-                          self.block_1_day_count,self.block_2_day_count,self.block_3_day_count,
-                          self.block_1_fixed_pay_per_day,self.block_2_fixed_pay_per_day, self.block_3_fixed_pay_per_day,
                           self.minimum_wrist_minutes,
                           self.y_min_heart,self.y_max_heart,self.y_ticks_heart,self.x_min_heart,self.x_max_heart,self.x_ticks_heart,
                           self.y_min_immune,self.y_max_immune,self.y_ticks_immune,self.x_min_immune,self.x_max_immune,self.x_ticks_immune,
                           self.sleep_tracking, self.show_group])
+    
+    def get_csv_response_time_blocks(self, writer):
+        '''
+        get cvs version fo time blocks
+        '''
+        for time_block in self.time_blocks.all():
+            time_block.get_csv_response(writer)
 
     def get_csv_response_pay_level(self, writer):
         '''

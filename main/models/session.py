@@ -356,15 +356,18 @@ class Session(models.Model):
         writer.writerow(['Session','Treatment',
                           'Heart activity inital','Heart parameter 1','Heart parameter 2','Heart parameter 3',
                           'Immune activity inital','Immune parameter 1','Immune parameter 2','Immune parameter 3',
-                          'Block 1 heart pay','Block 2 heart pay','Block 3 heart pay', 
-                          'Block 1 immune pay','Block 2 immune pay','Block 3 immune pay',
-                          'Block 1 day count','Block 2 day count','Block 3 day count', 
-                          'Block 1 fixed pay', 'Block 2 fixed pay', 'Block 3 fixed pay', 'Minutes required on wrist',
+                          'Minutes required on wrist',
                           'Y min heart','Y max heart','Y ticks heart','X min heart','X max heart','X ticks heart',  
                           'Y min immune','Y max immune','Y ticks immune','X min immune','X max immune','X ticks immune',
                           'Sleep Tracking', 'Show Groups'])
 
         self.parameterset.getCSVResponse(writer,self.title,self.Treatment(self.treatment).label)
+
+        #time blocks
+        writer.writerow([])
+        writer.writerow(["Parameters"])
+        writer.writerow(["Time Block","Heart Pay","Sleep Pay", "Fixed Pay","Period Count"])
+        self.parameterset.get_csv_response_time_blocks(writer)
 
         #pay levels
         if self.treatment == "B" or self.treatment == "C":

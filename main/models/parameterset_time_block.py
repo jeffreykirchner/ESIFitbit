@@ -102,6 +102,12 @@ class ParametersetTimeBlock(models.Model):
         
         return None
 
+    def get_csv_response(self, writer):
+        '''
+        return csv version
+        '''
+        writer.writerow([self.block_number, self.heart_pay, self.immune_pay, self.fixed_pay_per_day, self.day_count])
+
 
     #return json object of class
     def json(self):
