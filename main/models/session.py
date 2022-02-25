@@ -22,7 +22,11 @@ import main
 from main.models import Parameterset
 from main.models import InstructionSet
 from main.models import Parameters
-from main.globals import todaysDate, TimeBlock, NoticeType
+
+from main.globals import todaysDate
+from main.globals import TimeBlock 
+from main.globals import NoticeType
+
 class Session(models.Model):
     '''
     session model
@@ -140,22 +144,23 @@ class Session(models.Model):
         #logger.info(d_end)     
 
         #add days for block 1
-        for i in range(self.parameterset.block_1_day_count):   
-            self.addSessionDay(d_start.date(),tempPeriod)
-            d_start += timedelta(days=1)
-            tempPeriod+=1
+        for j in self.parameterset.time_blocks.all():
+            for i in range(j.day_count):   
+                self.addSessionDay(d_start.date(), tempPeriod)
+                d_start += timedelta(days=1)
+                tempPeriod+=1
 
         #add days for block 2
-        for i in range(self.parameterset.block_2_day_count):   
-            self.addSessionDay(d_start.date(),tempPeriod)
-            d_start += timedelta(days=1)
-            tempPeriod+=1 
+        # for i in range(self.parameterset.block_2_day_count):   
+        #     self.addSessionDay(d_start.date(),tempPeriod)
+        #     d_start += timedelta(days=1)
+        #     tempPeriod+=1 
         
-        #add days for block 3
-        for i in range(self.parameterset.block_3_day_count):   
-            self.addSessionDay(d_start.date(),tempPeriod)
-            d_start += timedelta(days=1)
-            tempPeriod+=1 
+        # #add days for block 3
+        # for i in range(self.parameterset.block_3_day_count):   
+        #     self.addSessionDay(d_start.date(),tempPeriod)
+        #     d_start += timedelta(days=1)
+        #     tempPeriod+=1 
 
 
         # while d_start <= d_end:
@@ -223,7 +228,7 @@ class Session(models.Model):
 
     #return total number of days of session
     def numberOfDays(self):
-        return self.parameterset.block_1_day_count+self.parameterset.block_2_day_count+self.parameterset.block_3_day_count+1
+        return self.parameterset.get_total_number_of_periods()
     
     #calc and store end date
     def calcEndDate(self):
@@ -351,15 +356,18 @@ class Session(models.Model):
         writer.writerow(['Session','Treatment',
                           'Heart activity inital','Heart parameter 1','Heart parameter 2','Heart parameter 3',
                           'Immune activity inital','Immune parameter 1','Immune parameter 2','Immune parameter 3',
-                          'Block 1 heart pay','Block 2 heart pay','Block 3 heart pay', 
-                          'Block 1 immune pay','Block 2 immune pay','Block 3 immune pay',
-                          'Block 1 day count','Block 2 day count','Block 3 day count', 
-                          'Block 1 fixed pay', 'Block 2 fixed pay', 'Block 3 fixed pay', 'Minutes required on wrist',
+                          'Minutes required on wrist',
                           'Y min heart','Y max heart','Y ticks heart','X min heart','X max heart','X ticks heart',  
                           'Y min immune','Y max immune','Y ticks immune','X min immune','X max immune','X ticks immune',
                           'Sleep Tracking', 'Show Groups'])
 
         self.parameterset.getCSVResponse(writer,self.title,self.Treatment(self.treatment).label)
+
+        #time blocks
+        writer.writerow([])
+        writer.writerow(["Parameters"])
+        writer.writerow(["Time Block","Heart Pay","Sleep Pay", "Fixed Pay","Period Count"])
+        self.parameterset.get_csv_response_time_blocks(writer)
 
         #pay levels
         if self.treatment == "B" or self.treatment == "C":
@@ -405,33 +413,22 @@ class Session(models.Model):
         logger = logging.getLogger(__name__)
 
         session_day = self.getCurrentSessionDay()
-        current_block = 1
+
+        # logger.info(session_day)
 
         if session_day:
-            current_block = self.parameterset.getBlock(session_day.period_number)
+            return self.parameterset.getBlock(session_day.period_number).get_time_block_global()
         
-        if current_block == 1:
-            return TimeBlock.ONE
-        
-        if current_block == 2:
-            return TimeBlock.TWO
-        
-        return TimeBlock.THREE
+        logger.info(f"get_current_block: session day not found")
+
+        return None
     
     def get_next_block(self, p_number):
         '''
         get the next time block
         '''
 
-        current_block = self.parameterset.getBlock(p_number)
-        
-        if current_block == 1:
-            return TimeBlock.ONE
-        
-        if current_block == 2:
-            return TimeBlock.TWO
-        
-        return TimeBlock.THREE
+        return self.parameterset.getBlock(p_number).get_time_block_global()
         
     def get_instruction_text(self, page_type):
         '''

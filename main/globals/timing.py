@@ -8,9 +8,12 @@ class TimeBlock(models.TextChoices):
     '''
     time blocks
     '''
-    ONE = 'ONE', _('ONE')
+    ONE = "ONE", _('ONE')
     TWO = "TWO", _('TWO')
     THREE = "THREE", _('THREE')
+    FOUR = "FOUR", _('FOUR')
+    FIVE = "FIVE", _('FIVE')
+    SIX = "SIX", _('SIX')
 
 class PageType(models.TextChoices):
     '''

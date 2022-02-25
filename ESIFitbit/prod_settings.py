@@ -90,9 +90,10 @@ EMAIL_MS_USER_NAME = os.environ['EMAIL_MS_USER_NAME']
 EMAIL_MS_PASSWORD = os.environ['EMAIL_MS_PASSWORD']
 
 #esit auth
-ESI_AUTH_URL = os.environ['ESI_AUTH_URL']
-ESI_AUTH_ACCOUNT_URL = os.environ['ESI_AUTH_ACCOUNT_URL']
-ESI_AUTH_PASSWORD_RESET_URL = os.environ['ESI_AUTH_PASSWORD_RESET_URL']
-ESI_AUTH_USERNAME = os.environ['ESI_AUTH_USERNAME']
-ESI_AUTH_PASS = os.environ['ESI_AUTH_PASS']
-ESI_AUTH_APP = os.environ['ESI_AUTH_APP']
+ESI_AUTH_URL = 'https://esi-auth-dev.azurewebsites.net'
+ESI_AUTH_ACCOUNT_URL = 'https://esi-auth-dev.azurewebsites.net/account/'
+ESI_AUTH_PASSWORD_RESET_URL = 'https://esi-auth-dev.azurewebsites.net/password-reset/'
+
+ESI_AUTH_USERNAME = 'fitbit_local'
+ESI_AUTH_PASS = 'f4ac37gKgBy^je2Y'
+ESI_AUTH_APP = 'Fitbit Local'
