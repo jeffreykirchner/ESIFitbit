@@ -1,11 +1,13 @@
 '''
 instruction set page
 '''
+from tinymce.models import HTMLField
 
 from django.db import models
 
 from main.models import InstructionSet
 from main.globals import TimeBlock, PageType
+
 
 class InstructionSetPage(models.Model):
     '''
@@ -17,7 +19,7 @@ class InstructionSetPage(models.Model):
     time_block = models.CharField(max_length=100, choices=TimeBlock.choices)          #which time block page should be shown in       
     page_type = models.CharField(max_length=100, choices=PageType.choices)            #which page tab to show on  
 
-    text = models.CharField(verbose_name="Text", max_length = 50000,default = "")     #text of instructions
+    text = HTMLField(verbose_name="Text", default = "")                               #text of instructions
 
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)

@@ -127,7 +127,7 @@
                 [[b.immune_pay]]
             </div>
             <div class="col-md text-nowrap">
-                <button class="btn btn-outline-primary btn-sm" type="button" v-on:click = "showEditTimeBlock(index)" v-show="session.started===false || true"> 
+                <button class="btn btn-outline-primary btn-sm" type="button" v-on:click = "showEditTimeBlock(index)" v-show="session.started===false"> 
                     <i class="far fa-edit"></i>
                 </button>
             </div>
@@ -140,11 +140,11 @@
                         type="button" 
                         v-on:click = "removeTimeBlock()" 
                         v-bind:disabled = "session.parameterset.time_blocks.length <= 1"
-                        v-show="session.started == false || true">
+                        v-show="session.started == false">
                     Remove Time Block  <i class="far fa-trash-alt"></i>
                 </button>
 
-                <button class="btn btn-outline-success btn-sm" type="button" v-on:click = "addTimeBlock()" v-show="session.started == false || true"> 
+                <button class="btn btn-outline-success btn-sm" type="button" v-on:click = "addTimeBlock()" v-show="session.started == false" v-bind:disabled="session.parameterset.time_blocks.length>=6"> 
                     Add Time Block <i class="fas fa-plus"></i>
                 </button>
             </div>
