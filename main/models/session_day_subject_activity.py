@@ -47,14 +47,17 @@ class Session_day_subject_actvity(models.Model):
     fitbit_steps = models.IntegerField(default=0)                     #todays tracker steps
     fitbit_calories = models.IntegerField(default=0)                  #todays tracker calories
 
+    fitbit_birthday = models.CharField(max_length = 100, default = '')  #todays fitbit listed birthday
+    fitbit_weight = models.IntegerField(default=0)                      #todays fitbit listed weight
+
     #charge 4 active zone minutes
     fitbit_minutes_heart_out_of_range = models.IntegerField(default=0)         #todays heart rate out of range
     fitbit_minutes_heart_fat_burn = models.IntegerField(default=0)             #todays heart rate lightly fat burn
     fitbit_minutes_heart_cardio = models.IntegerField(default=0)               #todays heart rate cardio
     fitbit_minutes_heart_peak = models.IntegerField(default=0)                 #todays heart rate peak
 
-    fitbit_heart_time_series =  models.CharField(max_length = 100000, default = '')  #today's heart rate time series
-    fitbit_immune_time_series =  models.CharField(max_length = 100000, default = '')  #today's sleep time series
+    fitbit_heart_time_series = models.CharField(max_length = 100000, default = '')  #today's heart rate time series
+    fitbit_immune_time_series = models.CharField(max_length = 100000, default = '')  #today's sleep time series
 
     fitbit_on_wrist_minutes = models.IntegerField(default=0)         #minutes fit bit was one wrist (sum of heart time series) 
     fitbit_min_heart_rate_zone_bpm = models.IntegerField(default=0)  #minimum bmp a subject must have to register active zone minutes
@@ -392,6 +395,20 @@ class Session_day_subject_actvity(models.Model):
 
         return fitbitError
 
+    #pull fibit profile
+    def pullFitbitPofile(self):
+        logger = logging.getLogger(__name__)
+
+        try:
+            profile_json = self.session_subject.getFibitProfile()
+
+            self.fitbit_birthday = profile_json.get("user").get("dateOfBirth", "not found")
+        except Exception  as e:
+            logger.warning(f'Error pullFitbitPofile {e}')
+            self.fitbit_birthday = f"error"
+        
+        self.save()
+
     #pull actvities from fitbit and store
     def pullFitbitActvities(self):
         logger = logging.getLogger(__name__)
@@ -412,6 +429,8 @@ class Session_day_subject_actvity(models.Model):
             self.fitbit_calories = self.session_subject.getFibitActivityMinutes(self.session_day.date, "calories")
 
         self.save()
+
+        self.pullFitbitPofile()
 
         #old active minutes calculation
         #heart_activity_minutes =  self.fitbit_minutes_fairly_active +  self.fitbit_minutes_very_active

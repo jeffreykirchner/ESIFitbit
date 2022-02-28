@@ -59,7 +59,10 @@ class InstructionSet(models.Model):
         logger = logging.getLogger(__name__)
         logger.info(f'get_page_text {time_block} {page_type}')
 
-        return self.instruction_set_pages.get(Q(time_block = time_block) & Q(page_type = page_type)).text
+        if time_block and page_type:
+            return self.instruction_set_pages.get(Q(time_block = time_block) & Q(page_type = page_type)).text
+        
+        return None
     
     def get_notice_text(self, time_block, notice_type):
         '''
@@ -68,7 +71,10 @@ class InstructionSet(models.Model):
         logger = logging.getLogger(__name__)
         logger.info(f'get_notice_text {time_block} {notice_type}')
 
-        return self.instruction_set_notices.get(Q(time_block = time_block) & Q(notice_type = notice_type)).text
+        if time_block and notice_type:
+            return self.instruction_set_notices.get(Q(time_block = time_block) & Q(notice_type = notice_type)).text
+        
+        return None
     
     def get_notice_title(self, time_block, notice_type):
         '''
