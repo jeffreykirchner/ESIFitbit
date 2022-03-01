@@ -308,6 +308,16 @@ class Session_subject(models.Model):
 
         return fitbit_response
 
+    def getFibitProfile(self):
+        '''
+        pull profile info from fitbit
+        '''
+
+        # /1/user/[user-id]/profile.json
+        fitbit_response = self.getFitbitInfo(f'https://api.fitbit.com/1/user/-/profile.json')
+
+        return fitbit_response
+
     #get fitbit heart rate object
     def getFitbitHeartRate(self,heart_date):
         logger = logging.getLogger(__name__)
@@ -413,7 +423,7 @@ class Session_subject(models.Model):
 
         tempClientID = settings.FITBIT_CLIENT_ID
         tempState = str(self.id) + ";" + str(self.session.id) + ";" + request_type
-        fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20sleep%20settings&expires_in=604800&prompt=login%20consent&state={tempState}"
+        fitBit_Link = f"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id={tempClientID}&redirect_uri={tempURL}&scope=activity%20heartrate%20sleep%20settings%20profile%20weight&expires_in=604800&prompt=login%20consent&state={tempState}"
 
         return fitBit_Link
 
