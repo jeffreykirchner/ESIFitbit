@@ -183,8 +183,13 @@
 </div>    
 
 {%include "modals/consentModal.html"%}
-{%include "modals/helpModal.html"%}
-{%include "modals/questionnaire1Modal.html"%}
-{%include "modals/questionnaire2Modal.html"%}
+
+{%if session_subject.session.questionnaire1_required%}
+    {%include "modals/questionnaire1Modal.html"%}
+{%endif%}
+
+{%if session_subject.session.questionnaire2_required%}
+    {%include "modals/questionnaire2Modal.html"%}
+{%endif%}
 
 {%endblock content%}
