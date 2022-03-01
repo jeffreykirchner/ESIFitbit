@@ -21,8 +21,11 @@
                     </th>
                     <th scope="col" class = "text-center m-1 p-1">
                         Sleep Score
-                    </th>
+                    </th>                    
                     {%endif%}
+                    <th scope="col" class = "text-center m-1 p-1">
+                        Last Check-in
+                    </th>
                 </tr>
             </thead>
             <tbody id="subjectList">                                                  
@@ -44,6 +47,9 @@
                         [[g.sleep_score]]
                     </td>
                     {%endif%}
+                    <td class = "text-center m-1 p-1 text-nowrap">
+                        [[g.fitbit_last_sync]]
+                    </td>
                 </tr>
             </tbody>
         </table>
