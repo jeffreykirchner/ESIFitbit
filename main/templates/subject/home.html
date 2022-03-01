@@ -26,9 +26,9 @@
                 <span >{{session_subject.contact_email}}</span>               
                 <span class="float-right">
                     {%if session_started and not before_start_date and not session_complete and not session_canceled %}
-                        <button v-show="status === 'success'" class="btn btn-outline-primary btn-sm" type="button" v-on:click = "getSessionDaySubjectButton()">
+                        <!-- <button v-show="status === 'success'" class="btn btn-outline-primary btn-sm" type="button" v-on:click = "getSessionDaySubjectButton()">
                             <span v-html='refreshButtonText'></span>
-                        </button>                    
+                        </button>                     -->
                         <span v-html = "session_date"></span>
                     {%endif%}
                 </span>                                                                  
