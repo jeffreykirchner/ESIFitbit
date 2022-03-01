@@ -797,10 +797,10 @@ class Session_subject(models.Model):
         sada = self.Session_day_subject_actvities.filter(session_day__date = todaysDate().date()).first()
         sada_yesterday = sada.getPreviousActivityDay()
 
-        #if not checked in today, try to pull
+        #if not checked in today, try to pull        
+        fitbit_synced_today = self.fitbitSyncedToday()
 
-
-        if sada_yesterday and sada_yesterday.check_in_today:
+        if sada_yesterday and fitbit_synced_today:
 
             immune_activity_minutes=int(sada_yesterday.immune_activity_minutes)
             immune_activity_hours = f'{math.floor(immune_activity_minutes/60)}hrs {immune_activity_minutes%60}mins'
@@ -810,7 +810,7 @@ class Session_subject(models.Model):
                     "id":sada_yesterday.id,
                     "sleep_score":sada_yesterday.immune_activity_formatted(),
                     "sleep_hours":immune_activity_hours,
-                    "fitbit_synced_today": self.fitbitSyncedToday(),
+                    "fitbit_synced_today": fitbit_synced_today,
                     "fitbit_last_sync": self.getFitbitLastSyncStr(False),
                     }
         else:
@@ -819,7 +819,7 @@ class Session_subject(models.Model):
                      "id":sada.id,
                      "sleep_score":"---",
                      "sleep_hours":"---",
-                     "fitbit_synced_today": self.fitbitSyncedToday(),
+                     "fitbit_synced_today": fitbit_synced_today,
                      "fitbit_last_sync": self.getFitbitLastSyncStr(False),
                      }
        

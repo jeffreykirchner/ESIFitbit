@@ -47,7 +47,7 @@
                         [[g.sleep_score]]
                     </td>
                     {%endif%}
-                    <td class = "text-center m-1 p-1 text-nowrap">
+                    <td class = "text-center m-1 p-1 text-nowrap" v-bind:style="[g.fitbit_synced_today ? {} : {'color' : 'red'}]">
                         [[g.fitbit_last_sync]]
                     </td>
                 </tr>

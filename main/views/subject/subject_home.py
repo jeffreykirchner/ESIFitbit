@@ -334,7 +334,7 @@ def payMe(data,session_subject,session_day):
                          "session_day_subject_actvity" :session_day_subject_actvity.json() if session_day_subject_actvity else {}},safe=False)
 
 #get session subject day
-def getSessionDaySubject(data,session_subject,session_day):
+def getSessionDaySubject(data, session_subject, session_day):
     logger = logging.getLogger(__name__)
     logger.info("Session subject day")
     logger.info(data)
@@ -389,8 +389,7 @@ def getSessionDaySubject(data,session_subject,session_day):
             session_day_subject_actvity.updateLast_login()
 
         if session_day_subject_actvity_previous_day:
-
-
+            
             if not fitbitError:
                 #mark subject checkin as true
                 if session_subject.fitbitSyncedToday():
