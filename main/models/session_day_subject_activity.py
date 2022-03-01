@@ -48,7 +48,8 @@ class Session_day_subject_actvity(models.Model):
     fitbit_calories = models.IntegerField(default=0)                  #todays tracker calories
 
     fitbit_birthday = models.CharField(max_length = 100, default = '')  #todays fitbit listed birthday
-    fitbit_weight = models.IntegerField(default=0)                      #todays fitbit listed weight
+    fitbit_weight = models.DecimalField(decimal_places=2, default=0, max_digits=6)                      #todays fitbit listed weight
+    fitbit_height = models.DecimalField(decimal_places=2, default=0, max_digits=6)                      #todays fitbit listed height
 
     #charge 4 active zone minutes
     fitbit_minutes_heart_out_of_range = models.IntegerField(default=0)         #todays heart rate out of range
@@ -403,9 +404,14 @@ class Session_day_subject_actvity(models.Model):
             profile_json = self.session_subject.getFibitProfile()
 
             self.fitbit_birthday = profile_json.get("user").get("dateOfBirth", "not found")
+            self.fitbit_weight = profile_json.get("user").get("weight", "not found")
+            self.fitbit_height = profile_json.get("user").get("height", "not found")
+
         except Exception  as e:
-            logger.warning(f'Error pullFitbitPofile {e}')
-            self.fitbit_birthday = f"error"
+            logger.error(f'Error pullFitbitPofile {e}')
+            self.fitbit_birthday = "error"
+            self.fitbit_weight = "error"
+            self.fitbit_height = "error"
         
         self.save()
 
