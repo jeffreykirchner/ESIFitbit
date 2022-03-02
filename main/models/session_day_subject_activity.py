@@ -37,6 +37,9 @@ class Session_day_subject_actvity(models.Model):
 
     payment_today =  models.DecimalField(decimal_places=2, default=0, max_digits=6)                 #amount of money paid to subject today
 
+    activity_key = models.UUIDField(default=uuid.uuid4, editable=False, verbose_name = 'Subject Activity Key')
+    survey_complete = models.BooleanField(default=True, verbose_name="Survey Complete") 
+
     #fitbit metrics
     #charge 3 metrics depriciated
     fitbit_minutes_sedentary = models.IntegerField(default=0)         #todays tracker sedentary minutes

@@ -201,6 +201,21 @@ var app = Vue.createApp({
             }
         },
 
+        
+        //show edit parameters modal
+        showViewSessionDayModal:function(index){
+
+            $('#viewSessionDayModal').modal('show');                   
+        },
+
+        //fire when edit experiment model hides, cancel action if nessicary
+        hideViewSessionDayModal:function(){
+            if(app.$data.cancelModal)
+            {
+               
+            }
+        },
+
         //refresh subject table click
         refreshSubjectTableClick:function(){
 
@@ -1244,5 +1259,6 @@ var app = Vue.createApp({
         $('#copySubjectModal').on("hidden.bs.modal", this.hideCopySubject); 
         $('#editSessionParametersPaylevelModal').on("hidden.bs.modal", this.hideEditPaylevel); 
         $('#editSessionParametersetTimeBlockModal').on("hidden.bs.modal", this.hideEditTimeBlock);
+        $('#hideViewSessionDayModal').on("hidden.bs.modal", this.hideViewSessionDayModal);
     },
 }).mount('#app');

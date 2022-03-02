@@ -26,6 +26,9 @@ class Session_day(models.Model):
     payments_sent = models.BooleanField(default=False)                                #true once paypal payments are sent
     payments_result_message = models.CharField(max_length=200, default="No Payment")  #display message about payment status
 
+    survey_required = models.BooleanField(default=False, verbose_name="Survey Complete")
+    survey_link = models.CharField(max_length = 1000, default = '', verbose_name = 'Survey Link')  
+
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
 
@@ -154,4 +157,6 @@ class Session_day(models.Model):
             "id":self.id,
             "payments_sent" : self.payments_sent,
             "payments_result_message" : self.payments_result_message,
+            "survey_required" : self.survey_required,
+            "survey_link" : self.survey_link,
         }
