@@ -21,14 +21,17 @@
                     </th>
                     <th scope="col" class = "text-center m-1 p-1">
                         Sleep Score
-                    </th>
+                    </th>                    
                     {%endif%}
+                    <th scope="col" class = "text-center m-1 p-1">
+                        Last Check-in
+                    </th>
                 </tr>
             </thead>
             <tbody id="subjectList">                                                  
                 <tr v-for="(g, index) in group_list" v-bind:key="g.id">
                     <td class = "m-1 p-1 text-nowrap">
-                        Player [[index+1]] <span v-if="index==0">(You)</span>
+                        Player [[index+1]] <span v-if="g.is_me">(You)</span>
                     </td>
                     <td class = "text-center m-1 p-1 text-nowrap">
                         [[g.heart_min]]
@@ -44,6 +47,9 @@
                         [[g.sleep_score]]
                     </td>
                     {%endif%}
+                    <td class = "text-center m-1 p-1 text-nowrap" v-bind:style="[g.fitbit_synced_today ? {} : {'color' : 'red'}]">
+                        [[g.fitbit_last_sync]]
+                    </td>
                 </tr>
             </tbody>
         </table>

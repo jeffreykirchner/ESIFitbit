@@ -58,21 +58,25 @@ def Subject_Home(request, id_):
 
         if session_subject:
 
-            #questionnaire 1 setup
-            session_subject_questionnaire1_form = Session_subject_questionnaire1_form()
-
+            #questionnaire 1 setup            
             session_subject_questionnaire1_form_ids=[]
+            session_subject_questionnaire1_form = {}
 
-            for f in session_subject_questionnaire1_form:
-                session_subject_questionnaire1_form_ids.append(str(f.html_name))
+            if session_subject.session.questionnaire1_required:
+                session_subject_questionnaire1_form = Session_subject_questionnaire1_form()
+
+                for f in session_subject_questionnaire1_form:
+                    session_subject_questionnaire1_form_ids.append(str(f.html_name))                
 
             #questionnaire 2 setup
-            session_subject_questionnaire2_form = Session_subject_questionnaire2_form()
-
             session_subject_questionnaire2_form_ids=[]
+            session_subject_questionnaire2_form = {}
 
-            for f in session_subject_questionnaire2_form:
-                session_subject_questionnaire2_form_ids.append(str(f.html_name))
+            if session_subject.session.questionnaire2_required:
+                session_subject_questionnaire2_form = Session_subject_questionnaire2_form()
+
+                for f in session_subject_questionnaire2_form:
+                    session_subject_questionnaire2_form_ids.append(str(f.html_name))
 
             #which screen to show, baseline or full
             baseline_heart = False
@@ -334,7 +338,7 @@ def payMe(data,session_subject,session_day):
                          "session_day_subject_actvity" :session_day_subject_actvity.json() if session_day_subject_actvity else {}},safe=False)
 
 #get session subject day
-def getSessionDaySubject(data,session_subject,session_day):
+def getSessionDaySubject(data, session_subject, session_day):
     logger = logging.getLogger(__name__)
     logger.info("Session subject day")
     logger.info(data)
@@ -389,7 +393,6 @@ def getSessionDaySubject(data,session_subject,session_day):
             session_day_subject_actvity.updateLast_login()
 
         if session_day_subject_actvity_previous_day:
-
 
             if not fitbitError:
                 #mark subject checkin as true
