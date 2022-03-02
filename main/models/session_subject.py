@@ -10,16 +10,22 @@ import random
 import main
 import math
 
-from . import Session, Parameters
-
-from datetime import datetime, timedelta, timezone, date
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
+from datetime import date
 
 from django.db.models import Avg
 from django.conf import settings
 from django.utils.timezone import now
 from django.db import models
+from django.db.models import Q
 
-from main.globals import todaysDate, round_half_away_from_zero
+from main.models import Session
+from main.models import Parameters
+
+from main.globals import todaysDate
+from main.globals import round_half_away_from_zero
 
 #subject in session
 class Session_subject(models.Model):
@@ -672,10 +678,10 @@ class Session_subject(models.Model):
 
         session_subjects_group=[]
 
-        session_subjects_group.append(self.jsonGroup())
+        # session_subjects_group.append(self.jsonGroup())
 
-        for i in self.session.session_subjects.filter(group_number=self.group_number).exclude(id=self.id).order_by('id_number'):
-             session_subjects_group.append(i.jsonGroup())
+        for i in self.session.session_subjects.filter(group_number=self.group_number).order_by('id_number'):
+             session_subjects_group.append(i.jsonGroup(self.id))
 
         return session_subjects_group
 
@@ -792,7 +798,7 @@ class Session_subject(models.Model):
         return [sdsa.immune_activity_minutes/60 for sdsa in sdsa_list]
 
     #return json for group info
-    def jsonGroup(self):
+    def jsonGroup(self, requester_id):
 
         sada = self.Session_day_subject_actvities.filter(session_day__date = todaysDate().date()).first()
         sada_yesterday = sada.getPreviousActivityDay()
@@ -812,6 +818,7 @@ class Session_subject(models.Model):
                     "sleep_hours":immune_activity_hours,
                     "fitbit_synced_today": fitbit_synced_today,
                     "fitbit_last_sync": self.getFitbitLastSyncStr(False),
+                    "is_me" : True if self.id==requester_id else False,
                     }
         else:
              return {"heart_score":"---",
@@ -821,6 +828,7 @@ class Session_subject(models.Model):
                      "sleep_hours":"---",
                      "fitbit_synced_today": fitbit_synced_today,
                      "fitbit_last_sync": self.getFitbitLastSyncStr(False),
+                     "is_me" : True if self.id==requester_id else False,
                      }
        
     #take fitbit api url and return response

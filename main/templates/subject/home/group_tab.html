@@ -31,7 +31,7 @@
             <tbody id="subjectList">                                                  
                 <tr v-for="(g, index) in group_list" v-bind:key="g.id">
                     <td class = "m-1 p-1 text-nowrap">
-                        Player [[index+1]] <span v-if="index==0">(You)</span>
+                        Player [[index+1]] <span v-if="g.is_me">(You)</span>
                     </td>
                     <td class = "text-center m-1 p-1 text-nowrap">
                         [[g.heart_min]]
