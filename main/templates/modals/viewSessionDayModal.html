@@ -10,7 +10,44 @@
                 </button>
             </div>
             <div class="modal-body">
-                                                                              
+                <table class="table table-hover table-condensed table-responsive-lg">                            
+
+                    <!-- <caption style="caption-side:top;text-align: center;">Subjects</caption> -->
+                    <thead>
+                        <tr>
+                            <th scope="col" class = "m-1 p-1">
+                                Period
+                            </th> 
+                            <th scope="col" class = "text-center m-1 p-1">
+                                Link
+                            </th>
+                            <th scope="col" class = "text-center m-1 p-1">
+                                Enabled
+                            </th>
+                            <th scope="col" class = "text-center m-1 p-1">
+                                Control
+                            </th>
+                        </tr> 
+                    </thead>
+                    <tbody id="subjectList">                                                  
+                        <tr v-for="(s, index) in session.session_days" v-bind:key="s.id">
+                            <td class = "text-nowrap m-1 p-1">
+                                [[s.period_number]]
+                            </td>
+                            <td class = "text-center text-nowrap m-1 p-1">
+                                [[s.survey_link]]
+                            </td>
+                            <td class = "text-center text-nowrap m-1 p-1"> 
+                                [[s.survey_required]]
+                            </td>
+                            <td class = "text-center text-nowrap m-1 p-1"> 
+                                <button class="btn btn-outline-primary btn-sm" type="button" v-on:click = "showEditSessionDayModal(index)"> 
+                                    <i class="far fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>    
                     
         </div>

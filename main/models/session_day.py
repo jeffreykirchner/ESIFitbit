@@ -45,6 +45,8 @@ class Session_day(models.Model):
         ]
         verbose_name = 'Session Day'
         verbose_name_plural = 'Session Days'
+        ordering = ['period_number']
+        
     
     #add session day user actvities for testing
     def addSessionDayUserActivites(self):
@@ -155,6 +157,8 @@ class Session_day(models.Model):
     def json(self):
         return{
             "id":self.id,
+            "period_number" : self.period_number,
+            "date" : self.date,
             "payments_sent" : self.payments_sent,
             "payments_result_message" : self.payments_result_message,
             "survey_required" : self.survey_required,

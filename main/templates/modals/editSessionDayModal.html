@@ -1,0 +1,30 @@
+{% load crispy_forms_tags %}
+
+<div class="modal" id="editSessionDayModal" tabindex="-1" role="dialog" aria-labelledby="helpModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="helpModalTitle">Edit Day</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="sessionDayForm">
+                    {% for i in session_day_form %}
+                    <div class="row">
+                        <div class = "col col-md-10 offset-md-1">  
+                            {{ i|as_crispy_field }}         
+                        </div>            
+                    </div> 
+                    {% endfor %}
+                </form>                                                                
+            </div>    
+            <div class="modal-footer">             
+                <button type="button" class="btn btn-outline-primary" v-on:click = "updateSessionDay()">
+                    Update <i class="fas fa-sign-in-alt"></i>
+                </button>
+            </div>        
+        </div>
+    </div>
+</div>

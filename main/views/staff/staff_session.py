@@ -18,6 +18,7 @@ from main.forms import Subject_form
 from main.forms import Import_parameters_form
 from main.forms import ParametersetPaylevelForm
 from main.forms import ParametersetTimeBlockForm
+from main.forms import  SessionDayForm
 
 from main.models import Session
 from main.models import Parameterset
@@ -60,6 +61,8 @@ def Staff_Session(request,id):
                 return updateParameters(data, id)
             elif data["action"] == "updateSession":
                 return updateSession(data, id)
+            elif data["action"] == "updateSessionDay":
+                return updateSessionDay(data, id)
             elif data["action"] == "updateSubject":
                 return updateSubject(data, id)
             elif data["action"] ==  "showFitbitStatus":
@@ -105,6 +108,7 @@ def Staff_Session(request,id):
         parameterset_form = Parameterset_form()
         session_form = SessionForm()
         subject_form = Subject_form()
+        session_day_form = SessionDayForm()
         import_parameters_form = Import_parameters_form()
         parameterset_paylevel_form = ParametersetPaylevelForm()
         parameterset_time_block_form = ParametersetTimeBlockForm()
@@ -125,21 +129,28 @@ def Staff_Session(request,id):
         time_block_form_ids=[]
         for i in parameterset_time_block_form:
             time_block_form_ids.append(i.html_name)
-        
+
+        session_day_form_ids=[]
+        for i in session_day_form:
+            session_day_form_ids.append(i.html_name)
+
         return render(request,'staff/session.html',{'id' : id,
                                                     'session' : session,
                                                     'session_json' : json.dumps(session.json(), cls=DjangoJSONEncoder),
                                                     'time_block_json' : json.dumps(main.models.ParametersetTimeBlock().json(), cls=DjangoJSONEncoder),
                                                     'pay_level_json' : json.dumps(main.models.ParametersetPaylevel().json(), cls=DjangoJSONEncoder),
+                                                    'current_session_day' : json.dumps(session.session_days.first().json() if session.session_days.first() else {}, cls=DjangoJSONEncoder),
                                                     'parameterset_form' : parameterset_form,
                                                     'session_form' : session_form,
                                                     'subject_form' : subject_form,
+                                                    'session_day_form' : session_day_form,
                                                     'help_text' : p.manualHelpText,
                                                     'import_parameters_form' : import_parameters_form,
                                                     'parameterset_paylevel_form' : parameterset_paylevel_form,
                                                     'parameterset_time_block_form' : parameterset_time_block_form,
                                                     'subject_form_ids' : subject_form_ids,
                                                     'paylevel_form_ids' : paylevel_form_ids,
+                                                    'session_day_form_ids' : session_day_form_ids,
                                                     'time_block_form_ids' : time_block_form_ids,
                                                     'yesterdays_date' : yesterdays_date.date().strftime("%Y-%m-%d")})     
 
@@ -285,6 +296,61 @@ def updateSession(data,id):
     logger = logging.getLogger(__name__) 
     logger.info("Update session")
     logger.info(data)
+
+    form_data_dict = {}
+
+    s=Session.objects.get(id=id)
+
+    for field in data["formData"]:            
+        form_data_dict[field["name"]] = field["value"]
+
+    if not s.editable():
+        form_data_dict["start_date"] = s.getDateString()
+
+        form_data_dict["consent_required"] = 1 if s.consent_required else 0
+        form_data_dict["questionnaire1_required"] = 1 if s.questionnaire1_required else 0
+        form_data_dict["questionnaire2_required"] = 1 if s.questionnaire2_required else 0
+        form_data_dict["treatment"] = s.treatment
+
+    form = SessionForm(form_data_dict, instance=s)
+
+    if form.is_valid():
+        #print("valid form")                
+        form.save()              
+
+        #set first session day date to start date
+        if not s.started:
+            sd = s.session_days.order_by('date').first()
+            sd.date=s.start_date
+            sd.save()
+
+            s.calcEndDate()
+        
+        #logger.info(s.instruction_set)
+
+        #check if session is base line
+       
+        if s.treatment=="BASE":
+            s.parameterset.block_1_heart_pay = 0
+            s.parameterset.block_2_heart_pay = 0
+            s.parameterset.block_3_heart_pay = 0
+
+            s.parameterset.block_1_immune_pay = 0
+            s.parameterset.block_2_immune_pay = 0
+            s.parameterset.block_3_immune_pay = 0
+
+            s.parameterset.save()
+
+
+        return JsonResponse({"status" : "success", "session" : getSessionJSON(id),}, safe=False)                         
+                                
+    else:
+        logger.info("Invalid session form")
+        return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
+
+def updateSessionDay(data, id):
+    logger = logging.getLogger(__name__) 
+    logger.info(f"Update session Day: {data}")
 
     form_data_dict = {}
 

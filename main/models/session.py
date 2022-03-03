@@ -552,6 +552,7 @@ class Session(models.Model):
             "questionnaire2_required" : 1 if self.questionnaire2_required else 0,
             "payments_sent_yestery" : yesterday_session_day.payments_result_message if yesterday_session_day else "---",
             "auto_pay" : 1 if self.auto_pay else 0,
+            "session_days" : [session_day.json() for session_day in self.session_days.all()]
         }
 
 #delete associated user model when profile is deleted
