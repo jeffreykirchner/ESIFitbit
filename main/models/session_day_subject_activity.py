@@ -480,7 +480,7 @@ class Session_day_subject_actvity(models.Model):
         return v
     
     #return CSV response for data download
-    def getCSVResponse(self,writer):
+    def getCSVResponse(self, writer):
         p = Parameters.objects.first()
         tz = pytz.timezone(p.experimentTimeZone)
         last_login_str = "No login" if not self.last_login else self.last_login.astimezone(tz).strftime("%#m/%#d/%Y %H:%M:%S %Z")
@@ -500,7 +500,7 @@ class Session_day_subject_actvity(models.Model):
                          self.fitbit_minutes_heart_out_of_range, self.fitbit_minutes_heart_fat_burn, self.fitbit_minutes_heart_cardio,
                          self.fitbit_minutes_heart_peak, self.fitbit_min_heart_rate_zone_bpm, self.fitbit_on_wrist_minutes, last_login_str])
     
-    def getCSVResponseABC(self,writer):
+    def getCSVResponseABC(self, writer):
         p = Parameters.objects.first()
         tz = pytz.timezone(p.experimentTimeZone)
         last_login_str = "No login" if not self.last_login else self.last_login.astimezone(tz).strftime("%#m/%#d/%Y %H:%M:%S %Z")
@@ -535,6 +535,14 @@ class Session_day_subject_actvity(models.Model):
                          self.fitbit_minutes_fairly_active, self.fitbit_minutes_very_active, self.fitbit_steps, self.fitbit_calories,
                          self.fitbit_minutes_heart_out_of_range, self.fitbit_minutes_heart_fat_burn, self.fitbit_minutes_heart_cardio,
                          self.fitbit_minutes_heart_peak, self.fitbit_min_heart_rate_zone_bpm, self.fitbit_on_wrist_minutes, last_login_str])
+
+    def get_survey_link(self):
+        '''
+        get survey link
+        '''
+        link_string = self.session_day.survey_link
+
+        return link_string
 
     #return json object of class
     def json(self):

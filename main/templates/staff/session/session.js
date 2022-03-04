@@ -122,7 +122,8 @@ var app = Vue.createApp({
                         })
                         .then(function (response) {    
                            
-                            app.$data.session.parameterset = response.data.parameterset;                                           
+                            app.$data.session.parameterset = response.data.parameterset;        
+                            app.$data.session.session_days = response.data.session_days;                                   
                         })
                         .catch(function (error) {
                             console.log(error);
@@ -136,7 +137,8 @@ var app = Vue.createApp({
                         })
                         .then(function (response) {    
                            
-                            app.$data.session.parameterset = response.data.parameterset;                                         
+                            app.$data.session.parameterset = response.data.parameterset;   
+                            app.$data.session.session_days = response.data.session_days;                                      
                         })
                         .catch(function (error) {
                             console.log(error);
@@ -160,7 +162,8 @@ var app = Vue.createApp({
                 if(status=="success")
                 {
                     app.$data.cancelModal=false;
-                    app.$data.session.parameterset = response.data.parameterset;       
+                    app.$data.session.parameterset = response.data.parameterset;    
+                    app.$data.session.session_days = response.data.session_days;   
                     $('#editSessionParametersetTimeBlockModal').modal('toggle');      
                 } 
                 else
@@ -203,7 +206,6 @@ var app = Vue.createApp({
             }
         },
 
-        
         //show edit parameters modal
         showViewSessionDayModal:function(){
 
@@ -254,7 +256,7 @@ var app = Vue.createApp({
             axios.post('/session/{{id}}/', {
                 action :"updateSessionDay" ,      
                 formData : $("#sessionDayForm").serializeArray(),  
-                id : app.$data.current_time_block.id,                                                                                                                                                        
+                id : app.$data.current_session_day.id,                                                                                                                                                        
             })
             .then(function (response) {     
                 status=response.data.status;                               
@@ -264,8 +266,8 @@ var app = Vue.createApp({
                 if(status=="success")
                 {
                     app.$data.cancelModal=false;
-                    app.$data.session.parameterset = response.data.parameterset;       
-                    $('#editSessionParametersetTimeBlockModal').modal('toggle');      
+                    app.$data.session.session_days = response.data.session_days;       
+                    $('#editSessionDayModal').modal('toggle');      
                 } 
                 else
                 {                      
@@ -539,7 +541,7 @@ var app = Vue.createApp({
                 action :"addPayLevel" ,                                                                                                                                                           
             })
             .then(function (response) {     
-                app.$data.session.parameterset = response.data.parameterset;                                         
+                app.$data.session.parameterset = response.data.parameterset;                                        
             })
             .catch(function (error) {
                 console.log(error);
@@ -1327,7 +1329,7 @@ var app = Vue.createApp({
         $('#copySubjectModal').on("hidden.bs.modal", this.hideCopySubject); 
         $('#editSessionParametersPaylevelModal').on("hidden.bs.modal", this.hideEditPaylevel); 
         $('#editSessionParametersetTimeBlockModal').on("hidden.bs.modal", this.hideEditTimeBlock);
-        $('#hideViewSessionDayModal').on("hidden.bs.modal", this.hideViewSessionDayModal);
-        $('#hideEditSessionDayModal').on("hidden.bs.modal", this.hideEditSessionDayModal);
+        $('#viewSessionDayModal').on("hidden.bs.modal", this.hideViewSessionDayModal);
+        $('#editSessionDayModal').on("hidden.bs.modal", this.hideEditSessionDayModal);
     },
 }).mount('#app');

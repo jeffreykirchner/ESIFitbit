@@ -58,7 +58,7 @@ class Session_day(models.Model):
             self.addNewSessionDayUserActivity(s)
                 
     #add new session day user activity for a session_subject        
-    def addNewSessionDayUserActivity(self,session_subject):
+    def addNewSessionDayUserActivity(self, session_subject):
         logger = logging.getLogger(__name__)
 
         if not main.models.Session_day_subject_actvity.objects.filter(session_day=self,session_subject=session_subject):
@@ -67,6 +67,7 @@ class Session_day(models.Model):
             sdsa.session_subject=session_subject
             sdsa.heart_activity_minutes=-1
             sdsa.immune_activity_minutes=-1
+            sdsa.survey_complete = False if self.survey_required else True
             sdsa.save()
 
             return sdsa
@@ -161,6 +162,6 @@ class Session_day(models.Model):
             "date" : self.date,
             "payments_sent" : self.payments_sent,
             "payments_result_message" : self.payments_result_message,
-            "survey_required" : self.survey_required,
+            "survey_required" : 1 if self.survey_required else 0,
             "survey_link" : self.survey_link,
         }

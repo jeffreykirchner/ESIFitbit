@@ -38,7 +38,12 @@
                                 [[s.survey_link]]
                             </td>
                             <td class = "text-center text-nowrap m-1 p-1"> 
-                                [[s.survey_required]]
+                                <span v-if="s.survey_required==1">
+                                    Yes
+                                </span>
+                                <span v-else>
+                                    No
+                                </span>
                             </td>
                             <td class = "text-center text-nowrap m-1 p-1"> 
                                 <button class="btn btn-outline-primary btn-sm" type="button" v-on:click = "showEditSessionDayModal(index)"> 

@@ -21,6 +21,7 @@ from main.forms import ParametersetTimeBlockForm
 from main.forms import  SessionDayForm
 
 from main.models import Session
+from main.models import Session_day
 from main.models import Parameterset
 from main.models import Session_subject
 from main.models import Session_day_subject_actvity
@@ -354,50 +355,18 @@ def updateSessionDay(data, id):
 
     form_data_dict = {}
 
-    s=Session.objects.get(id=id)
+    s=Session_day.objects.get(id=data["id"])
 
     for field in data["formData"]:            
         form_data_dict[field["name"]] = field["value"]
 
-    if not s.editable():
-        form_data_dict["start_date"] = s.getDateString()
-
-        form_data_dict["consent_required"] = 1 if s.consent_required else 0
-        form_data_dict["questionnaire1_required"] = 1 if s.questionnaire1_required else 0
-        form_data_dict["questionnaire2_required"] = 1 if s.questionnaire2_required else 0
-        form_data_dict["treatment"] = s.treatment
-
-    form = SessionForm(form_data_dict, instance=s)
+    form = SessionDayForm(form_data_dict, instance=s)
 
     if form.is_valid():
         #print("valid form")                
         form.save()              
 
-        #set first session day date to start date
-        if not s.started:
-            sd = s.session_days.order_by('date').first()
-            sd.date=s.start_date
-            sd.save()
-
-            s.calcEndDate()
-        
-        #logger.info(s.instruction_set)
-
-        #check if session is base line
-       
-        if s.treatment=="BASE":
-            s.parameterset.block_1_heart_pay = 0
-            s.parameterset.block_2_heart_pay = 0
-            s.parameterset.block_3_heart_pay = 0
-
-            s.parameterset.block_1_immune_pay = 0
-            s.parameterset.block_2_immune_pay = 0
-            s.parameterset.block_3_immune_pay = 0
-
-            s.parameterset.save()
-
-
-        return JsonResponse({"status" : "success", "session" : getSessionJSON(id),}, safe=False)                         
+        return JsonResponse({"status" : "success", "session_days" : [session_day.json() for session_day in Session.objects.get(id=id).session_days.all()],}, safe=False)                         
                                 
     else:
         logger.info("Invalid session form")
@@ -555,6 +524,7 @@ def importParameters(data,id):
         ps = form.cleaned_data['session'].parameterset
         s.parameterset.setup(ps)              
         s.calcEndDate() 
+        s.addNewSessionDays()
         return JsonResponse({"status":"success","session" : getSessionJSON(id),},safe=False)                         
                                 
     else:
@@ -665,6 +635,7 @@ def uploadParamterSet(v,id):
 
     message = ps.setup_from_dict(v)
     s.calcEndDate()
+    s.addNewSessionDays()
 
     return JsonResponse({"session" : getSessionJSON(id),
                          "message":message,
@@ -780,7 +751,7 @@ def add_pay_level(data, id):
 
         paylevel.save()
 
-    return JsonResponse({"parameterset" : session.parameterset.json()} ,safe=False)
+    return JsonResponse({"parameterset" : session.parameterset.json() } ,safe=False)
 
 def remove_pay_level(data, id):
     '''
@@ -833,8 +804,10 @@ def add_time_block(data, id):
 
     session=Session.objects.get(id=id)
     session.parameterset.add_time_block()
+    session.addNewSessionDays()
 
-    return JsonResponse({"parameterset" : session.parameterset.json()} ,safe=False)
+    return JsonResponse({"parameterset" : session.parameterset.json(),
+                         "session_days" : [session_day.json() for session_day in Session.objects.get(id=id).session_days.all()]  } ,safe=False)
 
 def remove_time_block(data, id):
     '''
@@ -845,8 +818,10 @@ def remove_time_block(data, id):
 
     session=Session.objects.get(id=id)
     session.parameterset.remove_time_block()
+    session.addNewSessionDays()
 
-    return JsonResponse({"parameterset" : session.parameterset.json()} ,safe=False)
+    return JsonResponse({"parameterset" : session.parameterset.json(),
+                         "session_days" : [session_day.json() for session_day in Session.objects.get(id=id).session_days.all()]} ,safe=False)
 
 def update_time_block(data, id):
     '''
@@ -867,8 +842,12 @@ def update_time_block(data, id):
     if form.is_valid():
         #print("valid form")                
         form.save()           
+
+        session.addNewSessionDays()
             
-        return JsonResponse({"status":"success","parameterset" : session.parameterset.json()} ,safe=False)                         
+        return JsonResponse({"status":"success",
+                             "parameterset" : session.parameterset.json(),
+                             "session_days" : [session_day.json() for session_day in Session.objects.get(id=id).session_days.all()]} ,safe=False)                         
                                 
     else:
         logger.info("Invalid parameterset form")

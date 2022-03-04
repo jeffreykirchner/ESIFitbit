@@ -137,37 +137,52 @@ class Session(models.Model):
         d_start = todaysDate()
         d_start = d_start.replace(day=self.start_date.day,month=self.start_date.month, year=self.start_date.year)
 
-        d_start += timedelta(days=1)
-        tempPeriod = 2
+        # d_start += timedelta(days=1)
+        tempPeriod = 1
 
         logger.info(d_start)
         #logger.info(d_end)     
 
-        #add days for block 1
+        #find total needed
+        total_needed = 1
         for j in self.parameterset.time_blocks.all():
-            for i in range(j.day_count):   
-                self.addSessionDay(d_start.date(), tempPeriod)
-                d_start += timedelta(days=1)
-                tempPeriod+=1
+            total_needed += j.day_count
 
-        #add days for block 2
-        # for i in range(self.parameterset.block_2_day_count):   
-        #     self.addSessionDay(d_start.date(),tempPeriod)
-        #     d_start += timedelta(days=1)
-        #     tempPeriod+=1 
-        
-        # #add days for block 3
-        # for i in range(self.parameterset.block_3_day_count):   
-        #     self.addSessionDay(d_start.date(),tempPeriod)
-        #     d_start += timedelta(days=1)
-        #     tempPeriod+=1 
+        total_found = self.session_days.count()
 
+        if total_needed>total_found:
+            #add more
+            last_day =  self.session_days.all().last()
 
-        # while d_start <= d_end:
-        #     #logger.info("Newest session day: " + str(sd))
-        #     self.addSessionDay(d_start.date(),tempPeriod)
-        #     d_start += timedelta(days=1)
-        #     tempPeriod+=1     
+            if last_day:
+                temp_period = last_day.period_number+1
+                temp_date = last_day.date+timedelta(days=1)
+            else:
+                temp_period = 1
+
+            for i in range(total_needed-total_found):
+                self.addSessionDay(temp_date, temp_period)
+                temp_date += timedelta(days=1)
+                temp_period+=1
+
+        elif total_found>total_needed:
+            #remove excess
+            for i in range(total_found-total_needed):
+                self.session_days.all().last().delete()
+
+        #update dates
+        for session_day in self.session_days.all():
+            session_day.date=d_start.date()
+            session_day.save()
+            session_day.addSessionDayUserActivites()
+            d_start += timedelta(days=1)
+
+        #add days for block 1
+        # for j in self.parameterset.time_blocks.all():
+        #     for i in range(j.day_count):   
+        #         self.addSessionDay(d_start.date(), tempPeriod)
+        #         d_start += timedelta(days=1)
+        #         tempPeriod+=1
 
     #add new session day to this session
     def addSessionDay(self,new_day,new_period):
