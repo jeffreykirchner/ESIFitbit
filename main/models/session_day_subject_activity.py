@@ -540,7 +540,15 @@ class Session_day_subject_actvity(models.Model):
         '''
         get survey link
         '''
-        link_string = self.session_day.survey_link
+        #https://chapmanu.co1.qualtrics.com/jfe/form/SV_9BJPiWNYT9hZ6tM?student_id=[student%20id]&session_id=10786&first_name=[first%20name]&last_name=[last%20name]&email=[email]&recruiter_id=[recruiter%20id]
+        link_string = f'{self.session_day.survey_link}?'
+        link_string += f'student_id={self.session_subject.student_id}&'
+        link_string += f'session_id={self.session_day.session.id}&'
+        link_string += f'name={self.session_subject.name}&'
+        link_string += f'subject_id={self.session_subject.id_number}&'
+        link_string += f'period={self.session_day.period_number}&'
+        link_string += f'activity_key={self.activity_key}&'
+        link_string += f'session_name={self.session_day.session.title}&'
 
         return link_string
 

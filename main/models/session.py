@@ -81,6 +81,26 @@ class Session(models.Model):
         verbose_name_plural = 'Experiment Sessions'
         ordering = ['-start_date', 'title']
 
+    def setup(self, session_source):
+        '''
+        setup from another session
+        '''
+
+        self.parameterset.setup(session_source.parameterset)    
+
+        self.consent_required = session_source.consent_required
+        self.questionnaire1_required = session_source.questionnaire1_required
+        self.questionnaire2_required = session_source.questionnaire2_required
+        self.treatment = session_source.treatment
+
+        self.calcEndDate() 
+        self.addNewSessionDays()
+
+        for session_day_source in session_source.session_days.all():
+            self.session_days.get(period_number=session_day_source.period_number).setup(session_day_source)
+        
+        self.save()
+
     #get the current session day
     def getCurrentSessionDay(self):
         #logger = logging.getLogger(__name__)
@@ -174,6 +194,9 @@ class Session(models.Model):
         for session_day in self.session_days.all():
             session_day.date=d_start.date()
             session_day.save()
+
+            session_day.Session_day_subject_actvities_SD.all().delete()
+
             session_day.addSessionDayUserActivites()
             d_start += timedelta(days=1)
 

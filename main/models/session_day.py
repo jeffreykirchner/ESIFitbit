@@ -46,7 +46,18 @@ class Session_day(models.Model):
         verbose_name = 'Session Day'
         verbose_name_plural = 'Session Days'
         ordering = ['period_number']
-        
+    
+    def setup(self, session_day_source):
+        '''
+        copy from another session day
+        '''
+
+        self.survey_required = session_day_source.survey_required
+        self.survey_link = session_day_source.survey_link
+
+        self.save()
+
+        pass
     
     #add session day user actvities for testing
     def addSessionDayUserActivites(self):

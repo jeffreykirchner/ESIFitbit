@@ -1,0 +1,19 @@
+{%extends "base.html"%}
+{% load crispy_forms_tags %}
+
+{%block head%}
+
+{%endblock head%}
+
+{%block content%}
+<div class="row justify-content-lg-center" v-cloak> 
+    <div class="col-md-6 mt-4 text-center">
+        {%if error%}
+            There was an error completing the survey.  Use your original link to open the experiment and try again.
+        {%else%}
+            Survey complete: <a href="{% url 'subject_home' return_link %}">Return to study.</a>            
+        {%endif%}       
+    </div>
+</div>    
+
+{%endblock content%}

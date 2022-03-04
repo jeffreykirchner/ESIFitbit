@@ -326,6 +326,7 @@ def updateSession(data,id):
             sd.save()
 
             s.calcEndDate()
+            s.addNewSessionDays()
         
         #logger.info(s.instruction_set)
 
@@ -521,10 +522,11 @@ def importParameters(data,id):
 
     if form.is_valid():
         logger.info(form.cleaned_data['session'])
-        ps = form.cleaned_data['session'].parameterset
-        s.parameterset.setup(ps)              
-        s.calcEndDate() 
-        s.addNewSessionDays()
+
+        session_source =  form.cleaned_data['session']                 
+
+        s.setup(session_source)
+
         return JsonResponse({"status":"success","session" : getSessionJSON(id),},safe=False)                         
                                 
     else:

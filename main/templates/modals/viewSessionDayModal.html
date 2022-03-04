@@ -46,7 +46,7 @@
                                 </span>
                             </td>
                             <td class = "text-center text-nowrap m-1 p-1"> 
-                                <button class="btn btn-outline-primary btn-sm" type="button" v-on:click = "showEditSessionDayModal(index)"> 
+                                <button class="btn btn-outline-primary btn-sm" type="button" v-on:click = "showEditSessionDayModal(index)" v-show="session.started == false"> 
                                     <i class="far fa-edit"></i>
                                 </button>
                             </td>
