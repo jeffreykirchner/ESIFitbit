@@ -8,6 +8,7 @@ import logging
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
+from django.shortcuts import redirect
 
 from main.models import Session_subject, Session_day_subject_actvity, Parameters
 from main.models import Session_subject_questionnaire1,Session_subject_questionnaire2
@@ -57,6 +58,13 @@ def Subject_Home(request, id_):
         p = Parameters.objects.first()
 
         if session_subject:
+
+            #check for survey redirect
+            session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
+
+            if session_day_subject_actvity:
+                if not session_day_subject_actvity.survey_complete:
+                    return redirect(session_day_subject_actvity.get_survey_link())
 
             #questionnaire 1 setup            
             session_subject_questionnaire1_form_ids=[]

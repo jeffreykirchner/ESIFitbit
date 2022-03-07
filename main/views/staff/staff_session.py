@@ -18,8 +18,10 @@ from main.forms import Subject_form
 from main.forms import Import_parameters_form
 from main.forms import ParametersetPaylevelForm
 from main.forms import ParametersetTimeBlockForm
+from main.forms import  SessionDayForm
 
 from main.models import Session
+from main.models import Session_day
 from main.models import Parameterset
 from main.models import Session_subject
 from main.models import Session_day_subject_actvity
@@ -60,6 +62,8 @@ def Staff_Session(request,id):
                 return updateParameters(data, id)
             elif data["action"] == "updateSession":
                 return updateSession(data, id)
+            elif data["action"] == "updateSessionDay":
+                return updateSessionDay(data, id)
             elif data["action"] == "updateSubject":
                 return updateSubject(data, id)
             elif data["action"] ==  "showFitbitStatus":
@@ -105,6 +109,7 @@ def Staff_Session(request,id):
         parameterset_form = Parameterset_form()
         session_form = SessionForm()
         subject_form = Subject_form()
+        session_day_form = SessionDayForm()
         import_parameters_form = Import_parameters_form()
         parameterset_paylevel_form = ParametersetPaylevelForm()
         parameterset_time_block_form = ParametersetTimeBlockForm()
@@ -125,21 +130,28 @@ def Staff_Session(request,id):
         time_block_form_ids=[]
         for i in parameterset_time_block_form:
             time_block_form_ids.append(i.html_name)
-        
+
+        session_day_form_ids=[]
+        for i in session_day_form:
+            session_day_form_ids.append(i.html_name)
+
         return render(request,'staff/session.html',{'id' : id,
                                                     'session' : session,
                                                     'session_json' : json.dumps(session.json(), cls=DjangoJSONEncoder),
                                                     'time_block_json' : json.dumps(main.models.ParametersetTimeBlock().json(), cls=DjangoJSONEncoder),
                                                     'pay_level_json' : json.dumps(main.models.ParametersetPaylevel().json(), cls=DjangoJSONEncoder),
+                                                    'current_session_day' : json.dumps(session.session_days.first().json() if session.session_days.first() else {}, cls=DjangoJSONEncoder),
                                                     'parameterset_form' : parameterset_form,
                                                     'session_form' : session_form,
                                                     'subject_form' : subject_form,
+                                                    'session_day_form' : session_day_form,
                                                     'help_text' : p.manualHelpText,
                                                     'import_parameters_form' : import_parameters_form,
                                                     'parameterset_paylevel_form' : parameterset_paylevel_form,
                                                     'parameterset_time_block_form' : parameterset_time_block_form,
                                                     'subject_form_ids' : subject_form_ids,
                                                     'paylevel_form_ids' : paylevel_form_ids,
+                                                    'session_day_form_ids' : session_day_form_ids,
                                                     'time_block_form_ids' : time_block_form_ids,
                                                     'yesterdays_date' : yesterdays_date.date().strftime("%Y-%m-%d")})     
 
@@ -314,6 +326,7 @@ def updateSession(data,id):
             sd.save()
 
             s.calcEndDate()
+            s.addNewSessionDays()
         
         #logger.info(s.instruction_set)
 
@@ -332,6 +345,29 @@ def updateSession(data,id):
 
 
         return JsonResponse({"status" : "success", "session" : getSessionJSON(id),}, safe=False)                         
+                                
+    else:
+        logger.info("Invalid session form")
+        return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
+
+def updateSessionDay(data, id):
+    logger = logging.getLogger(__name__) 
+    logger.info(f"Update session Day: {data}")
+
+    form_data_dict = {}
+
+    s=Session_day.objects.get(id=data["id"])
+
+    for field in data["formData"]:            
+        form_data_dict[field["name"]] = field["value"]
+
+    form = SessionDayForm(form_data_dict, instance=s)
+
+    if form.is_valid():
+        #print("valid form")                
+        form.save()              
+
+        return JsonResponse({"status" : "success", "session_days" : [session_day.json() for session_day in Session.objects.get(id=id).session_days.all()],}, safe=False)                         
                                 
     else:
         logger.info("Invalid session form")
@@ -486,9 +522,11 @@ def importParameters(data,id):
 
     if form.is_valid():
         logger.info(form.cleaned_data['session'])
-        ps = form.cleaned_data['session'].parameterset
-        s.parameterset.setup(ps)              
-        s.calcEndDate() 
+
+        session_source =  form.cleaned_data['session']                 
+
+        s.setup(session_source)
+
         return JsonResponse({"status":"success","session" : getSessionJSON(id),},safe=False)                         
                                 
     else:
@@ -599,6 +637,7 @@ def uploadParamterSet(v,id):
 
     message = ps.setup_from_dict(v)
     s.calcEndDate()
+    s.addNewSessionDays()
 
     return JsonResponse({"session" : getSessionJSON(id),
                          "message":message,
@@ -714,7 +753,7 @@ def add_pay_level(data, id):
 
         paylevel.save()
 
-    return JsonResponse({"parameterset" : session.parameterset.json()} ,safe=False)
+    return JsonResponse({"parameterset" : session.parameterset.json() } ,safe=False)
 
 def remove_pay_level(data, id):
     '''
@@ -767,8 +806,10 @@ def add_time_block(data, id):
 
     session=Session.objects.get(id=id)
     session.parameterset.add_time_block()
+    session.addNewSessionDays()
 
-    return JsonResponse({"parameterset" : session.parameterset.json()} ,safe=False)
+    return JsonResponse({"parameterset" : session.parameterset.json(),
+                         "session_days" : [session_day.json() for session_day in Session.objects.get(id=id).session_days.all()]  } ,safe=False)
 
 def remove_time_block(data, id):
     '''
@@ -779,8 +820,10 @@ def remove_time_block(data, id):
 
     session=Session.objects.get(id=id)
     session.parameterset.remove_time_block()
+    session.addNewSessionDays()
 
-    return JsonResponse({"parameterset" : session.parameterset.json()} ,safe=False)
+    return JsonResponse({"parameterset" : session.parameterset.json(),
+                         "session_days" : [session_day.json() for session_day in Session.objects.get(id=id).session_days.all()]} ,safe=False)
 
 def update_time_block(data, id):
     '''
@@ -801,8 +844,12 @@ def update_time_block(data, id):
     if form.is_valid():
         #print("valid form")                
         form.save()           
+
+        session.addNewSessionDays()
             
-        return JsonResponse({"status":"success","parameterset" : session.parameterset.json()} ,safe=False)                         
+        return JsonResponse({"status":"success",
+                             "parameterset" : session.parameterset.json(),
+                             "session_days" : [session_day.json() for session_day in Session.objects.get(id=id).session_days.all()]} ,safe=False)                         
                                 
     else:
         logger.info("Invalid parameterset form")

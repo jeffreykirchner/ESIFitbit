@@ -26,6 +26,9 @@ class Session_day(models.Model):
     payments_sent = models.BooleanField(default=False)                                #true once paypal payments are sent
     payments_result_message = models.CharField(max_length=200, default="No Payment")  #display message about payment status
 
+    survey_required = models.BooleanField(default=False, verbose_name="Survey Complete")
+    survey_link = models.CharField(max_length = 1000, default = '', verbose_name = 'Survey Link')  
+
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
 
@@ -42,6 +45,19 @@ class Session_day(models.Model):
         ]
         verbose_name = 'Session Day'
         verbose_name_plural = 'Session Days'
+        ordering = ['period_number']
+    
+    def setup(self, session_day_source):
+        '''
+        copy from another session day
+        '''
+
+        self.survey_required = session_day_source.survey_required
+        self.survey_link = session_day_source.survey_link
+
+        self.save()
+
+        pass
     
     #add session day user actvities for testing
     def addSessionDayUserActivites(self):
@@ -53,7 +69,7 @@ class Session_day(models.Model):
             self.addNewSessionDayUserActivity(s)
                 
     #add new session day user activity for a session_subject        
-    def addNewSessionDayUserActivity(self,session_subject):
+    def addNewSessionDayUserActivity(self, session_subject):
         logger = logging.getLogger(__name__)
 
         if not main.models.Session_day_subject_actvity.objects.filter(session_day=self,session_subject=session_subject):
@@ -62,6 +78,7 @@ class Session_day(models.Model):
             sdsa.session_subject=session_subject
             sdsa.heart_activity_minutes=-1
             sdsa.immune_activity_minutes=-1
+            sdsa.survey_complete = False if self.survey_required else True
             sdsa.save()
 
             return sdsa
@@ -152,6 +169,10 @@ class Session_day(models.Model):
     def json(self):
         return{
             "id":self.id,
+            "period_number" : self.period_number,
+            "date" : self.date,
             "payments_sent" : self.payments_sent,
             "payments_result_message" : self.payments_result_message,
+            "survey_required" : 1 if self.survey_required else 0,
+            "survey_link" : self.survey_link,
         }

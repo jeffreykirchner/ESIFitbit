@@ -37,6 +37,9 @@ class Session_day_subject_actvity(models.Model):
 
     payment_today =  models.DecimalField(decimal_places=2, default=0, max_digits=6)                 #amount of money paid to subject today
 
+    activity_key = models.UUIDField(default=uuid.uuid4, editable=False, verbose_name = 'Subject Activity Key')
+    survey_complete = models.BooleanField(default=True, verbose_name="Survey Complete") 
+
     #fitbit metrics
     #charge 3 metrics depriciated
     fitbit_minutes_sedentary = models.IntegerField(default=0)         #todays tracker sedentary minutes
@@ -477,7 +480,7 @@ class Session_day_subject_actvity(models.Model):
         return v
     
     #return CSV response for data download
-    def getCSVResponse(self,writer):
+    def getCSVResponse(self, writer):
         p = Parameters.objects.first()
         tz = pytz.timezone(p.experimentTimeZone)
         last_login_str = "No login" if not self.last_login else self.last_login.astimezone(tz).strftime("%#m/%#d/%Y %H:%M:%S %Z")
@@ -497,7 +500,7 @@ class Session_day_subject_actvity(models.Model):
                          self.fitbit_minutes_heart_out_of_range, self.fitbit_minutes_heart_fat_burn, self.fitbit_minutes_heart_cardio,
                          self.fitbit_minutes_heart_peak, self.fitbit_min_heart_rate_zone_bpm, self.fitbit_on_wrist_minutes, last_login_str])
     
-    def getCSVResponseABC(self,writer):
+    def getCSVResponseABC(self, writer):
         p = Parameters.objects.first()
         tz = pytz.timezone(p.experimentTimeZone)
         last_login_str = "No login" if not self.last_login else self.last_login.astimezone(tz).strftime("%#m/%#d/%Y %H:%M:%S %Z")
@@ -532,6 +535,22 @@ class Session_day_subject_actvity(models.Model):
                          self.fitbit_minutes_fairly_active, self.fitbit_minutes_very_active, self.fitbit_steps, self.fitbit_calories,
                          self.fitbit_minutes_heart_out_of_range, self.fitbit_minutes_heart_fat_burn, self.fitbit_minutes_heart_cardio,
                          self.fitbit_minutes_heart_peak, self.fitbit_min_heart_rate_zone_bpm, self.fitbit_on_wrist_minutes, last_login_str])
+
+    def get_survey_link(self):
+        '''
+        get survey link
+        '''
+        #https://chapmanu.co1.qualtrics.com/jfe/form/SV_9BJPiWNYT9hZ6tM?student_id=[student%20id]&session_id=10786&first_name=[first%20name]&last_name=[last%20name]&email=[email]&recruiter_id=[recruiter%20id]
+        link_string = f'{self.session_day.survey_link}?'
+        link_string += f'student_id={self.session_subject.student_id}&'
+        link_string += f'session_id={self.session_day.session.id}&'
+        link_string += f'name={self.session_subject.name}&'
+        link_string += f'subject_id={self.session_subject.id_number}&'
+        link_string += f'period={self.session_day.period_number}&'
+        link_string += f'activity_key={self.activity_key}&'
+        link_string += f'session_name={self.session_day.session.title}&'
+
+        return link_string
 
     #return json object of class
     def json(self):

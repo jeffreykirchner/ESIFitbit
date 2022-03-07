@@ -10,6 +10,7 @@ var app = Vue.createApp({
         current_paylevel:{{pay_level_json|safe}},
         current_time_block:{{time_block_json|safe}},
         session:{{session_json|safe}},
+        current_session_day:{{current_session_day|safe}},
         session_subjects:[],              //list of subjects in this session 
         cancelModal:false,                //if modal is canceled reload old values
         currentSubject:{},                //current subject being edited
@@ -41,6 +42,7 @@ var app = Vue.createApp({
         subject_form_ids:{{subject_form_ids|safe}},
         paylevel_form_ids:{{paylevel_form_ids|safe}},
         time_block_form_ids:{{time_block_form_ids|safe}},
+        session_day_form_ids:{{session_day_form_ids|safe}},
         last_refresh:"",
         auto_refresh:"Off",
         timeouts:[],
@@ -120,7 +122,8 @@ var app = Vue.createApp({
                         })
                         .then(function (response) {    
                            
-                            app.$data.session.parameterset = response.data.parameterset;                                           
+                            app.$data.session.parameterset = response.data.parameterset;        
+                            app.$data.session.session_days = response.data.session_days;                                   
                         })
                         .catch(function (error) {
                             console.log(error);
@@ -134,7 +137,8 @@ var app = Vue.createApp({
                         })
                         .then(function (response) {    
                            
-                            app.$data.session.parameterset = response.data.parameterset;                                         
+                            app.$data.session.parameterset = response.data.parameterset;   
+                            app.$data.session.session_days = response.data.session_days;                                      
                         })
                         .catch(function (error) {
                             console.log(error);
@@ -158,7 +162,8 @@ var app = Vue.createApp({
                 if(status=="success")
                 {
                     app.$data.cancelModal=false;
-                    app.$data.session.parameterset = response.data.parameterset;       
+                    app.$data.session.parameterset = response.data.parameterset;    
+                    app.$data.session.session_days = response.data.session_days;   
                     $('#editSessionParametersetTimeBlockModal').modal('toggle');      
                 } 
                 else
@@ -199,6 +204,79 @@ var app = Vue.createApp({
                     app.$data.timeBlockBeforeEdit=null;
                 }
             }
+        },
+
+        //show edit parameters modal
+        showViewSessionDayModal:function(){
+
+            $('#viewSessionDayModal').modal('show');                   
+        },
+
+        //fire when edit experiment model hides, cancel action if nessicary
+        hideViewSessionDayModal:function(){
+            if(app.$data.cancelModal)
+            {
+               
+            }
+        },
+
+        //show edit session day modal
+        showEditSessionDayModal:function(index){
+            app.clearMainFormErrors();
+
+            app.$data.sessionDayBeforeEdit = Object.assign({}, app.$data.session.session_days[index]);
+            app.$data.current_session_day_index = index
+
+            session_day = app.$data.session.session_days[index];
+
+            app.$data.current_session_day = session_day;
+            
+            app.$data.cancelModal=true;
+
+            $('#editSessionDayModal').modal('show');                   
+        },
+
+        //fire when hide edit session day model
+        hideEditSessionDayModal:function(){
+            if(app.$data.cancelModal)
+            {
+                index = app.$data.current_session_day_index;
+
+                if(index != -1)
+                {
+                    Object.assign(app.$data.session.session_days[index], app.$data.sessionDayBeforeEdit);
+                    app.$data.sessionDayBeforeEdit=null;
+                }
+            }
+        },
+
+        updateSessionDay:function(){                    
+            app.$data.cancelModal=true;
+
+            axios.post('/session/{{id}}/', {
+                action :"updateSessionDay" ,      
+                formData : $("#sessionDayForm").serializeArray(),  
+                id : app.$data.current_session_day.id,                                                                                                                                                        
+            })
+            .then(function (response) {     
+                status=response.data.status;                               
+
+                app.clearMainFormErrors();
+
+                if(status=="success")
+                {
+                    app.$data.cancelModal=false;
+                    app.$data.session.session_days = response.data.session_days;       
+                    $('#editSessionDayModal').modal('toggle');      
+                } 
+                else
+                {                      
+                    app.displayErrors(response.data.errors);
+                }                                   
+            })
+            .catch(function (error) {
+                console.log(error);
+            });                       
         },
 
         //refresh subject table click
@@ -463,7 +541,7 @@ var app = Vue.createApp({
                 action :"addPayLevel" ,                                                                                                                                                           
             })
             .then(function (response) {     
-                app.$data.session.parameterset = response.data.parameterset;                                         
+                app.$data.session.parameterset = response.data.parameterset;                                        
             })
             .catch(function (error) {
                 console.log(error);
@@ -979,6 +1057,13 @@ var app = Vue.createApp({
                 $("#id_" + s[i]).attr("class","form-control");
                 $("#id_errors_" + s[i]).remove();
             }
+
+            s = app.session_day_form_ids;
+            for(var i in s)
+            {
+                $("#id_" + s[i]).attr("class","form-control");
+                $("#id_errors_" + s[i]).remove();
+            }
         },       
         
         //graphs
@@ -1244,5 +1329,7 @@ var app = Vue.createApp({
         $('#copySubjectModal').on("hidden.bs.modal", this.hideCopySubject); 
         $('#editSessionParametersPaylevelModal').on("hidden.bs.modal", this.hideEditPaylevel); 
         $('#editSessionParametersetTimeBlockModal').on("hidden.bs.modal", this.hideEditTimeBlock);
+        $('#viewSessionDayModal').on("hidden.bs.modal", this.hideViewSessionDayModal);
+        $('#editSessionDayModal').on("hidden.bs.modal", this.hideEditSessionDayModal);
     },
 }).mount('#app');

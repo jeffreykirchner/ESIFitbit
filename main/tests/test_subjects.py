@@ -7,12 +7,25 @@ import logging
 import json
 
 from django.test import TestCase
+from django.test import Client
 
-from main.models import Session, Session_day_subject_actvity
-from main.globals import todaysDate, PageType, TimeBlock, NoticeType, round_half_away_from_zero
+from main.models import Session
+from main.models import Session_day_subject_actvity
+
+from main.globals import todaysDate
+from main.globals import PageType
+from main.globals import TimeBlock
+from main.globals import NoticeType
+from main.globals import round_half_away_from_zero
 
 from main.views.staff.staff_home import createSession
-from main.views.staff.staff_session import updateSession, addSubject, startSession, sendCancelations
+
+from main.views.staff.staff_session import updateSession
+from main.views.staff.staff_session import addSubject
+from main.views.staff.staff_session import startSession
+from main.views.staff.staff_session import sendCancelations
+from main.views.staff.staff_session import updateSessionDay
+
 from main.views.subject.subject_home import payMe
 
 
@@ -182,7 +195,7 @@ class SubjectAfterStartTestCase(TestCase):
         session = Session.objects.first()
         session.parameterset.add_time_block()
         session.parameterset.add_time_block()
-
+        
         start_date = todaysDate()
 
         data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'},{'name':'auto_pay','value':'1'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'},{'name':'auto_pay','value':'1'}]}
@@ -190,9 +203,19 @@ class SubjectAfterStartTestCase(TestCase):
         r = json.loads(updateSession(data,session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
 
+        #add survey day
+        session_day_one = session.session_days.get(period_number=1)
+        data = {'action': 'updateSessionDay', 'formData': [{'name': 'survey_link', 'value': 'https://google.com'}, {'name': 'survey_required', 'value': '1'}], 'id': session_day_one.id}
+        updateSessionDay(data, session.id)
+
+        session_day_two = session.session_days.get(period_number=2)
+        data = {'action': 'updateSessionDay', 'formData': [{'name': 'survey_link', 'value': 'https://google.com'}, {'name': 'survey_required', 'value': '1'}], 'id': session_day_two.id}
+        updateSessionDay(data, session.id)
+
         session = Session.objects.first()
         logger.info(f"Session start date {session.start_date} end date {session.end_date}")
 
+        #add subjects
         addSubject({},session.id)
         addSubject({},session.id)
         addSubject({},session.id)
@@ -200,6 +223,7 @@ class SubjectAfterStartTestCase(TestCase):
         addSubject({},session.id)
         addSubject({},session.id)
 
+        #start session
         r = json.loads(startSession({},session.id).content.decode("UTF-8"))
         self.assertEqual(r['status'],"success")
 
@@ -307,6 +331,44 @@ class SubjectAfterStartTestCase(TestCase):
 
         session_day_subject_actvity = session_subject.Session_day_subject_actvities.filter(session_day__period_number = 1).first()
         self.assertFalse(session_day_subject_actvity.paypal_today) 
+
+    def test_take_survey_active(self):
+        '''
+        test taking survey
+        '''
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+        session_subject = session.session_subjects.all().first()
+
+        session_day_one = session.session_days.get(period_number=1)
+        sdsa_one = session_subject.Session_day_subject_actvities.get(session_day=session_day_one)
+
+        session_day_two = session.session_days.get(period_number=2)
+        sdsa_two = session_subject.Session_day_subject_actvities.get(session_day=session_day_two)
+
+        session_day_three = session.session_days.get(period_number=3)
+        sdsa_three = session_subject.Session_day_subject_actvities.get(session_day=session_day_three)
+
+        #check day one
+        self.assertEquals(False, sdsa_one.survey_complete)  
+
+        #check day two
+        self.assertEquals(False, sdsa_two.survey_complete)
+
+        #check day two
+        self.assertEquals(True, sdsa_three.survey_complete)  
+
+        c = Client()
+        response = c.get(f'/subjectHome/{session_subject.login_key}/', follow=True, secure=True)
+
+        #verify redirect
+        logger.info(response.redirect_chain)
+        self.assertIn("google", response.redirect_chain[0][0]) 
+
+        response = c.get(f'/survey_complete/{sdsa_one.activity_key}', follow=True)  
+        sdsa_one = session_subject.Session_day_subject_actvities.get(session_day=session_day_one)
+        self.assertEquals(True, sdsa_one.survey_complete)      
 
 #test subject before experiment starts
 class SubjectBeforeStartTestCase(TestCase):
@@ -891,7 +953,6 @@ class SubjectPayments(TestCase):
         for subject in self.session.session_subjects.all():
             subject.fitBitLastSynced = todaysDate()
             subject.save()
-        
     
     def test_three_x_three_one(self):
         '''
@@ -1063,3 +1124,31 @@ class SubjectPayments(TestCase):
                                 time_block_3.heart_pay * session_subject_activity_2day.heart_activity +
                                 time_block_3.immune_pay * session_subject_activity_2day.immune_activity)
                                ,2))
+
+    def test_take_survey_inactive(self):
+        '''
+        test taking survey with no survey active
+        '''
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        session = self.session
+        session_subject = session.session_subjects.all().first()
+
+        session_day_one = session.session_days.get(period_number=1)
+        sdsa_one = session_subject.Session_day_subject_actvities.get(session_day=session_day_one)
+
+        #check day one
+        self.assertEquals(True, sdsa_one.survey_complete)  
+
+        c = Client()
+        response = c.get(f'/subjectHome/{session_subject.login_key}/', follow=True, secure=True)
+
+        #verify redirect
+        logger.info(response.redirect_chain)
+        self.assertEqual(0, len(response.redirect_chain)) 

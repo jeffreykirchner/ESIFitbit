@@ -15,3 +15,4 @@ from .session_form_admin import *
 from .instruction_set_page_form import *
 from .instruction_set_notice_form import *
 from .login_form import *
+from .session_day_form import *
