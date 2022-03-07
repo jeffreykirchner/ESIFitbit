@@ -102,6 +102,8 @@ def Staff_Session(request,id):
                 return remove_time_block(data, id)
             elif data["action"] == "updateTimeBlock":
                 return update_time_block(data, id)
+            elif data["action"] == "resetSession":
+                return reset_session(data, id)
            
         return JsonResponse({"response" :  "fail"},safe=False)       
     else:      
@@ -155,8 +157,8 @@ def Staff_Session(request,id):
                                                     'time_block_form_ids' : time_block_form_ids,
                                                     'yesterdays_date' : yesterdays_date.date().strftime("%Y-%m-%d")})     
 
-#get list of experiment sessions
-def getSession(data,id):
+#get session information
+def getSession(data, id):
     logger = logging.getLogger(__name__) 
     logger.info("Get Session")
     logger.info(data)
@@ -350,6 +352,22 @@ def updateSession(data,id):
         logger.info("Invalid session form")
         return JsonResponse({"status":"fail","errors":dict(form.errors.items())}, safe=False)
 
+#update session settings
+def reset_session(data, id):
+    logger = logging.getLogger(__name__) 
+    logger.info(f"Reset session, {data}, id {id}")
+
+    s=Session.objects.get(id=id)
+
+    s.started = False
+    s.canceled = False
+
+    s.save()
+
+    s.session_subjects.all().delete()
+        
+    return getSession(data, id)                   
+                                
 def updateSessionDay(data, id):
     logger = logging.getLogger(__name__) 
     logger.info(f"Update session Day: {data}")

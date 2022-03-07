@@ -370,6 +370,16 @@ class SubjectAfterStartTestCase(TestCase):
         sdsa_one = session_subject.Session_day_subject_actvities.get(session_day=session_day_one)
         self.assertEquals(True, sdsa_one.survey_complete)      
 
+        #test update session will not change survey status
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': 'Updated Session'}, {'name': 'start_date', 'value': None}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'},{'name':'auto_pay','value':'1'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'},{'name': 'instruction_set', 'value': '1'},{'name':'auto_pay','value':'1'}]}
+
+        r = json.loads(updateSession(data,session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+
+        sdsa_one = session_subject.Session_day_subject_actvities.get(session_day=session_day_one)
+        self.assertEquals("Updated Session", sdsa_one.session_day.session.title)
+        self.assertEquals(True, sdsa_one.survey_complete)
+
 #test subject before experiment starts
 class SubjectBeforeStartTestCase(TestCase):
     fixtures = ['parameters.json', 'instruction_set.json']
