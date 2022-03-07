@@ -21,6 +21,7 @@ var app = Vue.createApp({
         showFitbitStatusButtonText:'Check fitbit <i class="far fa-check-circle"></i>',
         backFillButtonText:'Back Fill Data For Testing',
         startSessionButtonText: 'Start Session <i class="far fa-play-circle"></i>',
+        resetSessionButtonText: 'Reset Session <i class="fas fa-retweet"></i>',
         invitationButtonText: 'Send Invitations <i class="far fa-envelope"></i>',
         cancelationButtonText: 'Cancel Session <i class="fas fa-ban"></i>',
         downloadDataButtonText:'Download Data <i class="fas fa-scroll fa-xs"></i>',
@@ -381,81 +382,6 @@ var app = Vue.createApp({
                         });                        
         },
 
-        //for testing, back fill session days.
-        backFillSessionsDays:function(){                    
-            app.$data.backFillButtonText = '<i class="fas fa-spinner fa-spin"></i>';
-            axios.post('/session/{{id}}/', {
-                            action :"backFillSessionDays"                                                                                                                                                          
-                        })
-                        .then(function (response) {     
-                            app.updateSession(response);   
-                            app.updateSubjects(response);  
-
-                            app.$data.backFillButtonText = 'Back Fill Data For Testing';                                    
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });                        
-        },
-
-        //activate session and fill session days
-        startSession:function(){
-            app.$data.startSessionButtonText = '<i class="fas fa-spinner fa-spin"></i>';
-            axios.post('/session/{{id}}/', {
-                            action :"startSession" ,                                                                                                                                                               
-                        })
-                        .then(function (response) {     
-                            app.updateSession(response);      
-                            app.$data.startSessionButtonText = 'Start Session <i class="far fa-play-circle"></i>';                          
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        }); 
-        },
-
-        //send invitations
-        sendInvitations:function(){
-
-            if(app.$data.session.invitation_text_subject == "")
-            {
-                alert("Message has no subject.");
-                return;
-            }
-
-            if(app.$data.session.invitation_text == "")
-            {
-                alert("Message is empty.");
-                return;
-            }
-
-            app.$data.invitationButtonText = '<i class="fas fa-spinner fa-spin"></i>';
-            axios.post('/session/{{id}}/', {
-                            action :"sendInvitations" ,  
-                            invitation_text_subject:app.$data.session.invitation_text_subject, 
-                            invitation_text:app.$data.session.invitation_text,                                                                                                                                                            
-                        })
-                        .then(function (response) {     
-                            app.updateSession(response);      
-                            app.$data.invitationButtonText = 'Send Invitations <i class="far fa-envelope"></i>';   
-
-                            if( response.data.success)
-                            {
-                                if(response.data.result.error_message != "")
-                                    app.$data.emailResult = "Error: " + response.data.result.error_message;
-                                else
-                                    app.$data.emailResult = response.data.result.mail_count + " email(s) were sent.";                                     
-                            }
-                            else
-                            {
-                                app.$data.emailResult =response.data.result;
-                            }
-                                                    
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        }); 
-        },
-
         //get list of valid subjects to copy
         getSubjectsAvailableToCopy:function(){                    
             app.subjectsAvailableToCopyWorking = true;
@@ -487,53 +413,6 @@ var app = Vue.createApp({
                     console.log(error);
                 });                        
         },
-
-        //send cancelations
-        sendCancelations:function(){
-            if(!confirm("Cancel Session?"))
-            {                        
-                return;
-            }
-
-            if(app.$data.session.cancelation_text_subject == "")
-            {
-                alert("Message has no subject.");
-                return;
-            }
-
-            if(app.$data.session.cancelation_text == "")
-            {
-                alert("Message is empty.");
-                return;
-            }
-
-            app.$data.cancelationButtonText = '<i class="fas fa-spinner fa-spin"></i>';
-            axios.post('/session/{{id}}/', {
-                            action :"sendCancelations" ,  
-                            cancelation_text_subject:app.$data.session.cancelation_text_subject, 
-                            cancelation_text:app.$data.session.cancelation_text,                                                                                                                                                            
-                        })
-                        .then(function (response) {     
-                            app.updateSession(response);      
-                            app.$data.cancelationButtonText = 'Cancel Session <i class="fas fa-ban"></i>';   
-
-                            if( response.data.success)
-                            {
-                                if(response.data.result.error_message != "")
-                                    app.$data.emailResultCancelation = "Error: " + response.data.result.error_message;
-                                else
-                                    app.$data.emailResultCancelation = response.data.result.mail_count + " email(s) were sent.";                                     
-                            }
-                            else
-                            {
-                                app.$data.emailResultCancelation = response.data.result;
-                            }
-                                                
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        }); 
-            },
 
         //add pay level
         addPayLevel:function(){
@@ -664,64 +543,6 @@ var app = Vue.createApp({
                         .catch(function (error) {
                             console.log(error);
                         });                        
-        },
-
-        //download data
-        downloadData:function(){                    
-            app.$data.downloadDataButtonText = '<i class="fas fa-spinner fa-spin"></i>';
-            axios.post('/session/{{id}}/', {
-                            action :"downloadData" ,                                                                                                                                                                                              
-                        })
-                        .then(function (response) {     
-                                                        
-                            
-                            console.log(response.data);
-
-                            var downloadLink = document.createElement("a");
-                            var blob = new Blob(["\ufeff", response.data]);
-                            var url = URL.createObjectURL(blob);
-                            downloadLink.href = url;
-                            downloadLink.download = "FitBit_Session_" + app.$data.session.id +"_Data.csv";
-
-                            document.body.appendChild(downloadLink);
-                            downloadLink.click();
-                            document.body.removeChild(downloadLink);
-
-                            app.$data.downloadDataButtonText ='Download Data <i class="fas fa-scroll fa-xs"></i>';
-                                                            
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });                        
-        },
-
-        //download earnings
-        downloadEarnings:function(){
-            app.$data.downloadEarningsButtonText = '<i class="fas fa-spinner fa-spin"></i>';
-            axios.post('/session/{{id}}/', {
-                            action :"downloadEarnings",
-                            date : app.$data.earningsDownloadDate,                                                                                                                                                                                              
-                        })
-                        .then(function (response) {    
-                                                        
-                            console.log(response.data);
-
-                            var downloadLink = document.createElement("a");
-                            var blob = new Blob(["\ufeff", response.data]);
-                            var url = URL.createObjectURL(blob);
-                            downloadLink.href = url;
-                            downloadLink.download = "FitBit_Session_" + app.$data.session.id +"_Earnings_" + app.$data.earningsDownloadDate + ".csv";
-
-                            document.body.appendChild(downloadLink);
-                            downloadLink.click();
-                            document.body.removeChild(downloadLink);
-
-                            app.$data.downloadEarningsButtonText ='Download Earnings <i class="fas fa-cash-register"></i>';
-                                                            
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
         },
 
         //download parameter set
@@ -950,17 +771,6 @@ var app = Vue.createApp({
         //hide send invitation
         hideSendInvitations:function(){
             app.$data.emailResult="";
-        },
-
-        //show cancel session
-        showCancelSession:function(){
-            
-            $('#sendCancelationsModalCenter').modal('show');                   
-        },
-
-        //hide cancel session
-        hideCancelSession:function(){
-            app.$data.emailResultCancelation="";
         },
                     
         //show edit parameters modal
@@ -1315,6 +1125,8 @@ var app = Vue.createApp({
 
             return(-1 * tempT * tempValue - markerHeight/2)
         },
+
+        {%include "staff/session/control_card/control_card.js"%}
     },
 
     mounted(){
