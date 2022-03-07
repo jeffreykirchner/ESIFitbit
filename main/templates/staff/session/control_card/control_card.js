@@ -6,7 +6,8 @@ startSession(){
         })
         .then(function (response) {     
             app.updateSession(response);      
-            app.$data.startSessionButtonText = 'Start Session <i class="far fa-play-circle"></i>';                          
+            app.$data.startSessionButtonText = 'Start Session <i class="far fa-play-circle"></i>';           
+            app.updateCanvases();               
         })
         .catch(function (error) {
             console.log(error);
@@ -28,6 +29,7 @@ resetSession(){
             app.updateSubjects(response);    
             app.graph_parameters = response.data.graph_parameters;
             app.$data.resetSessionButtonText = 'Reset Session <i class="fas fa-retweet"></i>';                          
+            app.updateCanvases();
         })
         .catch(function (error) {
             console.log(error);
@@ -112,6 +114,17 @@ backFillSessionsDays(){
                 .catch(function (error) {
                     console.log(error);
                 });                        
+},
+
+//show send invitation
+showSendInvitations(){
+    
+    $('#sendMessageModalCenter').modal('show');                   
+},
+
+//hide send invitation
+hideSendInvitations(){
+    app.$data.emailResult="";
 },
 
 //send invitations

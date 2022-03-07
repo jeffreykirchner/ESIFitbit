@@ -11,7 +11,7 @@
                 </button>
             </div>
             <div class="col text-right" v-show="session.started">
-                <button class="btn btn-outline-warning" type="button" v-on:click = "resetSession()">
+                <button class="btn btn-outline-warning" type="button" v-on:click = "resetSession()" v-bind:disabled="session.allow_delete===false">
                     <span v-html="resetSessionButtonText"></span>
                 </button>
             </div>    
@@ -22,10 +22,13 @@
                 <div v-else>
                     Session Not Started
                 </div>
+                <div v-if="session.allow_delete == false">
+                    (locked)
+                </div>
             </div>                        
         </div>
-        <div class="row mt-2">
-            <div class="col" style="text-align: right;">
+        <div class="row mt-2" v-show="session.started">
+            <div class="col text-right" >
                 <button class="btn btn-outline-danger" type="button" v-on:click = "showCancelSession()" v-bind:disabled = "session.started === false || session.canceled">
                     Cancel Session <i class="fas fa-ban"></i>
                 </button>
@@ -40,8 +43,8 @@
             </div>                        
         </div>
         {%if DEBUG%}
-        <div class="row mt-2"> 
-            <div class="col" style="text-align: right;">
+        <div class="row mt-2" v-show="session.started"> 
+            <div class="col text-right">
                
                 <button class="btn btn-outline-danger" type="button" v-on:click = "backFillSessionsDays()" v-bind:disabled = "session.started === false">
                     <span v-html="backFillButtonText"></span>
@@ -52,8 +55,8 @@
             </div> 
         </div>
         {%endif%}
-        <div class="row mt-2"> 
-            <div class="col" style="text-align: right;">                                
+        <div class="row mt-2" v-show="session.started"> 
+            <div class="col text-right">                                
                 <button class="btn btn-outline-primary" type="button" v-on:click = "showSendInvitations()" v-bind:disabled = "session.started === false">
                     Send Invitations <i class="far fa-envelope"></i>
                 </button>                                
@@ -67,8 +70,8 @@
                 </div>
             </div> 
         </div>    
-        <div class="row mt-2"> 
-            <div class="col" style="text-align: right;">                                
+        <div class="row mt-2" v-show="session.started"> 
+            <div class="col text-right">                                
                 <button class="btn btn-outline-primary" type="button" v-on:click = "downloadData()" v-bind:disabled = "session.started === false">
                    <span v-html="downloadDataButtonText"></span>
                 </button>                                
@@ -77,8 +80,8 @@
                 
             </div> 
         </div> 
-        <div class="row mt-2"> 
-            <div class="col" style="text-align: right;">                                
+        <div class="row mt-2" v-show="session.started"> 
+            <div class="col text-right">                                
                 <button class="btn btn-outline-primary" type="button" v-on:click = "downloadEarnings()" v-bind:disabled = "session.started === false">
                    <span v-html="downloadEarningsButtonText"></span>
                 </button>                                
