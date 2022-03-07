@@ -14,21 +14,20 @@ from django.urls import reverse
 
 from main.models import Session_day_subject_actvity
 
-
-
 def Survey_Complete(request, activity_key):
     '''
     survey complete view
     '''
+
+    logger = logging.getLogger(__name__) 
+    logger.info(f"Suvey Complete {activity_key}")
 
     if request.method == 'POST':
 
        pass
 
     else:
-        logger = logging.getLogger(__name__) 
-        logger.info(f"Suvey Complete {activity_key}")
-
+        
         return_link = ""
         error = False
 
