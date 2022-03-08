@@ -30,27 +30,7 @@ class Parameterset(models.Model):
     immune_parameter_2 = models.DecimalField(decimal_places=5, default=4.0, max_digits=20)
     immune_parameter_3 = models.DecimalField(decimal_places=5, default=4.0, max_digits=20)
 
-    # #heartEarnings $ = block_N_heart_pay * heartActivityToday
-    # block_1_heart_pay = models.DecimalField(decimal_places=2, default=0.00, max_digits=6)
-    # block_2_heart_pay = models.DecimalField(decimal_places=2, default=8.00, max_digits=6)
-    # block_3_heart_pay = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
-
-    # #immuneEarnings $ = block_N_immune_pay * immuneActivityToday
-    # block_1_immune_pay = models.DecimalField(decimal_places=2, default=0.00, max_digits=6)
-    # block_2_immune_pay = models.DecimalField(decimal_places=2, default=8.00, max_digits=6)
-    # block_3_immune_pay = models.DecimalField(decimal_places=2, default=16.00, max_digits=6)
-
-    # #fixed pay per day $
-    # block_1_fixed_pay_per_day = models.DecimalField(decimal_places=2, default=3.00, max_digits=6)
-    # block_2_fixed_pay_per_day = models.DecimalField(decimal_places=2, default=3.00, max_digits=6)
-    # block_3_fixed_pay_per_day = models.DecimalField(decimal_places=2, default=3.00, max_digits=6)
-
     minimum_wrist_minutes = models.IntegerField(default = 1080)
-
-    #number of days for each time block
-    # block_1_day_count = models.IntegerField(default = 1)
-    # block_2_day_count = models.IntegerField(default = 1)
-    # block_3_day_count = models.IntegerField(default = 1)
 
     #heart graph self
     y_min_heart = models.IntegerField(default=0)
@@ -80,9 +60,6 @@ class Parameterset(models.Model):
     class Meta:
         verbose_name = 'Study Parameter Set'
         verbose_name_plural = 'Study Parameter Sets'
-
-    # def get_heart_activity(heart_activity, heart_actvity_minutes):
-    #     return 0
 
     def setup_from_dict(self, data):
         '''

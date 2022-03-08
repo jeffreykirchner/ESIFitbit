@@ -917,6 +917,59 @@ class SubjectInstructions(TestCase):
 
         self.assertEqual(notification_title, instruction_set.get_notice_title(TimeBlock.FOUR, NoticeType.START))
         self.assertEqual(notification_text, instruction_set.get_notice_title(TimeBlock.FOUR, NoticeType.START))
+    
+    def test_fourteen_x_fourteen_x_fourteen_x_twentyeight_no_notice(self):
+        '''
+        test experiment with a 14 x 14 x 14 x 28 time block one advanced notice
+        '''
+        logger = logging.getLogger(__name__)
+
+        session = self.session
+       
+        #logger.info(self.session.instruction_set)
+        session.parameterset.add_time_block()
+
+        session.parameterset.time_blocks.filter(block_number=1).update(day_count=14)
+        session.parameterset.time_blocks.filter(block_number=2).update(day_count=14)
+        session.parameterset.time_blocks.filter(block_number=3).update(day_count=14)
+        session.parameterset.time_blocks.filter(block_number=4).update(day_count=28, show_notice=False)
+
+        session.parameterset.save()
+        instruction_set = session.instruction_set
+
+        start_date = todaysDate() - timedelta(43)
+
+        data = {'action': 'updateSession', 'formData': [{'name': 'title', 'value': '*** New Session ***'}, {'name': 'start_date', 'value': start_date.date().strftime("%m/%d/%Y")}, {'name': 'treatment', 'value': 'I'}, {'name': 'consent_required', 'value': '1'}, {'name': 'questionnaire1_required', 'value': '1'}, {'name': 'questionnaire2_required', 'value': '1'}, {'name': 'instruction_set', 'value': '2'},{'name':'auto_pay','value':'1'}]}
+
+        result = json.loads(updateSession(data, self.session.id).content.decode("UTF-8"))
+        self.assertEqual(result['status'],"success")
+
+        session = Session.objects.get(id = session.id)
+        # session.calcEndDate()
+        # session = Session.objects.get(id = session.id)
+
+        r = json.loads(startSession({},session.id).content.decode("UTF-8"))
+        self.assertEqual(r['status'],"success")
+        session = Session.objects.get(id = session.id)
+
+        logger.info(f"Session start date {session.start_date} end date {session.end_date}")
+
+        heart_help_text = session.get_instruction_text(PageType.HEART)
+        immune_help_text = session.get_instruction_text(PageType.SLEEP)
+        payment_help_text = session.get_instruction_text(PageType.PAY)
+
+        self.assertEqual(heart_help_text, instruction_set.get_page_text(TimeBlock.FOUR, PageType.HEART))
+        self.assertEqual(immune_help_text, instruction_set.get_page_text(TimeBlock.FOUR, PageType.SLEEP))
+        self.assertEqual(payment_help_text, instruction_set.get_page_text(TimeBlock.FOUR, PageType.PAY))
+
+        #check for payment change notice
+        p_number = session.getCurrentSessionDay().period_number
+
+        notification_title = session.get_notice_title(p_number)
+        notification_text = session.get_notice_text(p_number)
+
+        self.assertEqual(notification_title, "")
+        self.assertEqual(notification_text, "")
 
 class SubjectPayments(TestCase):
     '''

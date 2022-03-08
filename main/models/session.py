@@ -499,6 +499,11 @@ class Session(models.Model):
         else:
             return ""
 
+        #check that notice is active
+        parameter_set_time_block = self.parameterset.getBlock(p_number_used)
+        if not parameter_set_time_block.show_notice:
+            return ""
+
         notice_text = self.instruction_set.get_notice_text(time_block, notice_type)
 
         if self.treatment == "I" or self.treatment == "Base":
@@ -521,13 +526,21 @@ class Session(models.Model):
         if not self.instruction_set:
             return ""
 
+        p_number_used = p_number
+
         if self.parameterset.getBlockChangeToday(p_number):
             notice_type = NoticeType.START
             time_block = self.get_current_block()
         elif self.parameterset.getBlockChangeInTwoDays(p_number):
             notice_type = NoticeType.ADVANCE
             time_block = self.get_next_block(p_number + 2)
+            p_number = p_number + 2
         else:
+            return ""
+
+        #check that time block notice is active
+        parameter_set_time_block = self.parameterset.getBlock(p_number_used)
+        if not parameter_set_time_block.show_notice:
             return ""
 
         return self.instruction_set.get_notice_title(time_block, notice_type)

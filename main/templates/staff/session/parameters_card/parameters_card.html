@@ -99,34 +99,30 @@
                 Block [[index+1]]
             </div>
 
-            <div class="col-md text-right text-nowrap">
-                {{parameterset_time_block_form.day_count.label}}:
-            </div>
-            <div class="col-md text-nowrap">
-                [[b.day_count]]
+            <div class="col-md text-center text-nowrap">
+                {{parameterset_time_block_form.day_count.label}}: [[b.day_count]]
+               
             </div>
 
-            <div class="col-md text-right text-nowrap">
-                {{parameterset_time_block_form.fixed_pay_per_day.label}}:
-            </div>
-            <div class="col-md text-nowrap">
-                [[b.fixed_pay_per_day]]
+            <div class="col-md text-center text-nowrap">
+                {{parameterset_time_block_form.fixed_pay_per_day.label}}: [[b.fixed_pay_per_day]]
             </div>
 
-            <div class="col-md text-right text-nowrap">
-                {{parameterset_time_block_form.heart_pay.label}}:
-            </div>
-            <div class="col-md text-nowrap">
-               [[b.heart_pay]]
+            <div class="col-md text-center text-nowrap">
+                {{parameterset_time_block_form.heart_pay.label}}: [[b.heart_pay]]
             </div>
 
-            <div class="col-md text-right text-nowrap">
-                {{parameterset_time_block_form.immune_pay.label}}:
+            <div class="col-md text-center text-nowrap">
+                {{parameterset_time_block_form.immune_pay.label}}: [[b.immune_pay]]
             </div>
-            <div class="col-md">
-                [[b.immune_pay]]
+
+            <div class="col-md text-center text-nowrap">
+                {{parameterset_time_block_form.show_notice.label}}: 
+                <span v-if="b.show_notice == 1">Yes</span>
+                <span v-else="b.show_notice == 1">No</span>
             </div>
-            <div class="col-md text-nowrap">
+
+            <div class="col-md text-center">
                 <button class="btn btn-outline-primary btn-sm" type="button" v-on:click = "showEditTimeBlock(index)" v-show="session.started===false"> 
                     <i class="far fa-edit"></i>
                 </button>

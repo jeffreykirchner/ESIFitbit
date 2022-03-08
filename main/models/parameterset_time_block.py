@@ -24,8 +24,9 @@ class ParametersetTimeBlock(models.Model):
     heart_pay = models.DecimalField(decimal_places=2, default=0.00, max_digits=6)            #heartEarnings $ = block_N_heart_pay * heartActivityToday
     immune_pay = models.DecimalField(decimal_places=2, default=0.00, max_digits=6)           #immuneEarnings $ = block_N_immune_pay * immuneActivityToday
     fixed_pay_per_day = models.DecimalField(decimal_places=2, default=3.00, max_digits=6)    #fixed pay per day $
-    day_count = models.IntegerField(default = 1)                                             #number of days for each time block 
-    block_number = models.IntegerField(default = 1)                                          #which block from 1 - N this is
+    day_count = models.IntegerField(default=1)                                               #number of days for each time block 
+    block_number = models.IntegerField(default=1)                                            #which block from 1 - N this is
+    show_notice = models.BooleanField(default=True)                                          #if true, show notice for this time block
 
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
@@ -57,6 +58,7 @@ class ParametersetTimeBlock(models.Model):
             self.day_count = data.get("day_count")
             self.fixed_pay_per_day = data.get("fixed_pay_per_day")
             self.block_number = data.get("block_number")
+            self.show_notice = data.get("show_notice")
 
             self.save()
 
@@ -76,6 +78,7 @@ class ParametersetTimeBlock(models.Model):
         self.day_count = data.day_count
         self.fixed_pay_per_day = data.fixed_pay_per_day
         self.block_number = data.block_number
+        self.show_notice = data.show_notice
 
         self.save()
     
@@ -121,5 +124,6 @@ class ParametersetTimeBlock(models.Model):
             "day_count" : self.day_count,
             "fixed_pay_per_day" : self.fixed_pay_per_day,
             "block_number" : self.block_number,
+            "show_notice" :  1 if self.show_notice else 0,
         }
 
