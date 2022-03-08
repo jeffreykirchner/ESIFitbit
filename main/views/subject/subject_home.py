@@ -60,11 +60,13 @@ def Subject_Home(request, id_):
         if session_subject:
 
             #check for survey redirect
-            session_day_subject_actvity = Session_day_subject_actvity.objects.filter(session_subject = session_subject,session_day=session_day).first()
+            session_day_subject_actvity_survey_needed = Session_day_subject_actvity.objects.filter(session_subject = session_subject,
+                                                                                                   session_day__period_number__lte=session_day.period_number,
+                                                                                                   survey_complete=False).first()
+                                                                                    
 
-            if session_day_subject_actvity:
-                if not session_day_subject_actvity.survey_complete:
-                    return redirect(session_day_subject_actvity.get_survey_link())
+            if session_day_subject_actvity_survey_needed:
+                return redirect(session_day_subject_actvity_survey_needed.get_survey_link())
 
             #questionnaire 1 setup            
             session_subject_questionnaire1_form_ids=[]
