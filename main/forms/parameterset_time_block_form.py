@@ -25,7 +25,11 @@ class ParametersetTimeBlockForm(forms.ModelForm):
     fixed_pay_per_day = forms.DecimalField(label='Fixed Pay($)',
                                            min_value=0,
                                            widget=forms.NumberInput(attrs={"v-model":"current_time_block.fixed_pay_per_day"}))
+    
+    show_notice = forms.ChoiceField(label='Show Notices',
+                                    choices=((1, 'Yes'), (0,'No' )),
+                                    widget=forms.Select(attrs={"v-model":"current_time_block.show_notice"}))
 
     class Meta:
         model=ParametersetTimeBlock
-        fields = ('day_count', 'heart_pay', 'immune_pay', 'fixed_pay_per_day')
+        fields = ('day_count', 'heart_pay', 'immune_pay', 'fixed_pay_per_day', 'show_notice')

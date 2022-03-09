@@ -80,6 +80,7 @@ class Session_day_subject_actvity(models.Model):
         ]
         verbose_name = 'Session Day'
         verbose_name_plural = 'Session Days'
+        ordering=['session_day__period_number']
 
     #calc heart activity
     def calcHeartActivity(self,heart_time,activity_score,round_result):
