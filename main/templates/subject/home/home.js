@@ -620,9 +620,9 @@ var app = Vue.createApp({
         },   
         
         {%if session_treatment == "I"%}
-            {%include "subject/home/individual_payment.js"%}
+            {%include "subject/home/payment_tab/individual/individual_payment.js"%}
         {%else%}
-            {%include "subject/home/A_B_C_check_in.js"%}
+            {%include "subject/home/payment_tab/ABC/A_B_C_check_in.js"%}
         {%endif%}
     },
 

@@ -106,6 +106,16 @@
                                             <i class="fas fa-user-friends"></i>
                                     </label>
                                     {%endif%}
+                                    {%if show_group && show_chat%}
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" 
+                                               name="options" 
+                                               id="option3" 
+                                               autocomplete="off" 
+                                               v-on:click="updateToogleState('chat')"> 
+                                               <i class="far fa-comment"></i>
+                                    </label>
+                                    {%endif%}
                                     <label class="btn btn-secondary" 
                                            v-bind:style="[(viewed_heart === false || viewed_immune === false || viewed_group == false) && session_day_subject_actvity.paypal_today ===false ? {'background-color': 'lightgrey' }:{}]">
                                         <input type="radio" 
@@ -125,19 +135,19 @@
                         </div>
                     
                         <div v-show="toggleState==='heart'">
-                            {%include "subject/home/heart_tab.html"%}                            
+                            {%include "subject/home/heart_tab/heart_tab.html"%}                            
                         </div>
                         <div v-show="toggleState==='immune'">
-                            {%include "subject/home/immune_tab.html"%}
+                            {%include "subject/home/immune_tab/immune_tab.html"%}
                         </div>  
                         <div v-show="toggleState==='group'">
-                            {%include "subject/home/group_tab.html"%}
+                            {%include "subject/home/group_tab/group_tab.html"%}
                         </div>
                         <div v-show="toggleState==='payment'">
                             {%if session_treatment == "I"%}
-                                {%include "subject/home/payment_tab_individual.html"%}       
+                                {%include "subject/home/payment_tab/individual/payment_tab_individual.html"%}       
                             {%elif session_treatment == "A" or session_treatment == "B" or session_treatment == "C"%}   
-                                {%include "subject/home/payment_tab_ABC.html"%}
+                                {%include "subject/home/payment_tab/ABC/payment_tab_ABC.html"%}
                             {%endif%}       
                         </div>
 
@@ -145,10 +155,10 @@
                             {%include "subject/home/chart.html"%}                           
                         </div>
                         <div v-show="toggleState==='heart'">
-                            {%include "subject/home/averages_heart.html"%}   
+                            {%include "subject/home/payment_tab/ABC/averages_heart.html"%}   
                         </div>
                         <div v-show="toggleState==='immune'">
-                            {%include "subject/home/averages_sleep.html"%}   
+                            {%include "subject/home/payment_tab/ABC/averages_sleep.html"%}   
                         </div>
 
                     </div>

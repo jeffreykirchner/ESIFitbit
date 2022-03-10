@@ -50,6 +50,7 @@ class Parameterset(models.Model):
 
     sleep_tracking = models.BooleanField(default=True)  #enable sleep tracking
     show_group = models.BooleanField(default=False)     #show group information
+    show_chat = models.BooleanField(default=False)      #show tab information
 
     timestamp = models.DateTimeField(auto_now_add= True)
     updated= models.DateTimeField(auto_now= True)
@@ -99,6 +100,7 @@ class Parameterset(models.Model):
 
         self.sleep_tracking =  data.get("sleep_tracking")
         self.show_group = data.get("show_group")
+        self.show_chat = data.get("show_chat")
 
         # pay levels
         self.paylevels.all().delete()
@@ -169,6 +171,7 @@ class Parameterset(models.Model):
 
         self.sleep_tracking = data.sleep_tracking
         self.show_group = data.show_group
+        self.show_chat = data.show_chat
 
         #pay levels
         self.paylevels.all().delete()
@@ -446,6 +449,7 @@ class Parameterset(models.Model):
 
             "sleep_tracking":1 if  self.sleep_tracking else 0,
             "show_group":1 if  self.show_group else 0,
+            "show_chat":1 if self.show_chat else 0,
 
             "pay_levels" : [pl.json() for pl in self.paylevels.all()],
 

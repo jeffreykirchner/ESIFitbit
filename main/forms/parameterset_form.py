@@ -103,6 +103,10 @@ class Parameterset_form(forms.ModelForm):
                                    choices=((1, 'Yes'), (0, 'No')),
                                    widget=forms.Select(attrs={"v-model" : "session.parameterset.show_group"}))
 
+    show_chat = forms.ChoiceField(label='Show Chat (Groups required)',
+                                   choices=((1, 'Yes'), (0, 'No')),
+                                   widget=forms.Select(attrs={"v-model" : "session.parameterset.show_chat"}))
+
     class Meta:
         model=Parameterset
         fields = ('__all__')
