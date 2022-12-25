@@ -28,7 +28,7 @@ class SessionDayForm(forms.ModelForm):
            survey_link = self.data.get('survey_link')
            survey_required = self.data.get('survey_required')
 
-           if survey_required == '1' and not "http" in survey_link:
+           if (survey_required == '1' or survey_required == 1) and not "http" in survey_link:
                raise forms.ValidationError('Invalid link')
             
         except ValueError:

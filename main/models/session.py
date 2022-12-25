@@ -413,6 +413,18 @@ class Session(models.Model):
             writer.writerow(["Parameters Paylevels"])
             writer.writerow(["Score Start", "Score End", "Value"])
             self.parameterset.get_csv_response_pay_level(writer)
+        
+        #weekly AZM totals
+        writer.writerow([])
+        writer.writerow(["AZM Weekly Totals"])
+
+        weeks = ["Session", "Subject ID"]
+        for i in range(int(self.session_days.count()/7)):
+            weeks.append(f'Week {i+1}')
+        writer.writerow(weeks)
+
+        for i in self.session_subjects.filter(soft_delete=False).order_by('id_number'):
+            i.get_weekly_AZM_totals_csv(writer)
 
         return csv_response
 
