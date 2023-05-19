@@ -671,6 +671,34 @@ class Session_subject(models.Model):
 
         return round_half_away_from_zero((total_days - missed_checkins) * self.get_daily_payment_A_B_C(period_number), 2)
 
+    #get AZM totals for data file
+    def get_weekly_AZM_totals(self):
+        weekly_AZM_totals = {}
+
+        session_subject_activity = self.Session_day_subject_actvities.all().values('heart_activity_minutes','session_day__period_number')
+
+        for i in session_subject_activity:
+            week_number = (i["session_day__period_number"]-1) // 7 + 1
+
+            t = weekly_AZM_totals.get(week_number, 0)
+            t += i["heart_activity_minutes"]
+
+            weekly_AZM_totals[week_number] = t
+
+        return weekly_AZM_totals
+
+    def get_weekly_AZM_totals_csv(self, writer):
+
+        weekly_AZM_totals = self.get_weekly_AZM_totals()
+
+        weekly_AZM_totals_csv = [self.session.title, self.id_number]
+
+        for i in range(int(self.session.session_days.count()/7)):
+            weekly_AZM_totals_csv.append(weekly_AZM_totals[i+1])           
+
+        writer.writerow(weekly_AZM_totals_csv)
+
+
     #get list of group members in json
     def get_group_list_json(self):
         if not self.session.parameterset.show_group:
