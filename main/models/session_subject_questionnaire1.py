@@ -88,8 +88,8 @@ class Session_subject_questionnaire1(models.Model):
         #                  'Sleep Variation Likert','Sleep Variation Explanation',
         #                  'Exercise Variation Likert','Exercise Variation Explanation'
 
-        writer.writerow([self.session_subject.session.title, self.session_subject.id_number, self.session_subject.login_key, self.session_subject.contact_email,
-                         self.session_subject.consent_signature, self.sleep_hours, self.sleep_importance, self.sleep_explanation,
+        writer.writerow([self.session_subject.session.title, self.session_subject.id_number, self.session_subject.login_key, self.session_subject.student_id,
+                         self.sleep_hours, self.sleep_importance, self.sleep_explanation,
                          self.exercise_minutes, self.exercise_importance, self.exercise_explanation,
                          self.health_importance, self.health_importance_explanation, self.health_importance_actions,
                          self.health_satisfaction, self.sleep_variation, self.sleep_variation_explanation,
